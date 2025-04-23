@@ -1,6 +1,6 @@
 package no.ntnu.stud.idatt2106_2025_9.model;
 
-import java.sql.Date;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
