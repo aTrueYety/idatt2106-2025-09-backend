@@ -19,14 +19,15 @@ public class HouseholdTest {
     @Test
     void testAllArgsConstructorAndGetters() {
         Date now = new Date();
-        Household household = new Household(1L, "123 Main St", 40.7128, -74.0060, 500.0, now);
+        Household household = new Household(1L, "123 Main St", 40.7128, -74.0060, 500.0, now, true);
 
         assertEquals(1L, household.getId());
         assertEquals("123 Main St", household.getAdress());
-        assertEquals(40.7128, household.getLongditude());
+        assertEquals(40.7128, household.getLongitude());
         assertEquals(-74.0060, household.getLatitude());
         assertEquals(500.0, household.getWaterAmountLiters());
-        assertEquals(now, household.getLastWaterChange());
+        assertEquals(now, household.getLastWaterChangeDate());
+        assertEquals(true, household.isHasFirstAidKit());
     }
 
     /**
@@ -39,16 +40,16 @@ public class HouseholdTest {
 
         household.setId(2L);
         household.setAdress("456 Side St");
-        household.setLongditude(12.3456);
+        household.setLongitude(12.3456);
         household.setLatitude(65.4321);
         household.setWaterAmountLiters(750.0);
-        household.setLastWaterChange(now);
+        household.setLastWaterChangeDate(now);
 
         assertEquals(2L, household.getId());
         assertEquals("456 Side St", household.getAdress());
-        assertEquals(12.3456, household.getLongditude());
+        assertEquals(12.3456, household.getLongitude());
         assertEquals(65.4321, household.getLatitude());
         assertEquals(750.0, household.getWaterAmountLiters());
-        assertEquals(now, household.getLastWaterChange());
+        assertEquals(now, household.getLastWaterChangeDate());
     }
 }
