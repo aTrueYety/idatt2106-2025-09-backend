@@ -8,6 +8,12 @@ import org.springframework.jdbc.core.RowMapper;
 
 import no.ntnu.stud.idatt2106_2025_9.model.Household;
 
+/**
+ * Implements the methods defined in HouseholdRepository using JDBC.
+ * 
+ * @version 1.0
+ * @since 23.04.2025
+ */
 public class HouseholdRepositoryImpl implements HouseholdRepository {
 
     @Autowired
