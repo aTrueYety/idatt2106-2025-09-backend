@@ -45,13 +45,15 @@ public class JwtService {
    * @param username the username to include in the token
    * @param userId   the user ID to include in the token
    * @param isAdmin  whether the user is an admin
+   * @param isSuperAdmin whether the user is a super admin
    * @return the generated JWT token as a string
    */
-  public String generateToken(String username, long userId, boolean isAdmin) {
+  public String generateToken(String username, long userId, boolean isAdmin, boolean isSuperAdmin) {
     Map<String, Object> claims = new HashMap<>();
     claims.put("refreshToken", "placeholder");
     claims.put("userId", userId);
     claims.put("isAdmin", isAdmin);
+    claims.put("isSuperAdmin", isSuperAdmin);
 
     return Jwts.builder()
         .claims()
@@ -62,7 +64,6 @@ public class JwtService {
         .and()
         .signWith(getKey())
         .compact();
-
   }
 
   private SecretKey getKey() {
@@ -70,13 +71,44 @@ public class JwtService {
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
+  /**
+   * Extracts the username from the given JWT token.
+   *
+   * @param token the JWT token to extract the username from
+   * @return the username extracted from the token
+   */
   public String extractUserName(String token) {
-    // extract the username from jwt token
     return extractClaim(token, Claims::getSubject);
   }
 
+  /**
+   * Extracts the user ID from the given JWT token.
+   *
+   * @param token the JWT token to extract the user ID from
+   * @return the user ID extracted from the token
+   */
   public Long extractUserId(String token) {
     return extractClaim(token, claims -> claims.get("userId", Long.class));
+  }
+
+  /**
+   * Extracts the refresh token from the given JWT token.
+   *
+   * @param token the JWT token to extract the refresh token from
+   * @return the refresh token extracted from the token
+   */
+  public boolean extractIsAdmin(String token) {
+    return extractClaim(token, claims -> claims.get("isAdmin", Boolean.class));
+  }
+
+  /**
+   * Extracts the refresh token from the given JWT token.
+   *
+   * @param token the JWT token to extract the refresh token from
+   * @return the refresh token extracted from the token
+   */
+  public boolean extractIsSuperAdmin(String token) {
+    return extractClaim(token, claims -> claims.get("isSuperAdmin", Boolean.class));
   }
 
   private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
@@ -92,6 +124,13 @@ public class JwtService {
         .getPayload();
   }
 
+  /**
+   * Validates the given JWT token against the provided user details.
+   *
+   * @param token the JWT token to validate
+   * @param userDetails the user details to validate against
+   * @return true if the token is valid, false otherwise
+   */
   public boolean validateToken(String token, UserDetails userDetails) {
     final String userName = extractUserName(token);
     return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
@@ -104,9 +143,4 @@ public class JwtService {
   private Date extractExpiration(String token) {
     return extractClaim(token, Claims::getExpiration);
   }
-
-  public boolean extractIsAdmin(String token) {
-    return extractClaim(token, claims -> claims.get("isAdmin", Boolean.class));
-  }
-
 }

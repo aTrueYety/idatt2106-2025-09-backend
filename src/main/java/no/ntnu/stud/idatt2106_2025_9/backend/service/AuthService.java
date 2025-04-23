@@ -89,7 +89,8 @@ public class AuthService {
 
     if (authentication.isAuthenticated() && !isUsernameAvailable(username)) {
       User user = userService.getUserByUsername(username);
-      return jwtService.generateToken(user.getUsername(), user.getId(), user.isAdmin());
+      return jwtService.generateToken(
+        user.getUsername(), user.getId(), user.isAdmin(), user.isSuperAdmin());
     } else {
       return null;
     }
