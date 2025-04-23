@@ -20,3 +20,4 @@ checkstyle:
       - target/site/checkstyle.html
   only:
     - main
+    - dev
