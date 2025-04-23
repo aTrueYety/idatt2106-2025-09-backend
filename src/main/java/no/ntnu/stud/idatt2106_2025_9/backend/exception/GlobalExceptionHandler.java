@@ -1,4 +1,4 @@
-package edu.ntnu.stud.exception;
+package no.ntnu.stud.idatt2106_2025_9.backend.exception;
 
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
