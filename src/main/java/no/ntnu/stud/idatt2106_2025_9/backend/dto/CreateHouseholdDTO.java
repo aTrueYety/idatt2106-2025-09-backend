@@ -1,0 +1,25 @@
+package no.ntnu.stud.idatt2106_2025_9.backend.dto;
+
+import java.util.Date;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Data transfer object for creating a new household.
+ * 
+ * @version 1.0
+ * @since 23.04.2025
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class CreateHouseholdDTO {
+    private String adress;
+    private double longitude;
+    private double latitude;
+    private double waterAmountLiters;
+    private Date lastWaterChangeDate;
+    private boolean hasFirstAidKit;
+}
