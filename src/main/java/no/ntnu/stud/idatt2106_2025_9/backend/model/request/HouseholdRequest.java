@@ -1,4 +1,4 @@
-package no.ntnu.stud.idatt2106_2025_9.backend.dto;
+package no.ntnu.stud.idatt2106_2025_9.backend.model.request;
 
 import java.util.Date;
 
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateHouseholdDTO {
+public class HouseholdRequest {
     private String adress;
     private double longitude;
     private double latitude;

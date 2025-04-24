@@ -1,4 +1,4 @@
-package no.ntnu.stud.idatt2106_2025_9.backend.model;
+package no.ntnu.stud.idatt2106_2025_9.backend.model.base;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
