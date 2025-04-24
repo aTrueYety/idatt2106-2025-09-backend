@@ -1,10 +1,9 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import no.ntnu.stud.idatt2106.backend.model.base.User;
+import no.ntnu.stud.idatt2106.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import no.ntnu.stud.idatt2106.backend.model.base.User;
-import no.ntnu.stud.idatt2106.backend.repo.UserRepo;
 
 /**
  * Service class for managing user-related operations.
@@ -12,7 +11,7 @@ import no.ntnu.stud.idatt2106.backend.repo.UserRepo;
 @Service
 public class UserService {
   @Autowired
-  private UserRepo userRepo;
+  private UserRepository userRepo;
 
   /**
    * Adds a new user to the system.

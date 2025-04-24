@@ -1,16 +1,17 @@
-package no.ntnu.stud.idatt2106.backend.repo;
+package no.ntnu.stud.idatt2106.backend.repository;
 
 import java.util.List;
-
+import no.ntnu.stud.idatt2106.backend.model.base.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import no.ntnu.stud.idatt2106.backend.model.base.User;
-
+/**
+ * Repository class for managing user-related database operations.
+ */
 @Repository
-public class UserRepo {
+public class UserRepository {
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
@@ -32,6 +33,12 @@ public class UserRepo {
     return user;
   };
 
+  /**
+   * Adds a new user to the database.
+   *
+   * @param user the user to be added
+   * @return the number of rows affected
+   */
   public int addUser(User user) {
     String sql = "INSERT INTO user (household_id, email, username, password, email_confirmed, " 
         + "is_admin, is_super_admin, first_name, last_name, share_position_household, " 
@@ -42,12 +49,24 @@ public class UserRepo {
         user.isSharePositionGroup(), user.getPicture());
   }
 
+  /**
+   * Finds a user by their username.
+   *
+   * @param username the username of the user to be found
+   * @return the user with the specified username, or null if not found
+   */
   public User findUserByUsername(String username) {
     String sql = "SELECT * FROM user WHERE username = ?";
     List<User> users = jdbcTemplate.query(sql, userRowMapper, username);
     return users.isEmpty() ? null : users.get(0);
   }
 
+  /**
+   * Finds a user by their ID.
+   *
+   * @param user the user to be found
+   * @return the user with the specified ID, or null if not found
+   */
   public int updateUser(User user) {
     String sql = "UPDATE user SET household_id = ?, email = ?, username = ?, password = ?, " 
         + "email_confirmed = ?, is_admin = ?, is_super_admin = ?, first_name = ?, last_name = ?, " 
