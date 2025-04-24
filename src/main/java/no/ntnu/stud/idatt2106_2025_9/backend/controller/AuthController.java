@@ -1,5 +1,7 @@
 package no.ntnu.stud.idatt2106_2025_9.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import no.ntnu.stud.idatt2106_2025_9.backend.model.update.CredentialsUpdate;
 import no.ntnu.stud.idatt2106_2025_9.backend.model.request.LoginRequest;
 import no.ntnu.stud.idatt2106_2025_9.backend.model.request.RegisterRequest;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
  * like login, registration, token management and changing a user's password.
  * It provides endpoints for user registration, login and changing of password.
  */
+@Tag(name = "Authentication", 
+    description = "Endpoints for user authentication and security operations")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -38,6 +42,7 @@ public class AuthController {
    * @param registerRequest the registration request containing user details
    * @return a ResponseEntity containing the registration response or an error message
    */
+  @Operation(summary = "Register a new user", description = "Creates a new user in the system")
   @PostMapping("/register")
   public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
     RegisterResponse registerResponse = service.register(registerRequest);
@@ -52,6 +57,8 @@ public class AuthController {
    * @param loginRequest the login request containing the user's credentials
    * @return a ResponseEntity containing the login response or an error message
    */
+  @Operation(summary = "Login a user", 
+      description = "Verifies user credentials and returns a JWT token")
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
     LoginResponse loginResponse = service.login(loginRequest);
@@ -63,16 +70,18 @@ public class AuthController {
    * This method handles requests to change a user's password.
    * It verifies the user's identity and updates the password if valid.
    *
-   * @param CredentialsUpdate the request containing the current and new passwords
+   * @param credentialsUpdate the request containing the current and new passwords
    * @return a ResponseEntity indicating success or failure
    */
+  @Operation(summary = "Change user credentials", 
+      description = "Updates the user's password after verifying identity")
   @PostMapping("/change-credentials")
   public ResponseEntity<?> changeCredentials(
-      @RequestBody CredentialsUpdate CredentialsUpdate,
+      @RequestBody CredentialsUpdate credentialsUpdate,
       @RequestHeader("Authorization") String token
   ) {
     ChangeCredentialsResponse changeCredentialsResponse = service
-        .changeCredentials(CredentialsUpdate, token);
+        .changeCredentials(credentialsUpdate, token);
     logger.info("User credentials changed successfully");
     return ResponseEntity.ok(changeCredentialsResponse);
   }
