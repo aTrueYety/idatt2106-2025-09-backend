@@ -1,8 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.model.base;
 
 import java.sql.Blob;
-import java.time.LocalTime;
-
+import java.sql.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,8 @@ public class MapObject {
   private int typeId;
   private float latitude;
   private float longitude;
-  private LocalTime opening;
+  private Timestamp opening;
+  private Timestamp closing;
   private String contactPhone;
   private String contactEmail;
   private String contactName;
