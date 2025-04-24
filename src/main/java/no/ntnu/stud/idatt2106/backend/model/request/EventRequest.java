@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventRequest {
-  private long infoPageId;
+  private Long infoPageId;
   private double latitude;
   private double longitude;
   private double radius;
