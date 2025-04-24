@@ -1,10 +1,10 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import no.ntnu.stud.idatt2106.backend.config.SecurityConfigTest;
-import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
-import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
+import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.FoodTypeResponse;
+import no.ntnu.stud.idatt2106.backend.service.FoodTypeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,20 +29,20 @@ public class FoodTypeControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private FoodTypeRepository repository;
+    private FoodTypeService service;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     void shouldGetAllFoodTypes() throws Exception {
-        FoodType milk = new FoodType();
+        FoodTypeResponse milk = new FoodTypeResponse();
         milk.setId(1);
         milk.setName("Milk");
         milk.setUnit("liter");
         milk.setCaloriesPerUnit(64.0f);
 
-        when(repository.findAll()).thenReturn(List.of(milk));
+        when(service.getAll()).thenReturn(List.of(milk));
 
         mockMvc.perform(get("/api/food-types"))
                 .andExpect(status().isOk())
@@ -53,13 +52,13 @@ public class FoodTypeControllerTest {
 
     @Test
     void shouldReturnFoodTypeById() throws Exception {
-        FoodType milk = new FoodType();
+        FoodTypeResponse milk = new FoodTypeResponse();
         milk.setId(1);
         milk.setName("Milk");
         milk.setUnit("liter");
         milk.setCaloriesPerUnit(64.0f);
 
-        when(repository.findById(1)).thenReturn(Optional.of(milk));
+        when(service.getById(1)).thenReturn(Optional.of(milk));
 
         mockMvc.perform(get("/api/food-types/1"))
                 .andExpect(status().isOk())
@@ -68,7 +67,7 @@ public class FoodTypeControllerTest {
 
     @Test
     void shouldReturnNotFoundForMissingId() throws Exception {
-        when(repository.findById(999)).thenReturn(Optional.empty());
+        when(service.getById(999)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/food-types/999"))
                 .andExpect(status().isNotFound());
@@ -76,46 +75,62 @@ public class FoodTypeControllerTest {
 
     @Test
     void shouldCreateNewFoodType() throws Exception {
-        FoodType newFood = new FoodType();
-        newFood.setName("Yogurt");
-        newFood.setUnit("gram");
-        newFood.setCaloriesPerUnit(50.0f);
+        FoodTypeRequest request = new FoodTypeRequest();
+        request.setName("Yogurt");
+        request.setUnit("gram");
+        request.setCaloriesPerUnit(50.0f);
 
         mockMvc.perform(post("/api/food-types")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newFood)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
 
-        verify(repository, times(1)).save(any(FoodType.class));
+        verify(service).create(any(FoodTypeRequest.class));
     }
 
     @Test
     void shouldUpdateFoodType() throws Exception {
-        FoodType updated = new FoodType();
+        FoodTypeRequest updated = new FoodTypeRequest();
         updated.setName("Skim Milk");
         updated.setUnit("liter");
         updated.setCaloriesPerUnit(40.0f);
 
-        when(repository.findById(1)).thenReturn(Optional.of(new FoodType()));
+        when(service.update(eq(1), any(FoodTypeRequest.class))).thenReturn(true);
 
         mockMvc.perform(put("/api/food-types/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updated)))
                 .andExpect(status().isOk());
+    }
 
-        verify(repository).update(argThat(foodType -> 
-            foodType.getName().equals("Skim Milk") &&
-            foodType.getCaloriesPerUnit() == 40.0f
-        ));
+    @Test
+    void shouldReturnNotFoundOnUpdateIfMissing() throws Exception {
+        FoodTypeRequest updated = new FoodTypeRequest();
+        updated.setName("Skim Milk");
+        updated.setUnit("liter");
+        updated.setCaloriesPerUnit(40.0f);
+
+        when(service.update(eq(1), any())).thenReturn(false);
+
+        mockMvc.perform(put("/api/food-types/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updated)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void shouldDeleteFoodType() throws Exception {
-        when(repository.findById(1)).thenReturn(Optional.of(new FoodType()));
+        when(service.delete(1)).thenReturn(true);
 
         mockMvc.perform(delete("/api/food-types/1"))
                 .andExpect(status().isNoContent());
+    }
 
-        verify(repository).deleteById(1);
+    @Test
+    void shouldReturnNotFoundOnDeleteIfMissing() throws Exception {
+        when(service.delete(999)).thenReturn(false);
+
+        mockMvc.perform(delete("/api/food-types/999"))
+                .andExpect(status().isNotFound());
     }
 }
