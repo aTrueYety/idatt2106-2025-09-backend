@@ -16,12 +16,12 @@ public class FoodTypeMapper {
      * @return The corresponding FoodType model.
      */
     public static FoodType toModel(FoodTypeRequest request) {
-        FoodType foodType = new FoodType();
-        foodType.setName(request.getName());
-        foodType.setUnit(request.getUnit());
-        foodType.setCaloriesPerUnit(request.getCaloriesPerUnit());
-        foodType.setPicture(request.getPicture());
-        return foodType;
+      FoodType foodType = new FoodType();
+      foodType.setName(request.getName());
+      foodType.setUnit(request.getUnit());
+      foodType.setCaloriesPerUnit(request.getCaloriesPerUnit());
+      foodType.setPicture(request.getPicture());
+      return foodType;
     }
 
     /**
@@ -31,12 +31,12 @@ public class FoodTypeMapper {
      * @return The corresponding response DTO.
      */
     public static FoodTypeResponse toResponse(FoodType foodType) {
-        FoodTypeResponse response = new FoodTypeResponse();
-        response.setId(foodType.getId());
-        response.setName(foodType.getName());
-        response.setUnit(foodType.getUnit());
-        response.setCaloriesPerUnit(foodType.getCaloriesPerUnit());
-        response.setPicture(foodType.getPicture()); // Inkluderer rå bildebytes
-        return response;
+      FoodTypeResponse response = new FoodTypeResponse();
+      response.setId(foodType.getId());
+      response.setName(foodType.getName());
+      response.setUnit(foodType.getUnit());
+      response.setCaloriesPerUnit(foodType.getCaloriesPerUnit());
+      response.setPicture(foodType.getPicture()); 
+      return response;
     }
 }

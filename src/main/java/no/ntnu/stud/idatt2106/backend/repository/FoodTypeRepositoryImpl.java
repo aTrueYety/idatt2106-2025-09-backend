@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.repository;
 
 import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +14,7 @@ import java.util.Optional;
 @Repository
 public class FoodTypeRepositoryImpl implements FoodTypeRepository {
 
+  @Autowired
   private final JdbcTemplate jdbcTemplate;
 
   public FoodTypeRepositoryImpl(JdbcTemplate jdbcTemplate) {
