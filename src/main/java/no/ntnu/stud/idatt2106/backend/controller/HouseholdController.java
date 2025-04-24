@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
 import org.slf4j.Logger;
@@ -42,8 +43,25 @@ public class HouseholdController {
   @PostMapping("/register")
   public ResponseEntity<?> registerHousehold(@RequestBody HouseholdRequest householdRequest) {
     householdService.registerHousehold(householdRequest);
-    logger.info("Household created successfully {}");
-    return ResponseEntity.ok("Household create successfully"); //Return response object?
+    logger.info("Household created successfully");
+    return ResponseEntity.ok().build();
   }
 
+  /**
+   * Handles request to add a user to a household.
+   *
+   * @param request object with the id of the household and the username of the user to be added
+   * @return a ResponseEntity with the response to the operation or an error message
+   */
+  @Operation(
+      summary = "Adds a user to a household",
+      description = "Adds the user with the specified username to the "
+      + "household with the specified ID"
+  )
+  @PostMapping("add-user")
+  public ResponseEntity<?> addUserToHousehold(@RequestBody AddUserHouseholdRequest request) {
+    householdService.addUserToHousehold(request);
+    logger.info("User added to household successfully");
+    return ResponseEntity.ok().build();
+  }
 }
