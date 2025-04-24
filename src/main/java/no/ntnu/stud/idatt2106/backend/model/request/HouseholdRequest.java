@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Data transfer object for creating a new household.
- *
- * @version 1.0
- * @since 23.04.2025
  */
 @Data
 @AllArgsConstructor

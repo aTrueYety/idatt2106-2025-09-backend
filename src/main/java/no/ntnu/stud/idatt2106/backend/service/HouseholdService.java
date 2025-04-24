@@ -11,9 +11,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * Provides methods related to Households.
- *
- * @version 1.0
- * @Since 23.04.2025
  */
 @Service
 public class HouseholdService {
