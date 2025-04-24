@@ -1,7 +1,8 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
-import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
-import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
+import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.FoodTypeResponse;
+import no.ntnu.stud.idatt2106.backend.service.FoodTypeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,46 +13,60 @@ import java.util.List;
 @RequestMapping("/api/food-types")
 public class FoodTypeController {
 
-  private final FoodTypeRepository repository;
+    private final FoodTypeService service;
 
-  public FoodTypeController(FoodTypeRepository repository) {
-    this.repository = repository;
-  }
-
-  @GetMapping
-  public List<FoodType> getAll() {
-    return repository.findAll();
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<FoodType> getById(@PathVariable int id) {
-    return repository.findById(id)
-      .map(ResponseEntity::ok)
-      .orElse(ResponseEntity.notFound().build());
-  }
-
-  @PostMapping
-  public ResponseEntity<Void> create(@RequestBody FoodType foodType) {
-    repository.save(foodType);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
-  }
-
-  @PutMapping("/{id}")
-  public ResponseEntity<Void> update(@PathVariable int id, @RequestBody FoodType updated) {
-    if (repository.findById(id).isEmpty()) {
-      return ResponseEntity.notFound().build();
+    public FoodTypeController(FoodTypeService service) {
+        this.service = service;
     }
-    updated.setId(id);
-    repository.update(updated);
-    return ResponseEntity.ok().build();
-  }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable int id) {
-    if (repository.findById(id).isEmpty()) {
-      return ResponseEntity.notFound().build();
+    /**
+     * Get all food types.
+     */
+    @GetMapping
+    public ResponseEntity<List<FoodTypeResponse>> getAll() {
+        return ResponseEntity.ok(service.getAll());
     }
-    repository.deleteById(id);
-    return ResponseEntity.noContent().build();
-  }
+
+    /**
+     * Get a single food type by its ID.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<FoodTypeResponse> getById(@PathVariable int id) {
+        return service.getById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Create a new food type.
+     */
+    @PostMapping
+    public ResponseEntity<Void> create(@RequestBody FoodTypeRequest request) {
+        service.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * Update an existing food type.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable int id, @RequestBody FoodTypeRequest request) {
+        boolean updated = service.update(id, request);
+        if (!updated) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Delete a food type by ID.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable int id) {
+        boolean deleted = service.delete(id);
+        if (!deleted) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
+    }
 }
