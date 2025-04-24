@@ -1,17 +1,18 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 /**
  * Implements the methods defined in HouseholdRepository using JDBC.
- *
- * @version 1.0
- * @since 23.04.2025
  */
 @Repository
 public class HouseholdRepositoryImpl implements HouseholdRepository {
@@ -41,14 +42,27 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
     String sql = "INSERT INTO household "
         + "(adress, latitude, longitude, amount_water, last_water_change) "
         + "VALUES (?, ?, ?, ?, ?)";
+    
+    
+    KeyHolder keyHolder = new GeneratedKeyHolder();
 
-    jdbcTemplate.update(sql,  
-        household.getAdress(),
-        household.getLatitude(),
-        household.getLongitude(),
-        household.getWaterAmountLiters(), 
-        household.getLastWaterChangeDate());
-          
+    jdbcTemplate.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+      ps.setString(1, household.getAdress());
+      ps.setDouble(2, household.getLatitude());
+      ps.setDouble(3, household.getLongitude());
+      ps.setDouble(4, household.getWaterAmountLiters());
+      ps.setDate(5, new java.sql.Date(household
+          .getLastWaterChangeDate().getTime()));
+      return ps;
+    }, keyHolder);
+
+    // Get the generated ID
+    Number generatedId = keyHolder.getKey();
+    if (generatedId != null) {
+      household.setId(generatedId.longValue()); // Assuming Household has a setId() method
+    }
+
     return household;
   }
 

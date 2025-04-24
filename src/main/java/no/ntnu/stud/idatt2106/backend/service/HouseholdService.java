@@ -34,7 +34,14 @@ public class HouseholdService {
     household.setWaterAmountLiters(householdReqeust.getWaterAmountLiters());
     household.setLastWaterChangeDate(householdReqeust.getLastWaterChangeDate());
 
-    householdRepository.save(household);
+    Household registeredHousehold = householdRepository.save(household);
+
+    //Adds the user creating the household to the household.
+    System.out.println(registeredHousehold.getId());
+    addUserToHousehold(new AddUserHouseholdRequest(
+        householdReqeust.getUsername(),
+        registeredHousehold.getId())
+    );
   }
 
   /**

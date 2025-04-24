@@ -17,5 +17,5 @@ public class HouseholdRequest {
   private double latitude;
   private double waterAmountLiters;
   private Date lastWaterChangeDate;
-  private Long userId;
+  private String username;
 }
