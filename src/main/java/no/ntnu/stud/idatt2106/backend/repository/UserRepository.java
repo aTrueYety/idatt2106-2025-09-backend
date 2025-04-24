@@ -62,6 +62,18 @@ public class UserRepository {
   }
 
   /**
+   * Finds a user by their email.
+   *
+   * @param email the email of the user to be found
+   * @return the user with the specified email, or null if not found
+   */
+  public User findUserByEmail(String email) {
+    String sql = "SELECT * FROM user WHERE email = ?";
+    List<User> users = jdbcTemplate.query(sql, userRowMapper, email);
+    return users.isEmpty() ? null : users.get(0);
+  }
+
+  /**
    * Finds a user by their ID.
    *
    * @param user the user to be found

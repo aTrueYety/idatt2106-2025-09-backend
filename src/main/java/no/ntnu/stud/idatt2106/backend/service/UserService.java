@@ -33,6 +33,16 @@ public class UserService {
   }
 
   /**
+   * Retrieves a user by their email.
+   *
+   * @param email The email of the user to be retrieved.
+   * @return The user with the specified email, or null if not found.
+   */
+  public User getUserByEmail(String email) {
+    return userRepo.findUserByEmail(email);
+  }
+
+  /**
    * Retrieves a user by their ID.
    *
    * @param user The user to be retrieved.
