@@ -26,8 +26,7 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
         rs.getDouble("longitude"),
         rs.getDouble("latitude"),
         rs.getDouble("amount_water"),
-        rs.getTimestamp("last_water_change"),
-        rs.getBoolean("has_first_aid_kit")
+        rs.getTimestamp("last_water_change")
     );
   };
 
@@ -40,21 +39,16 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   @Override
   public Household save(Household household) {
     String sql = "INSERT INTO household "
-        + "(id, adress, latitude, longditude, amount_water, last_water_change, has_first_aid_kit)"
-        + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        + "(id, adress, latitude, longditude, amount_water, last_water_change)"
+        + "VALUES (?, ?, ?, ?, ?, ?)";
 
-    try {
-      jdbcTemplate.update(sql, 
-          household.getId(), 
-          household.getAdress(), 
-          household.getWaterAmountLiters(), 
-          household.getLastWaterChangeDate(),
-          household.isHasFirstAidKit());
-            
-      return household;
-    } catch (Exception e) {
-      return null;
-    }
+    jdbcTemplate.update(sql, 
+        household.getId(), 
+        household.getAdress(), 
+        household.getWaterAmountLiters(), 
+        household.getLastWaterChangeDate());
+          
+    return household;
   }
 
   /**

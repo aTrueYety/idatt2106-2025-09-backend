@@ -33,7 +33,6 @@ public class HouseholdService {
     household.setLongitude(householdReqeust.getLongitude());
     household.setWaterAmountLiters(householdReqeust.getWaterAmountLiters());
     household.setLastWaterChangeDate(householdReqeust.getLastWaterChangeDate());
-    household.setHasFirstAidKit(householdReqeust.isHasFirstAidKit());
 
     householdRepository.save(household);
   }

@@ -18,5 +18,4 @@ public class Household {
   private double latitude;
   private double waterAmountLiters;
   private Date lastWaterChangeDate;
-  private boolean hasFirstAidKit;
 }
