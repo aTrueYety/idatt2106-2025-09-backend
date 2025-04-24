@@ -21,17 +21,24 @@ public class HouseholdService {
   /**
    * Creates and saves a new Household.
    *
-   * @param createHouseholdDTO DTO with information about the new household
+   * @param householdReqeust DTO with information about the new household
    */
-  public void registerHousehold(HouseholdRequest createHouseholdDTO) {
+  public void registerHousehold(HouseholdRequest householdReqeust) {
     Household household = new Household();
-    household.setAdress(createHouseholdDTO.getAdress());
-    household.setLatitude(createHouseholdDTO.getLatitude());
-    household.setLongitude(createHouseholdDTO.getLongitude());
-    household.setWaterAmountLiters(createHouseholdDTO.getWaterAmountLiters());
-    household.setLastWaterChangeDate(createHouseholdDTO.getLastWaterChangeDate());
-    household.setHasFirstAidKit(createHouseholdDTO.isHasFirstAidKit());
+    household.setAdress(householdReqeust.getAdress());
+    household.setLatitude(householdReqeust.getLatitude());
+    household.setLongitude(householdReqeust.getLongitude());
+    household.setWaterAmountLiters(householdReqeust.getWaterAmountLiters());
+    household.setLastWaterChangeDate(householdReqeust.getLastWaterChangeDate());
+    household.setHasFirstAidKit(householdReqeust.isHasFirstAidKit());
 
     householdRepository.save(household);
+  }
+
+  /**
+   * Adds a user to an existing household.
+   */
+  public void addUserToHousehold(Long userId) {
+
   }
 }
