@@ -1,8 +1,8 @@
 package no.ntnu.stud.idatt2106.backend.model.base;
 
 public class User {
-    private int id;
-    private Integer householdId;
+    private Long id;
+    private Long householdId;
     private String email;
     private String username;
     private String password;
@@ -18,19 +18,19 @@ public class User {
     public User() {
     }
 
-    public int getId() {
+    public Long getId() {
       return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
       this.id = id;
     }
 
-    public Integer getHouseholdId() {
+    public Long getHouseholdId() {
       return householdId;
     }
 
-    public void setHouseholdId(Integer householdId) {
+    public void setHouseholdId(Long householdId) {
       this.householdId = householdId;
     }
 
