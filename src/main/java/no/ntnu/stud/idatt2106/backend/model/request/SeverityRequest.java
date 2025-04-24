@@ -1,18 +1,16 @@
-package no.ntnu.stud.idatt2106.backend.model.base;
+package no.ntnu.stud.idatt2106.backend.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Entity representing a severity level.
- * This class is used to define the severity levels of events in the system.
+ * Request object for creating or updating a severity level.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Severity {
-  private Long id;
+public class SeverityRequest {
   private String colour;
   private String name;
   private String description;
