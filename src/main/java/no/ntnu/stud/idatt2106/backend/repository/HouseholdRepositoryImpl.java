@@ -39,12 +39,13 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   @Override
   public Household save(Household household) {
     String sql = "INSERT INTO household "
-        + "(id, adress, latitude, longditude, amount_water, last_water_change)"
-        + "VALUES (?, ?, ?, ?, ?, ?)";
+        + "(adress, latitude, longitude, amount_water, last_water_change) "
+        + "VALUES (?, ?, ?, ?, ?)";
 
-    jdbcTemplate.update(sql, 
-        household.getId(), 
-        household.getAdress(), 
+    jdbcTemplate.update(sql,  
+        household.getAdress(),
+        household.getLatitude(),
+        household.getLongitude(),
         household.getWaterAmountLiters(), 
         household.getLastWaterChangeDate());
           
