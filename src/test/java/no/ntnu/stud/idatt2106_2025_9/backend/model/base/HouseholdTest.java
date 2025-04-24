@@ -6,6 +6,8 @@ import java.util.Date;
 
 import org.junit.jupiter.api.Test;
 
+import no.ntnu.stud.idatt2106.backend.model.base.Household;
+
 /**
  * Contains tests for the Household class.
  */
