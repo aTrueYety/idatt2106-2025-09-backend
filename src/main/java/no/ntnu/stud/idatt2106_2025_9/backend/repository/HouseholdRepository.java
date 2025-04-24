@@ -1,8 +1,8 @@
-package no.ntnu.stud.idatt2106_2025_9.repository;
+package no.ntnu.stud.idatt2106_2025_9.backend.repository;
 
 import java.util.Optional;
 
-import no.ntnu.stud.idatt2106_2025_9.model.Household;
+import no.ntnu.stud.idatt2106_2025_9.backend.model.Household;
 
 /**
  * Defines methods for storing and retrieving households.

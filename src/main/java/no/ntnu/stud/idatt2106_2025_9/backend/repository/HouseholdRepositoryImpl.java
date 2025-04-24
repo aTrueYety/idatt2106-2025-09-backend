@@ -1,12 +1,13 @@
-package no.ntnu.stud.idatt2106_2025_9.repository;
+package no.ntnu.stud.idatt2106_2025_9.backend.repository;
 
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
-import no.ntnu.stud.idatt2106_2025_9.model.Household;
+import no.ntnu.stud.idatt2106_2025_9.backend.model.Household;
 
 /**
  * Implements the methods defined in HouseholdRepository using JDBC.
@@ -14,6 +15,7 @@ import no.ntnu.stud.idatt2106_2025_9.model.Household;
  * @version 1.0
  * @since 23.04.2025
  */
+@Repository
 public class HouseholdRepositoryImpl implements HouseholdRepository {
 
     @Autowired

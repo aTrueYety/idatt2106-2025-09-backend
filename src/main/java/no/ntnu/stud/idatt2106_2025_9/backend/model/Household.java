@@ -1,4 +1,4 @@
-package no.ntnu.stud.idatt2106_2025_9.model;
+package no.ntnu.stud.idatt2106_2025_9.backend.model;
 
 import java.util.Date;
 
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class Household {
     private Long id;
     private String adress;
-    private double longditude;
+    private double longitude;
     private double latitude;
     private double waterAmountLiters;
     private Date lastWaterChangeDate;
