@@ -22,4 +22,5 @@ public class HouseholdRequest {
     private double waterAmountLiters;
     private Date lastWaterChangeDate;
     private boolean hasFirstAidKit;
+    private Long userId;
 }
