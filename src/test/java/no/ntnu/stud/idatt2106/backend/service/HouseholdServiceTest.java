@@ -1,0 +1,116 @@
+package no.ntnu.stud.idatt2106.backend.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Date;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import no.ntnu.stud.idatt2106.backend.model.base.Household;
+import no.ntnu.stud.idatt2106.backend.model.base.User;
+import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+/**
+ * Contains tests for the HouseholdService class.
+ */
+public class HouseholdServiceTest {
+  
+  @Mock
+  private HouseholdRepository householdRepository;
+
+  @Mock
+  private UserService userService;
+
+  @InjectMocks
+  private HouseholdService householdService;
+
+  @BeforeEach
+  void setup() {
+    MockitoAnnotations.openMocks(this);
+
+    User mockUser = new User();
+    mockUser.setUsername("Testuser");
+    when(userService.getUserByUsername("Testuser")).thenReturn(mockUser);
+    when(householdRepository.save(any(Household.class))).thenAnswer(i -> {
+      Household h = i.getArgument(0);
+      h.setId(1L);
+      return h;
+    });
+    when(householdRepository.findById(1L)).thenReturn(Optional.of(new Household()));
+  }
+
+  @Test
+  void shouldRegisterHousehold() {
+    HouseholdRequest request = new HouseholdRequest();
+    request.setAdress("Test");
+    request.setLatitude(32.3);
+    request.setLongitude(34.23);
+    request.setWaterAmountLiters(32.23);
+    request.setLastWaterChangeDate(new Date());
+    request.setUsername("Testuser");
+
+    householdService.registerHousehold(request);
+    verify(householdRepository).save(any(Household.class));
+    verify(userService).getUserByUsername("Testuser");
+    verify(userService).updateUserCredentials(any(User.class));
+  }
+
+  @Test
+  void shouldAddUserToHousehold() {
+    String username = "Testuser";
+    Long householdId = 1L;
+    User user = new User();
+    user.setUsername("Testusername");
+    
+    when(userService.getUserByUsername(username)).thenReturn(user);
+    when(householdRepository.findById(householdId)).thenReturn(Optional.of(new Household()));
+
+    AddUserHouseholdRequest request = new AddUserHouseholdRequest(username, householdId);
+    householdService.addUserToHousehold(request);
+
+    assertEquals(householdId, user.getHouseholdId());
+    verify(userService).updateUserCredentials(user);
+  }
+
+  @Test
+  void shouldThrowIfUserDoesNotExist() {
+    String username = "NonExistentUser";
+    Long householdId = 1L;
+
+    when(userService.getUserByUsername(username)).thenReturn(null);
+
+    AddUserHouseholdRequest request = new AddUserHouseholdRequest(username, householdId);
+
+    assertThrows(NoSuchElementException.class, () -> {
+      householdService.addUserToHousehold(request);
+    });
+  }
+
+  @Test
+  void shouldThrowIfHouseholdDoesNotExist() {
+    String username = "Testuser";
+    Long householdId = 999L;
+
+    User user = new User();
+    user.setUsername(username);
+
+    when(userService.getUserByUsername(username)).thenReturn(user);
+    when(householdRepository.findById(householdId)).thenReturn(Optional.empty());
+
+    AddUserHouseholdRequest request = new AddUserHouseholdRequest(username, householdId);
+
+    assertThrows(NoSuchElementException.class, () -> {
+      householdService.addUserToHousehold(request);
+    });
+  }
+}
