@@ -1,4 +1,4 @@
-package no.ntnu.stud.idatt2106.backend.model.base;
+package no.ntnu.stud.idatt2106.backend.model.request;
 
 import java.sql.Blob;
 import java.time.LocalTime;
@@ -7,13 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Represents a map object with various attributes.
+ * Request object for creating or updating a map object type.
+ * This class is used to define the types of map objects in the system.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MapObject {
-  private int id;
+public class MapObjectRequest {
   private int typeId;
   private float latitude;
   private float longitude;
