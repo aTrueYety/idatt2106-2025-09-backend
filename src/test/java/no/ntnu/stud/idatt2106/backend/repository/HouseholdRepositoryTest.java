@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +66,30 @@ public class HouseholdRepositoryTest {
     assertEquals(64.34, result.get().getLatitude());
     assertEquals(34.45, result.get().getLongitude());
     assertEquals(23, result.get().getWaterAmountLiters());
+  }
+
+  @Test
+  void findAllShouldReturnAllHouseholds() {
+    jdbcTemplate.update("""
+        INSERT INTO household
+        (id, adress, latitude, longitude, amount_water, last_water_change)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        1L, "Test adress", 64.34, 34.45, 23, new Date()
+    );
+
+    jdbcTemplate.update("""
+        INSERT INTO household
+        (id, adress, latitude, longitude, amount_water, last_water_change)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        2L, "Test adress 2", 64.33, 31.45, 24, new Date()
+    );
+
+    List<Household> result = householdRepository.findAll();
+
+    assertEquals(2, result.size());
+    assertTrue(result.stream().anyMatch(h -> h.getAdress().equals("Test adress")));
+    assertTrue(result.stream().anyMatch(h -> h.getAdress().equals("Test adress")));
   }
 }
