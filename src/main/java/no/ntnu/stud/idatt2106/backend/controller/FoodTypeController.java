@@ -1,22 +1,30 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodTypeResponse;
 import no.ntnu.stud.idatt2106.backend.service.FoodTypeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for handling food type-related requests.
+ */
 @RestController
 @RequestMapping("/api/food-types")
 public class FoodTypeController {
 
-  private final FoodTypeService service;
-
-  public FoodTypeController(FoodTypeService service) {
-    this.service = service;
-  }
+  @Autowired
+  private FoodTypeService service;
 
   /**
    * Get all food types.

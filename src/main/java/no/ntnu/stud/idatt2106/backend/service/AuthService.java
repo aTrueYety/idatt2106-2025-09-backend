@@ -1,12 +1,5 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.LoginRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.RegisterRequest;
@@ -15,6 +8,12 @@ import no.ntnu.stud.idatt2106.backend.model.response.LoginResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.RegisterResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.CredentialsUpdate;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 /**
  * Service class for handling auth-related operations such as registration and login.
@@ -40,12 +39,10 @@ public class AuthService {
   public RegisterResponse register(RegisterRequest registerRequest) {
 
     Validate.that(registerRequest.getUsername(),
-        Validate.isNotBlankOrNull(),
-        "Username cannot be blank or null"
+        Validate.isNotBlankOrNull(), "Username cannot be blank or null"
     );
-    Validate.that(isUsernameAvailable(registerRequest.getUsername()),
-        Validate.isTrue(),
-        "Username is not available"
+    Validate.that(userService.getUserByUsername(registerRequest.getUsername()),
+        Validate.isNull(), "Username is not available"
     );
 
     Validate.that(registerRequest.getPassword(),
@@ -56,9 +53,12 @@ public class AuthService {
         "New password must be at least 8 characters long, including both a letter and a digit"
     );
 
-    Validate.that(registerRequest.getEmail(),
-        Validate.isNotBlankOrNull(),
-        "Email cannot be blank or null"
+    Validate.that(registerRequest.getEmail().matches(
+            "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"),
+        Validate.isTrue(), "Email is not valid"
+    );
+    Validate.that(userService.getUserByEmail(registerRequest.getEmail()),
+        Validate.isNull(), "Email is already in use"
     );
 
     User user = new User();
@@ -88,7 +88,7 @@ public class AuthService {
     Authentication authentication = authManager
         .authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
-    if (authentication.isAuthenticated() && !isUsernameAvailable(username)) {
+    if (authentication.isAuthenticated() && userService.getUserByUsername(username) != null) {
       User user = userService.getUserByUsername(username);
       return jwtService.generateToken(
         user.getUsername(), user.getId(), user.isAdmin(), user.isSuperAdmin());
@@ -118,8 +118,8 @@ public class AuthService {
     // check if new username is availanle if the request includes a new username,
     // skip if user is keeping old username
     if (!user.getUsername().equals(credentialsUpdate.getUsername())) {
-      Validate.that(isUsernameAvailable(credentialsUpdate.getUsername()),
-          Validate.isTrue(),
+      Validate.that(userService.getUserByUsername(credentialsUpdate.getUsername()),
+          Validate.isNull(),
           "New username is not available"
       );
     }
@@ -184,15 +184,5 @@ public class AuthService {
     }
 
     return false;
-  }
-
-  /**
-   * Checks if a username is available.
-   *
-   * @param username   the username to check availability of
-   * @return true if the username is available or false if otherwise
-   */
-  public boolean isUsernameAvailable(String username) {
-    return userService.getUserByUsername(username) == null;
   }
 }
