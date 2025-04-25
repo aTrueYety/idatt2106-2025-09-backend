@@ -2,7 +2,9 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.MapObjectType;
+import no.ntnu.stud.idatt2106.backend.model.request.MapObjectTypeRequest;
 import no.ntnu.stud.idatt2106.backend.repository.MapObjectTypeRepositoryImpl;
+import no.ntnu.stud.idatt2106.backend.service.factory.MapObjectTypeFactory;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,9 +43,9 @@ public class MapObjectTypeService {
    * @param mapObjectType the map object type to create
    * @param token the JWT token for authentication
    */
-  public void createMapObjectType(MapObjectType mapObjectType, String token) {
+  public void createMapObjectType(MapObjectTypeRequest mapObjectType, String token) {
     Validate.isValid(jwtService.extractIsAdmin(token.substring(7)), "User is not admin");
-    mapObjectTypeRepository.save(mapObjectType);
+    mapObjectTypeRepository.save(MapObjectTypeFactory.requestToMapObjectType(mapObjectType));
   }
 
   /**
@@ -54,7 +56,7 @@ public class MapObjectTypeService {
    */
   public void updateMapObjectType(MapObjectType mapObjectType, String token) {
     Validate.isValid(jwtService.extractIsAdmin(token.substring(7)), "User is not admin");
-    mapObjectTypeRepository.save(mapObjectType);
+    mapObjectTypeRepository.update(mapObjectType);
   }
 
   /**
