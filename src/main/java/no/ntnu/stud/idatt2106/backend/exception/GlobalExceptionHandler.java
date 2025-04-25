@@ -143,7 +143,7 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<String> handleGlobalException(Exception ex, WebRequest request) {
-    logger.error("An unexpected error occurred: {}", ex.getMessage()/*, ex*/);
+    logger.error("An unexpected error occurred: {}", ex.getMessage(), ex);
     return new ResponseEntity<>(
         "An unexpected error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
   }

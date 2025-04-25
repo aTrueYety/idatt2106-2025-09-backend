@@ -14,4 +14,5 @@ import lombok.NoArgsConstructor;
 public class MapObjectType {
   private Long id;
   private String name;
+  private String icon;
 }
