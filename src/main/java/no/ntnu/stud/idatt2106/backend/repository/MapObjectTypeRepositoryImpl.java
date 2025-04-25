@@ -20,6 +20,7 @@ public class MapObjectTypeRepositoryImpl implements MapObjectTypeRepository {
     MapObjectType mapObjectType = new MapObjectType();
     mapObjectType.setId(rs.getLong("id"));
     mapObjectType.setName(rs.getString("name"));
+    mapObjectType.setIcon(rs.getString("icon"));
     return mapObjectType;
   };
 
@@ -38,14 +39,15 @@ public class MapObjectTypeRepositoryImpl implements MapObjectTypeRepository {
 
   @Override
   public void save(MapObjectType mapObjectType) {
-    String sql = "INSERT INTO map_object_type (name) VALUES (?)";
-    jdbcTemplate.update(sql, mapObjectType.getName());
+    String sql = "INSERT INTO map_object_type (name, icon) VALUES (?, ?)";
+    jdbcTemplate.update(sql, mapObjectType.getName(), mapObjectType.getIcon());
   }
 
   @Override
   public void update(MapObjectType mapObjectType) {
-    String sql = "UPDATE map_object_type SET name = ? WHERE id = ?";
-    jdbcTemplate.update(sql, mapObjectType.getName(), mapObjectType.getId());
+    String sql = "UPDATE map_object_type SET name = ?, icon = ? WHERE id = ?";
+    jdbcTemplate.update(
+        sql, mapObjectType.getName(), mapObjectType.getIcon(), mapObjectType.getId());
   }
 
   @Override
