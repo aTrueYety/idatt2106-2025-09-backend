@@ -2,6 +2,9 @@ package no.ntnu.stud.idatt2106.backend.repository;
 
 
 import no.ntnu.stud.idatt2106.backend.model.base.Severity;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -81,7 +84,7 @@ public class SeverityRepository {
    *
    * @return a list of all severity levels
    */
-  public Iterable<Severity> findAll() {
+  public List<Severity> findAll() {
     String sql = "SELECT * FROM severity";
     return jdbcTemplate.query(sql, severityRowMapper);
   }
