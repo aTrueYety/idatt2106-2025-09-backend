@@ -16,6 +16,7 @@ public class HouseholdMapper {
   public static HouseholdResponse toResponse(Household household) {
     HouseholdResponse response = new HouseholdResponse();
     response.setId(household.getId());
+    response.setAddress(household.getAdress());
     response.setLatitude(household.getLatitude());
     response.setLongitude(household.getLongitude());
     response.setWaterAmountLiters(household.getWaterAmountLiters());
