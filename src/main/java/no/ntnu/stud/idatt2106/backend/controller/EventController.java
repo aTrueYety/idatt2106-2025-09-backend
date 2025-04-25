@@ -5,8 +5,8 @@ import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EventResponse;
 import no.ntnu.stud.idatt2106.backend.service.EventService;
-import no.ntnu.stud.idatt2106.backend.util.ResopnseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +41,7 @@ public class EventController {
       @RequestBody EventRequest event,
       @RequestHeader("Authorization") String token) {
     eventService.saveEvent(event, token);
-    return ResponseEntity.ok("Event added successfully");
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   /**
@@ -51,13 +51,12 @@ public class EventController {
    * @return a ResponseEntity containing the event details if found.
    */
   @GetMapping("/{eventId}")
-  public ResponseEntity<ResopnseWrapper<EventResponse>> getEventById(@PathVariable Long eventId) {
+  public ResponseEntity<EventResponse> getEventById(@PathVariable Long eventId) {
     EventResponse event = eventService.findEventWithSeverityById(eventId);
     if (event != null) {
-      return ResponseEntity.ok(new ResopnseWrapper<>(
-          "Event retrieved successfully", event));
+      return ResponseEntity.ok(event);
     } else {
-      return ResponseEntity.noContent().build();
+      return ResponseEntity.notFound().build();
     }
   }
 
@@ -102,7 +101,7 @@ public class EventController {
    *         bounds.
    */
   @GetMapping("/bounds")
-  public ResponseEntity<ResopnseWrapper<List<EventResponse>>> getEventsInBounds(
+  public ResponseEntity<List<EventResponse>> getEventsInBounds(
       @RequestParam double minLat, 
       @RequestParam double maxLat, 
       @RequestParam double minLong, 
@@ -110,10 +109,9 @@ public class EventController {
     List<EventResponse> events = eventService.findAllEventsWithSeverityInBounds(
         minLat, maxLat, minLong, maxLong);
     if (events.isEmpty()) {
-      return ResponseEntity.noContent().build();
+      return ResponseEntity.notFound().build();
     } else {
-      return ResponseEntity.ok(new ResopnseWrapper<>(
-          "Events retrieved successfully", events));
+      return ResponseEntity.ok(events);
     }
   }
 }
