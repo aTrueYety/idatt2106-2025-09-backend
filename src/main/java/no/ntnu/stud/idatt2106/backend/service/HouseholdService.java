@@ -36,6 +36,21 @@ public class HouseholdService {
   }
 
   /**
+   * Returns a HuseholdResponse of the Household with the specified ID.
+   *
+   * @param id the ID of the household to be retrieved
+   * @return HouseholdResponse with the household with the specified ID
+   * @throws NoSuchElementException if there is no registered Household with the specified id
+   */
+  public HouseholdResponse getById(Long id) {   
+    if (!householdExists(id)) {
+      throw new NoSuchElementException("No household present with id = " + id);
+    }
+
+    return householdRepository.findById(id).map(HouseholdMapper::toResponse).get();
+  }
+
+  /**
    * Creates and saves a new Household.
    *
    * @param householdReqeust DTO with information about the new household

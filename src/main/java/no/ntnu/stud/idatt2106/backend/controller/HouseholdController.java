@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,5 +83,25 @@ public class HouseholdController {
     householdService.addUserToHousehold(request);
     logger.info("User added to household successfully");
     return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Handles request to get the Household with a given ID.
+   *
+   * @param id the ID off the household to be retrieved
+   * @return a ResponseEntity with the retrieved Household
+   */
+  @Operation(
+      summary = "Retrieves the household with the given ID",
+      description = """
+          Retrieves information about the household with the specified ID
+          if it exists.
+          """
+  )
+  @GetMapping("/{id}")
+  public ResponseEntity<HouseholdResponse> getById(@PathVariable Long id) {
+    HouseholdResponse response = householdService.getById(id);
+    logger.info("Retrieved household successfully");
+    return ResponseEntity.ok().body(response);
   }
 }
