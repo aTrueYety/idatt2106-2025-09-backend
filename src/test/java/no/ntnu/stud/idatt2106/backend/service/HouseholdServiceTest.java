@@ -7,7 +7,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
@@ -49,6 +51,36 @@ public class HouseholdServiceTest {
       return h;
     });
     when(householdRepository.findById(1L)).thenReturn(Optional.of(new Household()));
+  }
+
+  @Test
+  void getAllShouldReturnAllHouseholds() {
+    Household household1 = new Household();
+    household1.setId(1L);
+    household1.setAdress("Test Street 1");
+
+    Household household2 = new Household();
+    household2.setId(2L);
+    household2.setAdress("Test Street 2");
+
+    List<Household> households = new ArrayList<>();
+    households.add(household1);
+    households.add(household2);
+
+    when(householdRepository.findAll()).thenReturn(households);
+
+    HouseholdResponse response1 = new HouseholdResponse();
+    HouseholdResponse response2 = new HouseholdResponse();
+    response1.setId(1L);
+    response1.setAddress("Test Street 1");
+    response2.setId(2L);
+    response2.setAddress("Test Street 2");
+
+    List<HouseholdResponse> result = householdService.getAll();
+
+    assertEquals(result.size(), 2);
+    assertEquals("Test Street 1", result.get(0).getAddress());
+    assertEquals("Test Street 2", result.get(1).getAddress());
   }
 
   @Test
