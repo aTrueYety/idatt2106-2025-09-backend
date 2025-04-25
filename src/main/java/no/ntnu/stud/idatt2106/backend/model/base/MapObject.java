@@ -2,7 +2,6 @@ package no.ntnu.stud.idatt2106.backend.model.base;
 
 import java.sql.Blob;
 import java.sql.Timestamp;
-import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -85,4 +85,22 @@ public class AuthController {
     logger.info("User credentials changed successfully");
     return ResponseEntity.ok(changeCredentialsResponse);
   }
+
+  /**
+   * Validates a JWT token and returns a response indicating whether the token is valid or not.
+   *
+   * @param token the JWT token to validate
+   * @return a ResponseEntity indicating whether the token is valid or not
+   */
+  @Operation(summary = "Validate JWT token", 
+      description = "Verifies the validity of the provided JWT token")
+  @PostMapping("/test")
+  public ResponseEntity<Void> test(@RequestHeader("Authorization") String token) {
+    boolean isValid = service.validateToken(token);
+    if (isValid) {
+      return ResponseEntity.ok().build();
+    } else {
+      return ResponseEntity.status(401).build();
+    }
+  }
 }

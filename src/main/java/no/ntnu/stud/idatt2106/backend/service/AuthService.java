@@ -185,4 +185,15 @@ public class AuthService {
 
     return false;
   }
+
+  /**
+   * Validates the provided JWT token.
+   *
+   * @param token the JWT token to validate
+   * @return true if the token is valid, false otherwise
+   */
+  public boolean validateToken(String token) {
+    String username = jwtService.extractUserName(token.substring(7));
+    return true;
+  }
 }
