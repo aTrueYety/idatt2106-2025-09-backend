@@ -38,3 +38,23 @@ CREATE TABLE extra_resident (
   FOREIGN KEY (household_id) REFERENCES household(id),
   FOREIGN KEY (type_id) REFERENCES extra_resident_type(id)
 );
+
+CREATE TABLE user (
+  id INT NOT NULL AUTO_INCREMENT,
+  household_id INT DEFAULT NULL,
+  email VARCHAR(255) NOT NULL,
+  username VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  email_confirmed BOOLEAN DEFAULT FALSE,
+  is_admin BOOLEAN DEFAULT FALSE,
+  is_super_admin BOOLEAN DEFAULT FALSE,
+  first_name VARCHAR(255) DEFAULT NULL,
+  last_name VARCHAR(255) DEFAULT NULL,
+  share_position_household BOOLEAN DEFAULT FALSE,
+  share_position_group BOOLEAN DEFAULT FALSE,
+  picture BLOB,
+  PRIMARY KEY (id),
+  UNIQUE (email),
+  UNIQUE (username),
+  FOREIGN KEY (household_id) REFERENCES household(id) ON DELETE SET NULL
+);
