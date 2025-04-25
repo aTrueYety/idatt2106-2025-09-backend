@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,5 +79,17 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
     String sql = "SELECT * FROM household WHERE id = ?";
     Household household = jdbcTemplate.queryForObject(sql, householdRowMapper, id);
     return Optional.ofNullable(household);
+  }
+
+  /**
+   * Retrieves all of the registered households.
+   * 
+   * 
+   * @return a List of all registered households
+   */
+  @Override
+  public List<Household> findAll() {
+    String sql = "SELECT * FROM household";
+    return jdbcTemplate.query(sql, householdRowMapper);
   }
 }

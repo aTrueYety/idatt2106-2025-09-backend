@@ -2,8 +2,10 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,21 @@ public class HouseholdController {
   
   @Autowired
   private HouseholdService householdService;
+
+  /**
+   * Returns all of the registered households as HouseholdResponses.
+   *
+   * @return the registered households with a status code
+   */
+  @Operation(
+      summary = "Retrieve all registered households",
+      description = "Retrieves information about all of the registered households"
+  )
+  public ResponseEntity<List<HouseholdResponse>> getAll() {
+    List<HouseholdResponse> households = householdService.getAll();
+    logger.info("Retrieved all households successfully");
+    return ResponseEntity.ok().body(households);
+  }
 
   /**
    * Handles request to register a new household.

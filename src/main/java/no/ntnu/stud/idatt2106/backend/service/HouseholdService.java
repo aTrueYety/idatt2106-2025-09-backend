@@ -1,10 +1,13 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import no.ntnu.stud.idatt2106.backend.mapper.HouseholdMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,17 @@ public class HouseholdService {
 
   @Autowired
   private UserService userService;
+
+  /**
+   * Returns all registered households as a list of HouseholdResponse objects.
+   *
+   * @return list of all households as HouseholdResponse objects
+   */
+  public List<HouseholdResponse> getAll() {
+    return householdRepository.findAll().stream()
+      .map(HouseholdMapper::toResponse)
+      .toList();
+  }
 
   /**
    * Creates and saves a new Household.
