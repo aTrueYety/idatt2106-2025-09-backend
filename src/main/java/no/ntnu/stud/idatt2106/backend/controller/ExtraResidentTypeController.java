@@ -40,11 +40,13 @@ public class ExtraResidentTypeController {
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(@PathVariable int id, @RequestBody ExtraResidentTypeRequest request) {
     boolean success = service.update(id, request);
-    return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    return success ? ResponseEntity.ok().build() : 
+    ResponseEntity.notFound().build();
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable int id) {
-    return service.delete(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    return service.delete(id) ? ResponseEntity.noContent().build() :
+    ResponseEntity.notFound().build();
   }
 }
