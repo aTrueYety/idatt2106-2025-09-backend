@@ -1,38 +1,25 @@
 package no.ntnu.stud.idatt2106.backend.model.base;
 
 import java.time.LocalDate;
+import lombok.Data;
 
+/**
+ * Response object representing a food item.
+ * <p>
+ * This DTO is used for transferring information about food entries
+ * between backend and frontend, such as when listing or fetching food data.
+ * </p>
+ *
+ * <p>
+ * Each food item is associated with a type, belongs to a household,
+ * has an expiration date, and a specified amount.
+ * </p>
+ */
+@Data
 public class Food {
-    private int id;
-    private int typeId;
-    private int householdId;
-    private LocalDate expirationDate;
-    private int amount;
-
-    
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-
-    public int getTypeId() { return typeId; }
-    public void setTypeId(int typeId) { this.typeId = typeId; }
-
-    public int getHouseholdId() { return householdId; }
-    public void setHouseholdId(int householdId) { this.householdId = householdId; }
-
-    public LocalDate getExpirationDate() { return expirationDate; }
-    public void setExpirationDate(LocalDate expirationDate) { this.expirationDate = expirationDate; }
-
-    public int getAmount() { return amount; }
-    public void setAmount(int amount) { this.amount = amount; }
-
-    @Override
-    public String toString() {
-        return "Food{" +
-                "id=" + id +
-                ", typeId=" + typeId +
-                ", householdId=" + householdId +
-                ", expirationDate=" + expirationDate +
-                ", amount=" + amount +
-                '}';
-    }
+  private int id;
+  private int typeId;
+  private int householdId;
+  private LocalDate expirationDate;
+  private int amount;
 }

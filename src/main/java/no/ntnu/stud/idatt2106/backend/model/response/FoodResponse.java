@@ -9,38 +9,43 @@ public class FoodResponse {
   private LocalDate expirationDate;
   private int amount;
 
-  public int getId() { 
-    return id; 
+  public int getId() {
+    return id;
   }
-  public void setId(int id) { 
-    this.id = id; 
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public int getTypeId() {
-     return typeId;
-    }
+    return typeId;
+  }
+
   public void setTypeId(int typeId) {
-    this.typeId = typeId; 
+    this.typeId = typeId;
   }
 
-  public int getHouseholdId() { 
-    return householdId; 
+  public int getHouseholdId() {
+    return householdId;
   }
+
   public void setHouseholdId(int householdId) {
-    this.householdId = householdId; 
+    this.householdId = householdId;
   }
 
-  public LocalDate getExpirationDate() { 
-    return expirationDate; 
-  }
-  public void setExpirationDate(LocalDate expirationDate) { 
-    this.expirationDate = expirationDate; 
+  public LocalDate getExpirationDate() {
+    return expirationDate;
   }
 
-  public int getAmount() { 
-    return amount; 
+  public void setExpirationDate(LocalDate expirationDate) {
+    this.expirationDate = expirationDate;
   }
-  public void setAmount(int amount) { 
-    this.amount = amount; 
+
+  public int getAmount() {
+    return amount;
+  }
+
+  public void setAmount(int amount) {
+    this.amount = amount;
   }
 }
