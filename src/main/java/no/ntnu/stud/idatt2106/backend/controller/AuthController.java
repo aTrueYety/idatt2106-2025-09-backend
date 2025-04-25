@@ -9,7 +9,6 @@ import no.ntnu.stud.idatt2106.backend.model.response.LoginResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.RegisterResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.CredentialsUpdate;
 import no.ntnu.stud.idatt2106.backend.service.AuthService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
