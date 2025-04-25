@@ -69,4 +69,10 @@ public class FoodTypeService {
             return true;
         }).orElse(false);
     }
-}
+
+    public List<FoodTypeResponse> searchByName(String query) {
+      return repository.findByNameContainingIgnoreCase(query).stream()
+          .map(FoodTypeMapper::toResponse)
+          .collect(Collectors.toList());
+    } 
+  }

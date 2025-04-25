@@ -14,4 +14,7 @@ public interface FoodTypeRepository {
   void save(FoodType foodType);
   void update(FoodType foodType);
   void deleteById(int id);
+
+  List<FoodType> findByNameContainingIgnoreCase(String query);
+
 }

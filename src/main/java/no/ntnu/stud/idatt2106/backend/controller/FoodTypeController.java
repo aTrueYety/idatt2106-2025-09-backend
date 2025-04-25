@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -76,4 +77,13 @@ public class FoodTypeController {
     }
     return ResponseEntity.noContent().build();
   }
+
+  /**
+   * Search for food types by name.
+   */
+  @GetMapping("/search")
+  public ResponseEntity<List<FoodTypeResponse>> search(@RequestParam String query) {
+    return ResponseEntity.ok(service.searchByName(query));
+  }
+  
 }

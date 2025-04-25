@@ -78,4 +78,11 @@ public class FoodTypeRepositoryImpl implements FoodTypeRepository {
     String sql = "DELETE FROM food_type WHERE id = ?";
     jdbcTemplate.update(sql, id);
   }
+
+  @Override
+  public List<FoodType> findByNameContainingIgnoreCase(String query) {
+    String sql = "SELECT * FROM food_type WHERE LOWER(name) LIKE LOWER(?)";
+    return jdbcTemplate.query(sql, rowMapper, "%" + query + "%");
+  }
+
 }
