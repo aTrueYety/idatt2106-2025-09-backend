@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
+import java.util.List;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 
@@ -17,6 +18,13 @@ public interface HouseholdRepository {
    * @return the saved household
    */
   Household save(Household household);
+
+  /**
+   * Retrieves a List with all registered households.
+   *
+   * @return List of all registered households
+   */
+  List<Household> findAll();
 
   /**
    * Retrieves a household by its ID.

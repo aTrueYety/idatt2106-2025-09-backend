@@ -16,8 +16,8 @@ public class UserRepo {
 
   RowMapper<User> userRowMapper = (rs, rowNum) -> {
     User user = new User();
-    user.setId(rs.getInt("id"));
-    user.setHouseholdId(rs.getObject("household_id", Integer.class));
+    user.setId(rs.getLong("id"));
+    user.setHouseholdId(rs.getLong("household_id"));
     user.setEmail(rs.getString("email"));
     user.setUsername(rs.getString("username"));
     user.setPassword(rs.getString("password"));

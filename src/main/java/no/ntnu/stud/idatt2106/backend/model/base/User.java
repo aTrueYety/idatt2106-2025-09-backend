@@ -1,38 +1,38 @@
 package no.ntnu.stud.idatt2106.backend.model.base;
 
 public class User {
-  private int id;
-  private Integer householdId;
-  private String email;
-  private String username;
-  private String password;
-  private boolean emailConfirmed = false;
-  private boolean isAdmin = false;
-  private boolean isSuperAdmin = false;
-  private String firstName;
-  private String lastName;
-  private boolean sharePositionHousehold = false;
-  private boolean sharePositionGroup = false;
-  private byte[] picture;
+    private Long id;
+    private Long householdId;
+    private String email;
+    private String username;
+    private String password;
+    private boolean emailConfirmed = false;
+    private boolean isAdmin = false;
+    private boolean isSuperAdmin = false;
+    private String firstName;
+    private String lastName;
+    private boolean sharePositionHousehold = false;
+    private boolean sharePositionGroup = false;
+    private byte[] picture;
 
   public User() {
   }
 
-  public int getId() {
-    return id;
-  }
+    public Long getId() {
+      return id;
+    }
 
-  public void setId(int id) {
-    this.id = id;
-  }
+    public void setId(Long id) {
+      this.id = id;
+    }
 
-  public Integer getHouseholdId() {
-    return householdId;
-  }
+    public Long getHouseholdId() {
+      return householdId;
+    }
 
-  public void setHouseholdId(Integer householdId) {
-    this.householdId = householdId;
-  }
+    public void setHouseholdId(Long householdId) {
+      this.householdId = householdId;
+    }
 
   public String getEmail() {
     return email;
