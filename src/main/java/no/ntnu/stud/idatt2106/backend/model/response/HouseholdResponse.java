@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HouseholdResponse {
   private Long id;
+  private String address;
   private double longitude;
   private double latitude;
   private double waterAmountLiters;

@@ -1,6 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -13,6 +14,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,6 +113,31 @@ public class HouseholdServiceTest {
 
     assertThrows(NoSuchElementException.class, () -> {
       householdService.addUserToHousehold(request);
+    });
+  }
+
+  @Test
+  void getByIdShouldGetHouseholdByid() {
+    Long id = 1L;
+    Household household = new Household();
+    household.setId(id);
+    household.setAdress("Test street");
+
+    when(householdRepository.findById(id)).thenReturn(Optional.of(household));
+
+    HouseholdResponse response = householdService.getById(id);
+
+    assertNotNull(response);
+    assertEquals(id, response.getId());
+    assertEquals("Test street", response.getAddress());
+  }
+
+  void getByIdShouldThrowExceptionWhenHouseholdDoesNotExist() {
+    Long id = 999L;
+    when(householdRepository.findById(id)).thenReturn(Optional.empty());
+
+    assertThrows(NoSuchElementException.class, () -> {
+      householdService.getById(id);
     });
   }
 }
