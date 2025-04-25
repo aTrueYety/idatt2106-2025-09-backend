@@ -4,6 +4,7 @@ import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodSummaryResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.FoodDetailedResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 import no.ntnu.stud.idatt2106.backend.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,5 +96,9 @@ public class FoodController {
     return ResponseEntity.ok(service.getFoodSummaryByHousehold(id));
   }
   
-  
+  @GetMapping("/summary/detailed/{householdId}")
+  public ResponseEntity<List<FoodDetailedResponse>> getSummaryDetailed(@PathVariable int householdId) {
+    return ResponseEntity.ok(service.getFoodDetailedByHousehold(householdId));
+  }
+
 }
