@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HouseholdRequest {
-    private String adress;
-    private double longitude;
-    private double latitude;
-    private double waterAmountLiters;
-    private Date lastWaterChangeDate;
-    private boolean hasFirstAidKit;
+  private String adress;
+  private double longitude;
+  private double latitude;
+  private double waterAmountLiters;
+  private Date lastWaterChangeDate;
+  private boolean hasFirstAidKit;
 }

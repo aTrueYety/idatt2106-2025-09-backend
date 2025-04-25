@@ -5,6 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+/**
+ * Entity representing an extra resident type.
+ * <p>
+ * Each type specifies the resource consumption (water and food) per resident.
+ * </p>
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

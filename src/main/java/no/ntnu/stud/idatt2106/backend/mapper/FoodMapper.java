@@ -5,8 +5,17 @@ import no.ntnu.stud.idatt2106.backend.model.request.FoodRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 
+/**
+ * Utility class for mapping between Food entities and their corresponding DTOs.
+ */
 public class FoodMapper {
 
+  /**
+   * Converts a FoodRequest DTO to a Food entity.
+   *
+   * @param request the request DTO containing data for creating a food item
+   * @return the mapped Food entity
+   */
   public static Food toModel(FoodRequest request) {
     Food food = new Food();
     food.setTypeId(request.getTypeId());
@@ -16,6 +25,12 @@ public class FoodMapper {
     return food;
   }
 
+  /**
+   * Converts a FoodUpdate DTO to a Food entity.
+   *
+   * @param update the update DTO containing updated food data
+   * @return the mapped Food entity
+   */
   public static Food toModel(FoodUpdate update) {
     Food food = new Food();
     food.setTypeId(update.getTypeId());
@@ -25,6 +40,12 @@ public class FoodMapper {
     return food;
   }
 
+  /**
+   * Converts a Food entity to a FoodResponse DTO.
+   *
+   * @param food the Food entity
+   * @return the corresponding FoodResponse DTO
+   */
   public static FoodResponse toResponse(Food food) {
     FoodResponse response = new FoodResponse();
     response.setId(food.getId());
