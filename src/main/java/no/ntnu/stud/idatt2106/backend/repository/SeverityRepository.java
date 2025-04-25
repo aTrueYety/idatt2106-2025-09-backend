@@ -1,10 +1,9 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
 
-import no.ntnu.stud.idatt2106.backend.model.base.Severity;
 
 import java.util.List;
-
+import no.ntnu.stud.idatt2106.backend.model.base.Severity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
