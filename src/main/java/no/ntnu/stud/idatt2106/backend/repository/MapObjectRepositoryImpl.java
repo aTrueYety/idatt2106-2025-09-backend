@@ -30,7 +30,6 @@ public class MapObjectRepositoryImpl implements MapObjectRepository {
     mapObject.setContactEmail(rs.getString("contact_email"));
     mapObject.setContactName(rs.getString("contact_name"));
     mapObject.setDescription(rs.getString("description"));
-    mapObject.setImage(rs.getBlob("image"));
     return mapObject;
   };
 
@@ -87,6 +86,7 @@ public class MapObjectRepositoryImpl implements MapObjectRepository {
   @Override
   public List<MapObject> findAllInBounds(
       double minLat, double maxLat, double minLong, double maxLong) {
+    System.out.println(minLat + " " + maxLat + " " + minLong + " " + maxLong);
     String sql = "SELECT * FROM map_object WHERE latitude BETWEEN ? AND ? "
         + "AND longitude BETWEEN ? AND ?";
     return jdbcTemplate.query(sql, mapObjectRowMapper, minLat, maxLat, minLong, maxLong);
