@@ -1,14 +1,12 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.Severity;
 import no.ntnu.stud.idatt2106.backend.model.request.SeverityRequest;
 import no.ntnu.stud.idatt2106.backend.repository.SeverityRepository;
 import no.ntnu.stud.idatt2106.backend.service.factory.SeverityFactory;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
