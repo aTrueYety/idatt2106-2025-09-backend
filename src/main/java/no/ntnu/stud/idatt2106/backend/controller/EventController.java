@@ -6,6 +6,7 @@ import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EventResponse;
 import no.ntnu.stud.idatt2106.backend.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,11 +37,11 @@ public class EventController {
    * @return A ResponseEntity indicating the success or failure of the operation.
    */
   @PostMapping
-  public ResponseEntity<?> addEvent(
+  public ResponseEntity<String> addEvent(
       @RequestBody EventRequest event,
       @RequestHeader("Authorization") String token) {
     eventService.saveEvent(event, token);
-    return ResponseEntity.ok("Event added successfully");
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   /**
@@ -50,12 +51,12 @@ public class EventController {
    * @return a ResponseEntity containing the event details if found.
    */
   @GetMapping("/{eventId}")
-  public ResponseEntity<?> getEventById(@PathVariable Long eventId) {
+  public ResponseEntity<EventResponse> getEventById(@PathVariable Long eventId) {
     EventResponse event = eventService.findEventWithSeverityById(eventId);
     if (event != null) {
       return ResponseEntity.ok(event);
     } else {
-      return ResponseEntity.noContent().build();
+      return ResponseEntity.notFound().build();
     }
   }
 
@@ -67,7 +68,7 @@ public class EventController {
    * @return A ResponseEntity indicating the success or failure of the operation.
    */
   @PostMapping("/update")
-  public ResponseEntity<?> updateEvent(
+  public ResponseEntity<String> updateEvent(
       @RequestBody Event event,
       @RequestHeader("Authorization") String token) {
     eventService.updateEvent(event, token);
@@ -82,7 +83,7 @@ public class EventController {
    * @return A ResponseEntity indicating the success or failure of the operation.
    */
   @DeleteMapping("/{eventId}")
-  public ResponseEntity<?> deleteEvent(
+  public ResponseEntity<String> deleteEvent(
       @PathVariable Long eventId,
       @RequestHeader("Authorization") String token) {
     eventService.deleteEvent(eventId, token);
@@ -100,7 +101,7 @@ public class EventController {
    *         bounds.
    */
   @GetMapping("/bounds")
-  public ResponseEntity<?> getEventsInBounds(
+  public ResponseEntity<List<EventResponse>> getEventsInBounds(
       @RequestParam double minLat, 
       @RequestParam double maxLat, 
       @RequestParam double minLong, 
@@ -108,7 +109,7 @@ public class EventController {
     List<EventResponse> events = eventService.findAllEventsWithSeverityInBounds(
         minLat, maxLat, minLong, maxLong);
     if (events.isEmpty()) {
-      return ResponseEntity.noContent().build();
+      return ResponseEntity.notFound().build();
     } else {
       return ResponseEntity.ok(events);
     }

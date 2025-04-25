@@ -1,9 +1,11 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.Severity;
 import no.ntnu.stud.idatt2106.backend.model.request.SeverityRequest;
 import no.ntnu.stud.idatt2106.backend.service.SeverityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,11 +33,11 @@ public class SeverityController {
    * @return A ResponseEntity indicating the success or failure of the operation.
    */
   @PostMapping
-  public ResponseEntity<?> addSeverity(
+  public ResponseEntity<Void> addSeverity(
       @RequestBody SeverityRequest severity,
       @RequestHeader("Authorization") String token) {
     severityService.saveSeverity(severity, token);
-    return ResponseEntity.ok("Severity added successfully");
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   /**
@@ -45,12 +47,12 @@ public class SeverityController {
    * @return a ResponseEntity containing the severity level details if found.
    */
   @GetMapping("/{severityId}")
-  public ResponseEntity<?> getSeverityById(@PathVariable Long severityId) {
+  public ResponseEntity<Severity> getSeverityById(@PathVariable Long severityId) {
     Severity severity = severityService.findSeverityById(severityId);
     if (severity != null) {
       return ResponseEntity.ok(severity);
     } else {
-      return ResponseEntity.noContent().build();
+      return ResponseEntity.notFound().build();
     }
   }
 
@@ -60,8 +62,13 @@ public class SeverityController {
    * @return a ResponseEntity containing a list of all severity levels.
    */
   @GetMapping
-  public ResponseEntity<?> getAllSeverities() {
-    return ResponseEntity.ok(severityService.findAllSeverities());
+  public ResponseEntity<List<Severity>> getAllSeverities() {
+    List<Severity> severities = severityService.findAllSeverities();
+    if (severities != null && !severities.isEmpty()) {
+      return ResponseEntity.ok(severities);
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   /**
