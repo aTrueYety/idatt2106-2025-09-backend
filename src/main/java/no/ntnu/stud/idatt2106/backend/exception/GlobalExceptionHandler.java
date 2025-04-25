@@ -13,6 +13,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import io.jsonwebtoken.security.SignatureException;
+
 /**
  * Global exception handler for the application.
  */
@@ -28,10 +30,10 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<String> handleIllegalArgumentException(
-          IllegalArgumentException ex, WebRequest request) {
+      IllegalArgumentException ex, WebRequest request) {
     logger.error("Illegal argument: {}", ex.getMessage(), ex);
     return new ResponseEntity<>(
-            "Invalid token or request: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+        "Invalid token or request: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
   /**
@@ -42,10 +44,10 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(MissingServletRequestPartException.class)
   public ResponseEntity<String> handleMissingServletRequestPartException(
-          MissingServletRequestPartException ex) {
+      MissingServletRequestPartException ex) {
     logger.error("Missing request part: {}", ex.getRequestPartName(), ex);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Required part is missing: " + ex.getRequestPartName());
+        .body("Required part is missing: " + ex.getRequestPartName());
   }
 
   /**
@@ -56,10 +58,10 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   public ResponseEntity<String> handleMethodArgumentTypeMismatchException(
-          MethodArgumentTypeMismatchException ex) {
+      MethodArgumentTypeMismatchException ex) {
     logger.error("Method argument type mismatch: {}", ex.getMessage(), ex);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Invalid parameter type: " + ex.getName());
+        .body("Invalid parameter type: " + ex.getName());
   }
 
   /**
@@ -70,10 +72,10 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public ResponseEntity<String> handleMissingServletRequestParameterException(
-          MissingServletRequestParameterException ex) {
+      MissingServletRequestParameterException ex) {
     logger.error("Missing request parameter: {}", ex.getParameterName(), ex);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Required request parameter '" + ex.getParameterName() + "' is missing.");
+        .body("Required request parameter '" + ex.getParameterName() + "' is missing.");
   }
 
   /**
@@ -84,10 +86,10 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(NoHandlerFoundException.class)
   public ResponseEntity<String> handleNoHandlerFoundException(
-          NoHandlerFoundException ex) {
+      NoHandlerFoundException ex) {
     logger.error("No handler found for request: {}", ex.getRequestURL(), ex);
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body("Endpoint not found: " + ex.getRequestURL());
+        .body("Endpoint not found: " + ex.getRequestURL());
   }
 
   /**
@@ -98,10 +100,10 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   public ResponseEntity<String> handleHttpRequestMethodNotSupportedException(
-          HttpRequestMethodNotSupportedException ex) {
+      HttpRequestMethodNotSupportedException ex) {
     logger.error("Request method not supported: {}", ex.getMethod(), ex);
     return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-            .body("Request method " + ex.getMethod() + " not supported for this endpoint.");
+        .body("Request method " + ex.getMethod() + " not supported for this endpoint.");
   }
 
   /**
@@ -114,7 +116,22 @@ public class GlobalExceptionHandler {
   public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
     logger.error("Authentication failed: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .body("Authentication failed: " + ex.getMessage());
+        .body("Authentication failed: " + ex.getMessage());
+  }
+
+  /**
+   * Handles SignatureException.
+   *
+   * @param ex      the SignatureException
+   * @param request the WebRequest
+   * @return the ResponseEntity with a 401 status and error message
+   */
+  @ExceptionHandler(SignatureException.class)
+  public ResponseEntity<String> handleSignatureException(
+      SignatureException ex, WebRequest request) {
+    logger.error("Invalid token signature: {}", ex.getMessage());
+    return new ResponseEntity<>(
+        "Invalid token signature: " + ex.getMessage(), HttpStatus.UNAUTHORIZED);
   }
 
   /**
@@ -126,8 +143,8 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<String> handleGlobalException(Exception ex, WebRequest request) {
-    logger.error("An unexpected error occurred: {}", ex.getMessage());
+    logger.error("An unexpected error occurred: {}", ex.getMessage()/*, ex*/);
     return new ResponseEntity<>(
-            "An unexpected error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        "An unexpected error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
