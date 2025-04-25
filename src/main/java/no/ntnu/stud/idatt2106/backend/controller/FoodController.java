@@ -77,4 +77,16 @@ public class FoodController {
     }
     return ResponseEntity.noContent().build();
   }
+
+  /**
+  * Get all food items belonging to a specific household.
+  *
+  * @param householdId the ID of the household
+  * @return list of food items
+  */
+  @GetMapping("/household/{householdId}")
+  public ResponseEntity<List<FoodResponse>> getByHouseholdId(@PathVariable int householdId) {
+    return ResponseEntity.ok(service.getByHouseholdId(householdId));
+  }
+
 }

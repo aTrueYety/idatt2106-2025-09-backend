@@ -49,4 +49,11 @@ public class FoodService {
         repository.deleteById(id);
         return true;
     }
+
+    public List<FoodResponse> getByHouseholdId(int householdId) {
+    return repository.findByHouseholdId(householdId).stream()
+          .map(FoodMapper::toResponse)
+          .collect(Collectors.toList());
+    }
+    
 }
