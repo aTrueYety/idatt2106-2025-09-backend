@@ -14,3 +14,10 @@ CREATE TABLE food (
     amount INT NOT NULL,
     FOREIGN KEY (type_id) REFERENCES food_type(id)
 );
+
+CREATE TABLE extra_resident_type (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  consumption_water FLOAT NOT NULL,
+  consumption_food FLOAT NOT NULL
+);
