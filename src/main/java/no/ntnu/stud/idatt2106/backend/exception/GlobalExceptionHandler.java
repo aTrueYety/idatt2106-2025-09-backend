@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.exception;
 
+import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-
-import io.jsonwebtoken.security.SignatureException;
 
 /**
  * Global exception handler for the application.
