@@ -10,4 +10,7 @@ public interface FoodRepository {
   void save(Food food);
   void update(Food food);
   void deleteById(int id);
+
+  
+  List<Food> findByHouseholdId(int householdId);
 }

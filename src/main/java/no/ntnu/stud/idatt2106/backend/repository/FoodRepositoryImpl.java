@@ -56,4 +56,11 @@ public class FoodRepositoryImpl implements FoodRepository {
   public void deleteById(int id) {
     jdbcTemplate.update("DELETE FROM food WHERE id = ?", id);
   }
+
+  @Override
+  public List<Food> findByHouseholdId(int householdId) {
+    String sql = "SELECT * FROM food WHERE household_id = ?";
+    return jdbcTemplate.query(sql, rowMapper, householdId);
+  }
+
 }
