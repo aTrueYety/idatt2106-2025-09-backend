@@ -96,11 +96,7 @@ public class AuthController {
       description = "Verifies the validity of the provided JWT token")
   @PostMapping("/test")
   public ResponseEntity<Void> test(@RequestHeader("Authorization") String token) {
-    boolean isValid = service.validateToken(token);
-    if (isValid) {
-      return ResponseEntity.ok().build();
-    } else {
-      return ResponseEntity.status(401).build();
-    }
+    service.validateToken(token);
+    return ResponseEntity.ok().build();
   }
 }
