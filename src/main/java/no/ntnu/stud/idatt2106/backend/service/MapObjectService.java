@@ -3,6 +3,7 @@ package no.ntnu.stud.idatt2106.backend.service;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.MapObject;
 import no.ntnu.stud.idatt2106.backend.model.request.MapObjectRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.MapObjectResponse;
 import no.ntnu.stud.idatt2106.backend.repository.MapObjectRepositoryImpl;
 import no.ntnu.stud.idatt2106.backend.service.factory.MapObjectFactory;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
@@ -34,8 +35,8 @@ public class MapObjectService {
    * @param id the ID of the map object
    * @return the map object with the specified ID, or null if not found
    */
-  public MapObject getMapObjectById(Long id) {
-    return mapObjectRepository.findById(id);
+  public MapObjectResponse getMapObjectById(Long id) {
+    return mapObjectRepository.findByIdWithDetail(id);
   }
 
   /**
@@ -80,8 +81,8 @@ public class MapObjectService {
    * @param maxLong The maximum longitude of the bounding box.
    * @return A list of map objects within the specified bounds.
    */
-  public List<MapObject> getMapObjectsInBounds(
+  public List<MapObjectResponse> getMapObjectsInBounds(
       double minLat, double maxLat, double minLong, double maxLong) {
-    return mapObjectRepository.findAllInBounds(minLat, maxLat, minLong, maxLong);
+    return mapObjectRepository.findAllInBoundsWithDetail(minLat, maxLat, minLong, maxLong);
   }
 }

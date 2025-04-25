@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.repository;
 
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.MapObject;
+import no.ntnu.stud.idatt2106.backend.model.response.MapObjectResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,7 +31,23 @@ public class MapObjectRepositoryImpl implements MapObjectRepository {
     mapObject.setContactEmail(rs.getString("contact_email"));
     mapObject.setContactName(rs.getString("contact_name"));
     mapObject.setDescription(rs.getString("description"));
-    mapObject.setImage(rs.getBlob("image"));
+    return mapObject;
+  };
+
+  private final RowMapper<MapObjectResponse> mapObjectResponseRowMapper = (rs, rowNum) -> {
+    MapObjectResponse mapObject = new MapObjectResponse();
+    mapObject.setId(rs.getLong("id"));
+    mapObject.setTypeId(rs.getLong("type_id"));
+    mapObject.setTypeName(rs.getString("type_name"));
+    mapObject.setTypeIcon(rs.getString("type_icon"));
+    mapObject.setLatitude(rs.getFloat("latitude"));
+    mapObject.setLongitude(rs.getFloat("longitude"));
+    mapObject.setOpening(rs.getTimestamp("opening"));
+    mapObject.setClosing(rs.getTimestamp("closing"));
+    mapObject.setContactPhone(rs.getString("contact_phone"));
+    mapObject.setContactEmail(rs.getString("contact_email"));
+    mapObject.setContactName(rs.getString("contact_name"));
+    mapObject.setDescription(rs.getString("description"));
     return mapObject;
   };
 
@@ -41,9 +58,10 @@ public class MapObjectRepositoryImpl implements MapObjectRepository {
   }
 
   @Override
-  public MapObject findById(Long id) {
-    String sql = "SELECT * FROM map_object WHERE id = ?";
-    List<MapObject> objects = jdbcTemplate.query(sql, mapObjectRowMapper, id);
+  public MapObjectResponse findByIdWithDetail(Long id) {
+    String sql = "SELECT mo.*, mot.name AS type_name, mot.icon AS type_icon FROM map_object mo "
+        + "JOIN map_object_type mot ON mo.type_id = mot.id WHERE mo.id = ?";
+    List<MapObjectResponse> objects = jdbcTemplate.query(sql, mapObjectResponseRowMapper, id);
     return objects.isEmpty() ? null : objects.get(0);
   }
 
@@ -85,10 +103,11 @@ public class MapObjectRepositoryImpl implements MapObjectRepository {
    * @return A list of map objects within the specified bounds.
    */
   @Override
-  public List<MapObject> findAllInBounds(
+  public List<MapObjectResponse> findAllInBoundsWithDetail(
       double minLat, double maxLat, double minLong, double maxLong) {
-    String sql = "SELECT * FROM map_object WHERE latitude BETWEEN ? AND ? "
-        + "AND longitude BETWEEN ? AND ?";
-    return jdbcTemplate.query(sql, mapObjectRowMapper, minLat, maxLat, minLong, maxLong);
+    String sql = "SELECT mo.*, mot.name AS type_name, mot.icon AS type_icon FROM map_object mo "
+        + "JOIN map_object_type mot ON mo.type_id = mot.id "
+        + "WHERE mo.latitude BETWEEN ? AND ? AND mo.longitude BETWEEN ? AND ?";
+    return jdbcTemplate.query(sql, mapObjectResponseRowMapper, minLat, maxLat, minLong, maxLong);
   }
 }
