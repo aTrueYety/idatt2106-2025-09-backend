@@ -76,13 +76,7 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   @Override
   public Optional<Household> findById(Long id) {
     String sql = "SELECT * FROM household WHERE id = ?";
-
-    try {
-      Household household = jdbcTemplate.queryForObject(sql, householdRowMapper, id);
-      return Optional.ofNullable(household);
-    } catch (Exception e) {
-      return Optional.empty();
-    }
+    Household household = jdbcTemplate.queryForObject(sql, householdRowMapper, id);
+    return Optional.ofNullable(household);
   }
-    
 }

@@ -37,7 +37,6 @@ public class HouseholdService {
     Household registeredHousehold = householdRepository.save(household);
 
     //Adds the user creating the household to the household.
-    System.out.println(registeredHousehold.getId());
     addUserToHousehold(new AddUserHouseholdRequest(
         householdReqeust.getUsername(),
         registeredHousehold.getId())

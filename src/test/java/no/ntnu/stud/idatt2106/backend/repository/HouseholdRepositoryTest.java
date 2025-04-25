@@ -1,4 +1,4 @@
-package no.ntnu.stud.idatt2106_2025_9.backend.repository;
+package no.ntnu.stud.idatt2106.backend.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
-import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
-import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepositoryImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -52,8 +50,8 @@ public class HouseholdRepositoryTest {
   @Test
   void savedHouseholdsCanBeRetrievedById() {
     jdbcTemplate.update("""
-        INSERT INTO household VALUES
-        (id, adress, latitude, longitude, amount_water, last_water_charge)
+        INSERT INTO household
+        (id, adress, latitude, longitude, amount_water, last_water_change)
         VALUES (?, ?, ?, ?, ?, ?)
         """,
         1L, "Test adress", 64.34, 34.45, 23, new Date()
@@ -62,7 +60,8 @@ public class HouseholdRepositoryTest {
     var result = householdRepository.findById(1L);
 
     assertTrue(result.isPresent());
-    assertEquals("Test adress", result.get().getId());
+    assertEquals(1L, result.get().getId());
+    assertEquals("Test adress", result.get().getAdress());
     assertEquals(64.34, result.get().getLatitude());
     assertEquals(34.45, result.get().getLongitude());
     assertEquals(23, result.get().getWaterAmountLiters());
