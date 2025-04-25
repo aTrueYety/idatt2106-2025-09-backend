@@ -1,4 +1,4 @@
-package no.ntnu.stud.idatt2106.backend.repo;
+package no.ntnu.stud.idatt2106.backend.repository;
 
 import java.util.List;
 

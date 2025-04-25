@@ -15,8 +15,8 @@ public class User {
     private boolean sharePositionGroup = false;
     private byte[] picture;
 
-    public User() {
-    }
+  public User() {
+  }
 
     public Long getId() {
       return id;
@@ -34,91 +34,91 @@ public class User {
       this.householdId = householdId;
     }
 
-    public String getEmail() {
-      return email;
-    }
+  public String getEmail() {
+    return email;
+  }
 
-    public void setEmail(String email) {
-      this.email = email;
-    }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-    public String getUsername() {
-      return username;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public void setUsername(String username) {
-      this.username = username;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    public String getPassword() {
-      return password;
-    }
+  public String getPassword() {
+    return password;
+  }
 
-    public void setPassword(String password) {
-      this.password = password;
-    }
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-    public boolean isEmailConfirmed() {
-      return emailConfirmed;
-    }
+  public boolean isEmailConfirmed() {
+    return emailConfirmed;
+  }
 
-    public void setEmailConfirmed(boolean emailConfirmed) {
-      this.emailConfirmed = emailConfirmed;
-    }
+  public void setEmailConfirmed(boolean emailConfirmed) {
+    this.emailConfirmed = emailConfirmed;
+  }
 
-    public boolean isAdmin() {
-      return isAdmin;
-    }
+  public boolean isAdmin() {
+    return isAdmin;
+  }
 
-    public void setAdmin(boolean admin) {
-      isAdmin = admin;
-    }
+  public void setAdmin(boolean admin) {
+    isAdmin = admin;
+  }
 
-    public boolean isSuperAdmin() {
-      return isSuperAdmin;
-    }
+  public boolean isSuperAdmin() {
+    return isSuperAdmin;
+  }
 
-    public void setSuperAdmin(boolean superAdmin) {
-      isSuperAdmin = superAdmin;
-    }
+  public void setSuperAdmin(boolean superAdmin) {
+    isSuperAdmin = superAdmin;
+  }
 
-    public String getFirstName() {
-      return firstName;
-    }
+  public String getFirstName() {
+    return firstName;
+  }
 
-    public void setFirstName(String firstName) {
-      this.firstName = firstName;
-    }
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-    public String getLastName() {
-      return lastName;
-    }
+  public String getLastName() {
+    return lastName;
+  }
 
-    public void setLastName(String lastName) {
-      this.lastName = lastName;
-    }
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-    public boolean isSharePositionHousehold() {
-      return sharePositionHousehold;
-    }
+  public boolean isSharePositionHousehold() {
+    return sharePositionHousehold;
+  }
 
-    public void setSharePositionHousehold(boolean sharePositionHousehold) {
-      this.sharePositionHousehold = sharePositionHousehold;
-    }
+  public void setSharePositionHousehold(boolean sharePositionHousehold) {
+    this.sharePositionHousehold = sharePositionHousehold;
+  }
 
-    public boolean isSharePositionGroup() {
-      return sharePositionGroup;
-    }
+  public boolean isSharePositionGroup() {
+    return sharePositionGroup;
+  }
 
-    public void setSharePositionGroup(boolean sharePositionGroup) {
-      this.sharePositionGroup = sharePositionGroup;
-    }
+  public void setSharePositionGroup(boolean sharePositionGroup) {
+    this.sharePositionGroup = sharePositionGroup;
+  }
 
-    public byte[] getPicture() {
-      return picture;
-    }
+  public byte[] getPicture() {
+    return picture;
+  }
 
-    public void setPicture(byte[] picture) {
-      this.picture = picture;
-    }
+  public void setPicture(byte[] picture) {
+    this.picture = picture;
+  }
 }

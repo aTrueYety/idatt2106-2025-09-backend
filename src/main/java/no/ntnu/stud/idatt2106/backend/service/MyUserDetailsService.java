@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.base.UserPrincipal;
-import no.ntnu.stud.idatt2106.backend.repo.UserRepo;
+import no.ntnu.stud.idatt2106.backend.repository.UserRepository;
 
 
 /**
@@ -18,7 +18,7 @@ import no.ntnu.stud.idatt2106.backend.repo.UserRepo;
 public class MyUserDetailsService implements UserDetailsService {
 
   @Autowired
-  private UserRepo userRepo;
+  private UserRepository userRepo;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

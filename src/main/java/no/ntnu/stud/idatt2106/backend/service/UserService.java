@@ -1,10 +1,9 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import no.ntnu.stud.idatt2106.backend.model.base.User;
+import no.ntnu.stud.idatt2106.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import no.ntnu.stud.idatt2106.backend.model.base.User;
-import no.ntnu.stud.idatt2106.backend.repo.UserRepo;
 
 /**
  * Service class for managing user-related operations.
@@ -12,7 +11,7 @@ import no.ntnu.stud.idatt2106.backend.repo.UserRepo;
 @Service
 public class UserService {
   @Autowired
-  private UserRepo userRepo;
+  private UserRepository userRepo;
 
   /**
    * Adds a new user to the system.
@@ -31,6 +30,16 @@ public class UserService {
    */
   public User getUserByUsername(String username) {
     return userRepo.findUserByUsername(username);
+  }
+
+  /**
+   * Retrieves a user by their email.
+   *
+   * @param email The email of the user to be retrieved.
+   * @return The user with the specified email, or null if not found.
+   */
+  public User getUserByEmail(String email) {
+    return userRepo.findUserByEmail(email);
   }
 
   /**

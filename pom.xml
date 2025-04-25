@@ -40,11 +40,11 @@
 
 
 		<!-- DotEnv -->
-			<dependency>
-    <groupId>io.github.cdimascio</groupId>
-   		<artifactId>java-dotenv</artifactId>
-    	<version>5.2.2</version>
-	</dependency>
+		<dependency>
+    		<groupId>io.github.cdimascio</groupId>
+   			<artifactId>java-dotenv</artifactId>
+    		<version>5.2.2</version>
+		</dependency>
 
 		<!-- Auth -->
 		<dependency>
@@ -121,6 +121,15 @@
 				<artifactId>h2</artifactId>
 				<scope>runtime</scope>
 		</dependency>
+
+		<!-- H2 testing -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -179,6 +188,28 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<!-- JaCoCo for test coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.11</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
 		</plugins>
 
 	</build>
