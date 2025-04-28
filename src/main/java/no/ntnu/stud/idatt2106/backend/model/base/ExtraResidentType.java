@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
  * <p>Each type specifies the resource consumption (water and food) per resident.
  * </p>
  */
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
