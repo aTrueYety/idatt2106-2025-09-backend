@@ -2,21 +2,25 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
+import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepositoryImpl;
+import no.ntnu.stud.idatt2106.backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-
-import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 
 /**
  * Contains integration tests for the HouseholdService class.
  */
 @JdbcTest
 @ActiveProfiles("test")
+@Import({HouseholdService.class, UserService.class,
+  HouseholdRepositoryImpl.class, UserRepository.class})
 public class HouseholdServiceIntegrationTest {
   
   @Autowired
@@ -33,7 +37,7 @@ public class HouseholdServiceIntegrationTest {
         """);
 
     jdbcTemplate.update("""
-        INSERT INTO "user" (id, username, email, password, household_id)
+        INSERT INTO `user` (id, username, email, password, household_id)
         VALUES (1, 'Testuser', 'test@example.com', 'password', 1)
         """);
   }
@@ -46,7 +50,7 @@ public class HouseholdServiceIntegrationTest {
       HouseholdResponse response = householdService.getById(1L);
 
       assertEquals(1L, response.getId());
-      assertEquals("Test Adress", response.getAddress());
+      assertEquals("Test Address", response.getAddress());
     }
   }
 }
