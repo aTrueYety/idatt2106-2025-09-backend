@@ -56,4 +56,15 @@ public interface MapObjectRepository {
   List<MapObjectResponse> findAllInBoundsWithDetail(
       double minLat, double maxLat, double minLong, double maxLong);
 
+  /**
+   * Finds the closest map object to the specified latitude and longitude of a given type.
+   *
+   * @param latitude  The latitude of the location.
+   * @param longitude The longitude of the location.
+   * @param typeId    The ID of the map object type.
+   * @return The closest map object of the specified type, or null if not found.
+   */
+  MapObjectResponse findClosestWithDetail(
+      double latitude, double longitude, long typeId);
+
 }

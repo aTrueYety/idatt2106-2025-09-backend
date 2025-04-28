@@ -129,4 +129,29 @@ public class MapObjectController {
     }
     return ResponseEntity.ok(mapObjects);
   }
+
+
+  /**
+   * Retrives the closest map object to a given location of a specific type.
+   *
+   * @param latitude  The latitude of the location.
+   * @param longitude The longitude of the location.
+   * @param type      The type of the map object to search for.
+   * @return A ResponseEntity containing the closest map object to the specified location.
+   */
+  @Operation(summary = "Get closest map object", 
+      description = "Retrieve the closest map object to a given location of a specific type.")
+  @GetMapping("/closest")
+  public ResponseEntity<MapObjectResponse> getClosestMapObject(
+      @Parameter(description = "Latitude of the location") @RequestParam double latitude, 
+      @Parameter(description = "Longitude of the location") @RequestParam double longitude, 
+      @Parameter(description = "Type of the map object to search for") 
+        @RequestParam long type) {
+    MapObjectResponse closestMapObject = 
+        mapObjectService.getClosestMapObject(latitude, longitude, type);
+    if (closestMapObject == null) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(closestMapObject);
+  }
 }
