@@ -18,9 +18,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean compile
 
+test:
+    needs: build 
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9.5-eclipse-temurin-21
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: mvn test
+        
   checkstyle:
+    needs: build
     runs-on: ubuntu-latest
     container:
       image: maven:3.9.5-eclipse-temurin-21
@@ -31,7 +44,7 @@ jobs:
       - name: Run Checkstyle
         run: mvn checkstyle:check
 
-      - name: Upload Checkstyle report
+      - name: Checkstyle
         uses: actions/upload-artifact@v4
         with:
           name: checkstyle-report
