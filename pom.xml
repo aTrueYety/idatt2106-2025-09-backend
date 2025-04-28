@@ -108,12 +108,6 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>8.0.2.Final</version>
 		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>31.1-jre</version>
-			<scope>runtime</scope>
-		</dependency>
 		<!-- end Swagger/OpenAPI -->
 
 		<!-- H2 testing -->
@@ -166,18 +160,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.3.0</version>
-				<dependencies>
-					<dependency>
-						<groupId>com.puppycrawl.tools</groupId>
-						<artifactId>checkstyle</artifactId>
-						<version>10.23.0</version>
-					</dependency>
-				</dependencies>
+				<version>3.6.0</version>
 				<configuration>
-					<configLocation>https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml</configLocation>
-					<consoleOutput>true</consoleOutput>
+					<configLocation>google_checks.xml</configLocation>
 					<failsOnError>true</failsOnError>
+					<consoleOutput>true</consoleOutput>
+					<violationSeverity>warning</violationSeverity>
+					<outputFile>${project.build.directory}/checkstyle/checkstyle-report.xml</outputFile>
 				</configuration>
 				<executions>
 					<execution>
@@ -209,7 +198,6 @@
                     </execution>
                 </executions>
             </plugin>
-
 		</plugins>
 
 	</build>

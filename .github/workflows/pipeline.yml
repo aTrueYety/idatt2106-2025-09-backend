@@ -1,0 +1,51 @@
+name: Build and Checkstyle
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - "40-*"
+
+jobs:
+  build:
+    if: ${{ github.ref_name == 'main' || github.ref_name == 'dev' || startsWith(github.ref_name, '40-') }}
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9.5-eclipse-temurin-21
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build with Maven
+        run: mvn clean compile
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9.5-eclipse-temurin-21
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: mvn test
+
+  checkstyle:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9.5-eclipse-temurin-21
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Checkstyle
+        run: mvn checkstyle:check
+
+      - name: Checkstyle
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkstyle-report
+          path: target/site/checkstyle.html

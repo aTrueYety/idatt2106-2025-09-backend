@@ -66,7 +66,7 @@ public class FoodService {
   public List<FoodResponse> getAll() {
     return repository.findAll().stream()
         .map(FoodMapper::toResponse)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -109,7 +109,7 @@ public class FoodService {
   public List<FoodResponse> getByHouseholdId(int householdId) {
     return repository.findByHouseholdId(householdId).stream()
         .map(FoodMapper::toResponse)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -131,7 +131,7 @@ public class FoodService {
           response.setTotalAmount(entry.getValue());
           return response;
         })
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -154,7 +154,6 @@ public class FoodService {
           if (typeOpt.isEmpty()) {
             return null;
           }
-
           FoodType type = typeOpt.get();
           List<Food> foodList = entry.getValue(); // Flyttet HER
           FoodDetailedResponse summary = new FoodDetailedResponse();
@@ -172,12 +171,12 @@ public class FoodService {
                 batch.setExpirationDate(f.getExpirationDate());
                 return batch;
               })
-              .collect(Collectors.toList());
+              .toList();
 
           summary.setBatches(batches);
           return summary;
         })
         .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .toList();
   }
 }

@@ -2,7 +2,6 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import no.ntnu.stud.idatt2106.backend.mapper.ExtraResidentTypeMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResidentType;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
@@ -39,7 +38,7 @@ public class ExtraResidentTypeService {
   public List<ExtraResidentTypeResponse> getAll() {
     return repository.findAll().stream()
         .map(ExtraResidentTypeMapper::toResponse)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**

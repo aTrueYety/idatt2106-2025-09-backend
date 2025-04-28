@@ -31,7 +31,8 @@ public class ExtraResidentService {
   /**
    * Creates a new extra resident.
    *
-   * @param request the request containing the details of the extra resident to create
+   * @param request the request containing the details of the extra resident to
+   *                create
    */
   public void create(ExtraResidentRequest request) {
     ExtraResident resident = ExtraResidentMapper.toModel(request);
@@ -39,9 +40,10 @@ public class ExtraResidentService {
   }
 
   /**
-   * Gets all extra residents.
+   * Retrieve all extra residents.
    *
-   * @return a list of ExtraResidentResponse for all extra residents
+   * @return a list of ExtraResidentResponse objects representing all extra
+   *         residents
    */
   public List<ExtraResidentResponse> getAll() {
     return repository.findAll().stream()
@@ -53,7 +55,8 @@ public class ExtraResidentService {
    * Gets an extra resident by ID.
    *
    * @param id the ID of the extra resident to retrieve
-   * @return an Optional containing the ExtraResidentResponse if found, empty otherwise
+   * @return an Optional containing the ExtraResidentResponse if found, empty
+   *         otherwise
    */
   public Optional<ExtraResidentResponse> getById(int id) {
     return repository.findById(id)
@@ -63,8 +66,9 @@ public class ExtraResidentService {
   /**
    * Updates an existing extra resident.
    *
-   * @param id the ID of the extra resident to update
-   * @param request the request containing the updated details of the extra resident
+   * @param id      the ID of the extra resident to update
+   * @param request the request containing the updated details of the extra
+   *                resident
    * @return true if updated, false if not found
    */
   public boolean update(int id, ExtraResidentUpdate request) {

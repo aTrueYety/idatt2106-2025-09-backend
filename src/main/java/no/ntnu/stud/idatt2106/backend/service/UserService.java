@@ -69,11 +69,12 @@ public class UserService {
    * and maps them to UserResponses.
    *
    * @param householdId the ID of the household to retrieve Users from
-   * @return a List of {@Link UserResponse} representing the users in the given household
+   * @return a List of {@Link UserResponse} representing the users in the given
+   *         household
    */
   public List<UserResponse> getUsersByHouseholdId(Long householdId) {
     return userRepo.findUsersByHouseholdId(householdId).stream()
-      .map(UserMapper::toResponse)
-      .toList();
+        .map(UserMapper::toResponse)
+        .toList();
   }
 }
