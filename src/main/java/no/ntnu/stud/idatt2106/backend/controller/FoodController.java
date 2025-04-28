@@ -91,7 +91,7 @@ public class FoodController {
     return ResponseEntity.ok(service.getByHouseholdId(householdId));
   }
 
-  @GetMapping("/household/{id}/summary")
+  @GetMapping("/household/summary/{id}")
   public ResponseEntity<List<FoodSummaryResponse>> getSummaryByHousehold(@PathVariable int id) {
     return ResponseEntity.ok(service.getFoodSummaryByHousehold(id));
   }

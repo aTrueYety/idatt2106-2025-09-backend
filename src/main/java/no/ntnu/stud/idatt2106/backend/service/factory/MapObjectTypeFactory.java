@@ -16,7 +16,7 @@ public class MapObjectTypeFactory {
    * @return the converted MapObjectType object
    */
   public static MapObjectType requestToMapObjectType(MapObjectTypeRequest mapObjectTypeRequest) {
-    return new MapObjectType(null, mapObjectTypeRequest.getName());
+    return new MapObjectType(null, mapObjectTypeRequest.getName(), mapObjectTypeRequest.getIcon());
   }
 
   /**
@@ -26,6 +26,6 @@ public class MapObjectTypeFactory {
    * @return the converted MapObjectTypeRequest object
    */
   public static MapObjectTypeRequest mapObjectTypeToRequest(MapObjectType mapObjectType) {
-    return new MapObjectTypeRequest(mapObjectType.getName());
+    return new MapObjectTypeRequest(mapObjectType.getName(), mapObjectType.getIcon());
   }
 }

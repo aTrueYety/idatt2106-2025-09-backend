@@ -7,9 +7,14 @@ package no.ntnu.stud.idatt2106.backend.model.response;
  */
 public class ChangeCredentialsResponse {
   private String message;
-
   private String token;
 
+  /**
+   * Constructor for ChangeCredentialsResponse.
+   *
+   * @param message the message to be returned to the user
+   * @param token   the token to be returned to the user
+   */
   public ChangeCredentialsResponse(String message, String token) {
     this.message = message;
     this.token = token;

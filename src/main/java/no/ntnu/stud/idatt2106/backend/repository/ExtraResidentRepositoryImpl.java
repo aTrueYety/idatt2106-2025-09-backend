@@ -1,25 +1,26 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
+import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResident;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
-
+/**
+ * Implements the methods defined in ExtraResidentRepository using JDBC.
+ * This class is responsible for interacting with the database to perform CRUD
+ * operations on extra residents.
+ */
 @Repository
 public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
-
-  private final JdbcTemplate jdbc;
-
-  public ExtraResidentRepositoryImpl(JdbcTemplate jdbc) {
-    this.jdbc = jdbc;
-  }
+  @Autowired
+  private JdbcTemplate jdbc;
 
   private final RowMapper<ExtraResident> rowMapper = (rs, rowNum) -> {
     ExtraResident resident = new ExtraResident();
@@ -61,7 +62,8 @@ public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
   @Override
   public void update(ExtraResident extraResident) {
     String sql = "UPDATE extra_resident SET household_id = ?, type_id = ? WHERE id = ?";
-    jdbc.update(sql, extraResident.getHouseholdid(), extraResident.getTypeId(), extraResident.getId());
+    jdbc.update(
+        sql, extraResident.getHouseholdid(), extraResident.getTypeId(), extraResident.getId());
   }
 
   @Override

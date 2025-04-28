@@ -6,9 +6,14 @@ package no.ntnu.stud.idatt2106.backend.model.response;
  */
 public class RegisterResponse {
   private String message;
-
   private String token;
 
+  /**
+   * Constructor for RegisterResponse.
+   *
+   * @param message the message to be returned to the user
+   * @param token the token to be returned to the user
+   */
   public RegisterResponse(String message, String token) {
     this.message = message;
     this.token = token;

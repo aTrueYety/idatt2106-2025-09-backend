@@ -1,5 +1,8 @@
 package no.ntnu.stud.idatt2106.backend.model.response;
 
+/**
+ * Represents a food type response in the system.
+ */
 public class FoodTypeResponse {
   private int id;
   private String name;

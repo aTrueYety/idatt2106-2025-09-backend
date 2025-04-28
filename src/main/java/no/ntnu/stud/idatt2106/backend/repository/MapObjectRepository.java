@@ -3,6 +3,7 @@ package no.ntnu.stud.idatt2106.backend.repository;
 
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.MapObject;
+import no.ntnu.stud.idatt2106.backend.model.response.MapObjectResponse;
 
 /**
  * Repository interface for managing map objects.
@@ -21,7 +22,7 @@ public interface MapObjectRepository {
    * @param id the ID of the map object
    * @return the map object with the specified ID, or null if not found
    */
-  MapObject findById(Long id);
+  MapObjectResponse findByIdWithDetail(Long id);
 
   /**
    * Saves a new map object to the database.
@@ -52,7 +53,18 @@ public interface MapObjectRepository {
    * @param minLong The minimum longitude of the bounding box.
    * @param maxLong The maximum longitude of the bounding box.
    */
-  List<MapObject> findAllInBounds(
+  List<MapObjectResponse> findAllInBoundsWithDetail(
       double minLat, double maxLat, double minLong, double maxLong);
+
+  /**
+   * Finds the closest map object to the specified latitude and longitude of a given type.
+   *
+   * @param latitude  The latitude of the location.
+   * @param longitude The longitude of the location.
+   * @param typeId    The ID of the map object type.
+   * @return The closest map object of the specified type, or null if not found.
+   */
+  MapObjectResponse findClosestWithDetail(
+      double latitude, double longitude, long typeId);
 
 }

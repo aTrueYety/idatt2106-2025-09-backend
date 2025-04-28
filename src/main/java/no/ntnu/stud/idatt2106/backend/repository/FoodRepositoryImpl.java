@@ -1,22 +1,22 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
+import java.sql.Date;
+import java.util.List;
+import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
-import java.util.List;
-import java.util.Optional;
-
+/**
+ * Repository implementation for managing food items in the database.
+ * This class uses JdbcTemplate to perform CRUD operations on the food table.
+ */
 @Repository
 public class FoodRepositoryImpl implements FoodRepository {
-
-  private final JdbcTemplate jdbcTemplate;
-
-  public FoodRepositoryImpl(JdbcTemplate jdbcTemplate) {
-    this.jdbcTemplate = jdbcTemplate;
-  }
+  @Autowired
+  private JdbcTemplate jdbcTemplate;
 
   private final RowMapper<Food> rowMapper = (rs, rowNum) -> {
     Food food = new Food();
@@ -42,14 +42,27 @@ public class FoodRepositoryImpl implements FoodRepository {
 
   @Override
   public void save(Food food) {
-    String sql = "INSERT INTO food (type_id, household_id, expiration_date, amount) VALUES (?, ?, ?, ?)";
-    jdbcTemplate.update(sql, food.getTypeId(), food.getHouseholdId(), Date.valueOf(food.getExpirationDate()), food.getAmount());
+    String sql = "INSERT INTO food (type_id, household_id, expiration_date, amount) " 
+        + "VALUES (?, ?, ?, ?)";
+    jdbcTemplate.update(
+        sql, 
+        food.getTypeId(), 
+        food.getHouseholdId(), 
+        Date.valueOf(food.getExpirationDate()),
+        food.getAmount());
   }
 
   @Override
   public void update(Food food) {
-    String sql = "UPDATE food SET type_id = ?, household_id = ?, expiration_date = ?, amount = ? WHERE id = ?";
-    jdbcTemplate.update(sql, food.getTypeId(), food.getHouseholdId(), Date.valueOf(food.getExpirationDate()), food.getAmount(), food.getId());
+    String sql = "UPDATE food SET type_id = ?, household_id = ?, expiration_date = ?, " 
+        + "amount = ? WHERE id = ?";
+    jdbcTemplate.update(
+        sql, 
+        food.getTypeId(), 
+        food.getHouseholdId(), 
+        Date.valueOf(food.getExpirationDate()),
+        food.getAmount(), 
+        food.getId());
   }
 
   @Override
