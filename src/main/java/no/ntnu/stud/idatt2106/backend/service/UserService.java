@@ -1,12 +1,10 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.mapper.UserMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.UserRepository;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,11 +59,12 @@ public class UserService {
    * and maps them to UserResponses.
    *
    * @param householdId the ID of the household to retrieve Users from
-   * @return a List of {@Link UserResponse} representing the users in the given household
+   * @return a List of {@Link UserResponse} representing the users in the given
+   *         household
    */
   public List<UserResponse> getUsersByHouseholdId(Long householdId) {
     return userRepo.findUsersByHouseholdId(householdId).stream()
-      .map(UserMapper::toResponse)
-      .toList();
+        .map(UserMapper::toResponse)
+        .toList();
   }
 }

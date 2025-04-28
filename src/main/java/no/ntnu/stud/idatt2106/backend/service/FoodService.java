@@ -14,9 +14,10 @@ import no.ntnu.stud.idatt2106.backend.model.response.FoodDetailedResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
-import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
+import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
 import org.springframework.stereotype.Service;
+
 /**
  * Service class for managing food items and related operations.
  */
@@ -29,7 +30,7 @@ public class FoodService {
   /**
    * Constructs a FoodService with given repositories.
    *
-   * @param repository the food repository
+   * @param repository         the food repository
    * @param foodTypeRepository the food type repository
    */
   public FoodService(FoodRepository repository, FoodTypeRepository foodTypeRepository) {
@@ -65,13 +66,13 @@ public class FoodService {
   public List<FoodResponse> getAll() {
     return repository.findAll().stream()
         .map(FoodMapper::toResponse)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
    * Updates an existing food item.
    *
-   * @param id the ID of the food item to update
+   * @param id     the ID of the food item to update
    * @param update the update request
    * @return true if updated, false if not found
    */
@@ -108,7 +109,7 @@ public class FoodService {
   public List<FoodResponse> getByHouseholdId(int householdId) {
     return repository.findByHouseholdId(householdId).stream()
         .map(FoodMapper::toResponse)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -130,7 +131,7 @@ public class FoodService {
           response.setTotalAmount(entry.getValue());
           return response;
         })
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -149,13 +150,12 @@ public class FoodService {
     return grouped.entrySet().stream()
         .map(entry -> {
           int typeId = entry.getKey();
-          List<Food> foodList = entry.getValue();
 
           Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
           if (typeOpt.isEmpty()) {
             return null;
           }
-
+          List<Food> foodList = entry.getValue();
           FoodType type = typeOpt.get();
           FoodDetailedResponse summary = new FoodDetailedResponse();
           summary.setTypeId(typeId);
@@ -172,12 +172,12 @@ public class FoodService {
                 batch.setExpirationDate(f.getExpirationDate());
                 return batch;
               })
-              .collect(Collectors.toList());
+              .toList();
 
           summary.setBatches(batches);
           return summary;
         })
         .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .toList();
   }
 }
