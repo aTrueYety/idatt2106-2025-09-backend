@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    if: github.ref_name == 'main' || github.ref_name == 'dev' || startsWith(github.ref_name, '40-')
+    if: ${{ github.ref_name == 'main' || github.ref_name == 'dev' || startsWith(github.ref_name, '40-') }}
     runs-on: ubuntu-latest
     container:
       image: maven:3.9.5-eclipse-temurin-21
