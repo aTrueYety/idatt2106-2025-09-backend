@@ -2,6 +2,10 @@ package no.ntnu.stud.idatt2106.backend.model.response;
 
 import java.time.LocalDate;
 
+/**
+ * DTO for a Food response.
+ * This class is used to represent the response of a food item in the system.
+ */
 public class FoodResponse {
   private int id;
   private int typeId;

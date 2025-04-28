@@ -4,8 +4,8 @@ import lombok.Data;
 
 /**
  * Request object for creating or updating a food type.
- * <p>
- * This class includes the name, unit of measurement, caloric value per unit,
+ *
+ * <p>This class includes the name, unit of measurement, caloric value per unit,
  * and an optional image representing the food type.
  * </p>
  */
