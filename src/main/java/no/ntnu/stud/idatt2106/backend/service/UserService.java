@@ -77,4 +77,14 @@ public class UserService {
         .map(UserMapper::toResponse)
         .toList();
   }
+
+  /**
+   * Checks if a user with the given ID exists.
+   *
+   * @param id the ID of the user to check
+   * @return true if the user exists, false if it doesen't
+   */
+  public boolean userExists(Long id) {
+    return userRepo.findById(id) != null;
+  }
 }

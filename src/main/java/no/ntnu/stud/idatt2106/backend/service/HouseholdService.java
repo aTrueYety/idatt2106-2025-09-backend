@@ -51,6 +51,29 @@ public class HouseholdService {
   }
 
   /**
+   * Returns a HouseholdResponse of the Household the user is a part of.
+   *
+   * @param id the ID of the user to get the household of
+   * @return HouseholdResponse with the household the user with the id is a part of
+   * @throws NoSuchElementException if there is no user with the specfied ID
+   * @throws IllegalArgumentException if the user with the ID is not a part of a household
+   */
+  public HouseholdResponse getByUserId(Long id) {
+    if (!userService.userExists(id)) {
+      throw new NoSuchElementException("No user with id = " + id);
+    }
+
+    User user = userService.getUserById(id);
+    Long householdId = user.getHouseholdId();
+
+    if (householdId == null) {
+      throw new IllegalArgumentException("User with id = " + id + " is not in a household");
+    }
+
+    return householdRepository.findById(householdId).map(HouseholdMapper::toResponse).get();
+  }
+
+  /**
    * Creates and saves a new Household.
    *
    * @param householdReqeust DTO with information about the new household
