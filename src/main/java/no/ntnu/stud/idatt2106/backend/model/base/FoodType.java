@@ -63,5 +63,4 @@ public class FoodType {
         + ", caloriesPerUnit=" + caloriesPerUnit
         + '}';
   }
-
 }
