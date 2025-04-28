@@ -1,6 +1,9 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import java.util.List;
+import no.ntnu.stud.idatt2106.backend.mapper.UserMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
+import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,16 @@ import org.springframework.stereotype.Service;
 public class UserService {
   @Autowired
   private UserRepository userRepo;
+
+  /**
+   * Retrieves a user by their ID.
+   *
+   * @param id The ID of the user to be retrieved.
+   * @return The user with the specified ID, or null if not found.
+   */
+  public User getUserById(Long id) {
+    return userRepo.findById(id);
+  }
 
   /**
    * Adds a new user to the system.
@@ -49,5 +62,18 @@ public class UserService {
    */
   public void updateUserCredentials(User user) {
     userRepo.updateUser(user);
+  }
+
+  /**
+   * Retrieves all users belonging to the household with the specified ID,
+   * and maps them to UserResponses.
+   *
+   * @param householdId the ID of the household to retrieve Users from
+   * @return a List of {@Link UserResponse} representing the users in the given household
+   */
+  public List<UserResponse> getUsersByHouseholdId(Long householdId) {
+    return userRepo.findUsersByHouseholdId(householdId).stream()
+      .map(UserMapper::toResponse)
+      .toList();
   }
 }
