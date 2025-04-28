@@ -8,7 +8,6 @@ import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodTypeResponse;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,11 +15,22 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FoodTypeService {
-  @Autowired
-  private FoodTypeRepository repository;
+
+  private final FoodTypeRepository repository;
+
+  /**
+   * Constructs a FoodTypeService with the given repository.
+   *
+   * @param repository the food type repository
+   */
+  public FoodTypeService(FoodTypeRepository repository) {
+    this.repository = repository;
+  }
 
   /**
    * Create a new food type.
+   *
+   * @param request the food type request containing type details
    */
   public void create(FoodTypeRequest request) {
     FoodType foodType = FoodTypeMapper.toModel(request);
@@ -29,6 +39,8 @@ public class FoodTypeService {
 
   /**
    * Get all food types.
+   *
+   * @return List of FoodTypeResponse for all food types
    */
   public List<FoodTypeResponse> getAll() {
     return repository.findAll().stream()
@@ -38,34 +50,57 @@ public class FoodTypeService {
 
   /**
    * Get food type by ID.
+   *
+   * @param id the ID of the food type
+   * @return Optional containing FoodTypeResponse if found, empty otherwise
    */
   public Optional<FoodTypeResponse> getById(int id) {
-    return repository.findById(id).map(FoodTypeMapper::toResponse);
+    return repository.findById(id)
+        .map(FoodTypeMapper::toResponse);
   }
 
   /**
-   * Update existing food type.
+   * Update an existing food type.
    *
+   * @param id      the ID of the food type to update
+   * @param request the update request
    * @return true if updated, false if not found
    */
   public boolean update(int id, FoodTypeRequest request) {
-    return repository.findById(id).map(existing -> {
-      FoodType updated = FoodTypeMapper.toModel(request);
-      updated.setId(id);
-      repository.update(updated);
-      return true;
-    }).orElse(false);
+    return repository.findById(id)
+        .map(existing -> {
+          FoodType updated = FoodTypeMapper.toModel(request);
+          updated.setId(id);
+          repository.update(updated);
+          return true;
+        })
+        .orElse(false);
   }
 
   /**
-   * Delete food type by ID.
+   * Delete a food type by ID.
    *
+   * @param id the ID of the food type to delete
    * @return true if deleted, false if not found
    */
   public boolean delete(int id) {
-    return repository.findById(id).map(existing -> {
-      repository.deleteById(id);
-      return true;
-    }).orElse(false);
+    return repository.findById(id)
+        .map(existing -> {
+          repository.deleteById(id);
+          return true;
+        })
+        .orElse(false);
+  }
+
+  /**
+   * Search for food types by name.
+   *
+   * @param query the search query string
+   * @return List of matching FoodTypeResponse objects
+   */
+  public List<FoodTypeResponse> searchByName(String query) {
+    return repository.findByNameContainingIgnoreCase(query).stream()
+        .map(FoodTypeMapper::toResponse)
+        .collect(Collectors.toList());
   }
 }

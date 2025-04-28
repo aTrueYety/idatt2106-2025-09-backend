@@ -49,4 +49,6 @@ public class FoodTypeResponse {
   public void setPicture(byte[] picture) {
     this.picture = picture;
   }
+
+  
 }

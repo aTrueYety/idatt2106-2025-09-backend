@@ -2,10 +2,11 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.FoodDetailedResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.FoodSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 import no.ntnu.stud.idatt2106.backend.service.FoodService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,11 +25,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/food")
 public class FoodController {
 
-  @Autowired
-  private FoodService service;
+  private final FoodService service;
+
+  /**
+   * Constructs a FoodController with the given FoodService.
+   *
+   * @param service the food service
+   */
+  public FoodController(FoodService service) {
+    this.service = service;
+  }
 
   /**
    * Get all food items.
+   *
+   * @return list of all food items
    */
   @GetMapping
   public ResponseEntity<List<FoodResponse>> getAll() {
@@ -37,6 +48,9 @@ public class FoodController {
 
   /**
    * Get a food item by its ID.
+   *
+   * @param id the ID of the food item
+   * @return the food item if found, otherwise 404
    */
   @GetMapping("/{id}")
   public ResponseEntity<FoodResponse> getById(@PathVariable int id) {
@@ -47,6 +61,9 @@ public class FoodController {
 
   /**
    * Create a new food item.
+   *
+   * @param request the food request containing item details
+   * @return 201 Created if successful
    */
   @PostMapping
   public ResponseEntity<Void> create(@RequestBody FoodRequest request) {
@@ -56,6 +73,10 @@ public class FoodController {
 
   /**
    * Update an existing food item.
+   *
+   * @param id the ID of the food item
+   * @param update the update request
+   * @return 200 OK if updated, 404 Not Found if item does not exist
    */
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(@PathVariable int id, @RequestBody FoodUpdate update) {
@@ -68,6 +89,9 @@ public class FoodController {
 
   /**
    * Delete a food item by its ID.
+   *
+   * @param id the ID of the food item
+   * @return 204 No Content if deleted, 404 Not Found if item does not exist
    */
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable int id) {
@@ -79,14 +103,38 @@ public class FoodController {
   }
 
   /**
-  * Get all food items belonging to a specific household.
-  *
-  * @param householdId the ID of the household
-  * @return list of food items
-  */
+   * Get all food items belonging to a specific household.
+   *
+   * @param householdId the ID of the household
+   * @return list of food items
+   */
   @GetMapping("/household/{householdId}")
   public ResponseEntity<List<FoodResponse>> getByHouseholdId(@PathVariable int householdId) {
     return ResponseEntity.ok(service.getByHouseholdId(householdId));
   }
 
+  /**
+   * Get a summary of food items grouped by type for a specific household.
+   *
+   * @param householdId the ID of the household
+   * @return list of food summary responses
+   */
+  @GetMapping("/household/summary/{householdId}")
+  public ResponseEntity<List<FoodSummaryResponse>> getSummaryByHousehold(
+      @PathVariable int householdId) {
+    return ResponseEntity.ok(service.getFoodSummaryByHousehold(householdId));
+  }
+
+  /**
+   * Get detailed food information for a specific household with
+   * batches for expired sorting.
+   *
+   * @param householdId the ID of the household
+   * @return list of detailed food responses
+   */
+  @GetMapping("/household/summary/detailed/{householdId}")
+  public ResponseEntity<List<FoodDetailedResponse>> getSummaryDetailed(
+      @PathVariable int householdId) {
+    return ResponseEntity.ok(service.getFoodDetailedByHousehold(householdId));
+  }
 }

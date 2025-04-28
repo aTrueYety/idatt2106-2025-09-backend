@@ -43,4 +43,7 @@ public interface FoodTypeRepository {
    * @param id the ID of the food type to delete
    */
   void deleteById(int id);
+
+  List<FoodType> findByNameContainingIgnoreCase(String query);
+
 }
