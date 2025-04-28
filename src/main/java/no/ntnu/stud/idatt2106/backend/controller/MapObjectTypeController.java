@@ -88,7 +88,7 @@ public class MapObjectTypeController {
    */
   @Operation(summary = "Update an existing map object type", 
       description = "Update an existing map object type.")
-  @PutMapping("/update")
+  @PutMapping
   public ResponseEntity<MapObjectType> updateMapObjectType(
         @RequestBody MapObjectType mapObjectType,
         @Parameter(description = "JWT token for authentication") 
