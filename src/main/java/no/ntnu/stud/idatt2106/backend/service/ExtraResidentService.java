@@ -9,7 +9,6 @@ import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.ExtraResidentUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.ExtraResidentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,11 +16,20 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ExtraResidentService {
-  @Autowired
-  private ExtraResidentRepository repository;
+
+  private final ExtraResidentRepository repository;
 
   /**
-   * Create a new extra resident.
+   * Constructs an ExtraResidentService with the given repository.
+   *
+   * @param repository the extra resident repository
+   */
+  public ExtraResidentService(ExtraResidentRepository repository) {
+    this.repository = repository;
+  }
+
+  /**
+   * Creates a new extra resident.
    *
    * @param request the request containing the details of the extra resident to create
    */
@@ -30,6 +38,11 @@ public class ExtraResidentService {
     repository.save(resident);
   }
 
+  /**
+   * Gets all extra residents.
+   *
+   * @return a list of ExtraResidentResponse for all extra residents
+   */
   public List<ExtraResidentResponse> getAll() {
     return repository.findAll().stream()
         .map(ExtraResidentMapper::toResponse)
@@ -37,17 +50,18 @@ public class ExtraResidentService {
   }
 
   /**
-   * Get extra resident by ID.
+   * Gets an extra resident by ID.
    *
    * @param id the ID of the extra resident to retrieve
    * @return an Optional containing the ExtraResidentResponse if found, empty otherwise
    */
   public Optional<ExtraResidentResponse> getById(int id) {
-    return repository.findById(id).map(ExtraResidentMapper::toResponse);
+    return repository.findById(id)
+        .map(ExtraResidentMapper::toResponse);
   }
 
   /**
-   * Update existing extra resident.
+   * Updates an existing extra resident.
    *
    * @param id the ID of the extra resident to update
    * @param request the request containing the updated details of the extra resident
@@ -62,9 +76,9 @@ public class ExtraResidentService {
     repository.update(resident);
     return true;
   }
-  
+
   /**
-   * Delete extra resident by ID.
+   * Deletes an extra resident by ID.
    *
    * @param id the ID of the extra resident to delete
    * @return true if deleted, false if not found
