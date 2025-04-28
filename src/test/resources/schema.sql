@@ -39,7 +39,7 @@ CREATE TABLE extra_resident (
   FOREIGN KEY (type_id) REFERENCES extra_resident_type(id)
 );
 
-CREATE TABLE user (
+CREATE TABLE `user` (
   id INT NOT NULL AUTO_INCREMENT,
   household_id INT DEFAULT NULL,
   email VARCHAR(255) NOT NULL,

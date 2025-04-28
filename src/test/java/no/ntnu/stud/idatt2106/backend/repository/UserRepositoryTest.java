@@ -39,7 +39,7 @@ public class UserRepositoryTest {
           """);
 
       jdbcTemplate.update(""" 
-          INSERT INTO \"user\" (username, email, password, household_id) VALUES
+          INSERT INTO `user` (username, email, password, household_id) VALUES
           ('user1', 'user1@example.com', 'pass1', 10),
           ('user2', 'user2@example.com', 'pass2', 10),
           ('user3', 'user3@example.com', 'pass3', 20)
