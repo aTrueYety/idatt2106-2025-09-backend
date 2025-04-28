@@ -110,4 +110,25 @@ public class MapObjectRepositoryImpl implements MapObjectRepository {
         + "WHERE mo.latitude BETWEEN ? AND ? AND mo.longitude BETWEEN ? AND ?";
     return jdbcTemplate.query(sql, mapObjectResponseRowMapper, minLat, maxLat, minLong, maxLong);
   }
+
+  /**
+   * Finds the closest map object to the specified latitude and longitude of a given type.
+   *
+   * @param latitude  The latitude of the location.
+   * @param longitude The longitude of the location.
+   * @param typeId    The ID of the map object type.
+   * @return The closest map object of the specified type, or null if not found.
+   */
+  @Override
+  public MapObjectResponse findClosestWithDetail(double latitude, double longitude, long typeId) {
+    String sql = "SELECT mo.*, mot.name AS type_name, mot.icon AS type_icon FROM map_object mo "
+        + "JOIN map_object_type mot ON mo.type_id = mot.id "
+        + "WHERE mo.type_id = ? "
+        + "ORDER BY (6371 * acos(cos(radians(?)) * cos(radians(mo.latitude)) * "
+        + "cos(radians(mo.longitude) - radians(?)) + sin(radians(?)) * "
+        + "sin(radians(mo.latitude)))) ASC LIMIT 1";
+    List<MapObjectResponse> objects = jdbcTemplate.query(sql, mapObjectResponseRowMapper,
+        typeId, latitude, longitude, latitude);
+    return objects.isEmpty() ? null : objects.get(0);
+  }
 }

@@ -85,4 +85,16 @@ public class MapObjectService {
       double minLat, double maxLat, double minLong, double maxLong) {
     return mapObjectRepository.findAllInBoundsWithDetail(minLat, maxLat, minLong, maxLong);
   }
+
+  /**
+   * Retrives the closest map object to a given location of a specific type.
+   *
+   * @param latitude  The latitude of the location.
+   * @param longitude The longitude of the location.
+   * @param type      The type of the map object to search for.
+   * @return The closest map object to the specified location.
+   */
+  public MapObjectResponse getClosestMapObject(double latitude, double longitude, long type) {
+    return mapObjectRepository.findClosestWithDetail(latitude, longitude, type);
+  }
 }
