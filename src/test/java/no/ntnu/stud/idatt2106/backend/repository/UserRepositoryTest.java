@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-
+import no.ntnu.stud.idatt2106.backend.model.base.User;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import no.ntnu.stud.idatt2106.backend.model.base.User;
-
+/**
+ * Integration test class for the UserRepository class.
+ */
 @JdbcTest
 @ActiveProfiles("Test")
 @Import(UserRepository.class)
