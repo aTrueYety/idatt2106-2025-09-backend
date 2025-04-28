@@ -14,4 +14,5 @@ public class ExtraResidentResponse {
   private int id;
   private int householdId;
   private int typeId;
+  private String name;
 }

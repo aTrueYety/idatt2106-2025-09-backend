@@ -68,6 +68,7 @@ public class ExtraResidentServiceIntegrationTest {
     ExtraResidentRequest request = new ExtraResidentRequest();
     request.setHouseholdId(householdId);
     request.setTypeId(typeId);
+    request.setName("Test Resident");
 
     service.create(request);
 
@@ -75,6 +76,7 @@ public class ExtraResidentServiceIntegrationTest {
     assertThat(all).hasSize(1);
     assertThat(all.get(0).getHouseholdId()).isEqualTo(householdId);
     assertThat(all.get(0).getTypeId()).isEqualTo(typeId);
+    assertThat(all.get(0).getName()).isEqualTo("Test Resident");
   }
 
   @Test
@@ -82,6 +84,7 @@ public class ExtraResidentServiceIntegrationTest {
     ExtraResidentRequest request = new ExtraResidentRequest();
     request.setHouseholdId(householdId);
     request.setTypeId(typeId);
+    request.setName("Test Resident");
     service.create(request);
 
     int id = service.getAll().get(0).getId();
@@ -89,6 +92,7 @@ public class ExtraResidentServiceIntegrationTest {
     ExtraResidentUpdate update = new ExtraResidentUpdate();
     update.setHouseholdId(householdId);
     update.setTypeId(typeId);
+    update.setName("Updated Resident");
     boolean success = service.update(id, update);
 
     assertThat(success).isTrue();
@@ -101,6 +105,7 @@ public class ExtraResidentServiceIntegrationTest {
     ExtraResidentRequest request = new ExtraResidentRequest();
     request.setHouseholdId(householdId);
     request.setTypeId(typeId);
+    request.setName("Test Resident");
     service.create(request);
 
     int id = service.getAll().get(0).getId();

@@ -35,6 +35,7 @@ CREATE TABLE extra_resident (
   id INT AUTO_INCREMENT PRIMARY KEY,
   household_id INT NOT NULL,
   type_id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
   FOREIGN KEY (household_id) REFERENCES household(id),
   FOREIGN KEY (type_id) REFERENCES extra_resident_type(id)
 );
