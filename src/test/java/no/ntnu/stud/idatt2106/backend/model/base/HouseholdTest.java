@@ -13,6 +13,7 @@ public class HouseholdTest {
 
   /**
    * Tests the all argument constructor and getters.
+   * Add this line to test pipeline
    */
   @Test
   void testAllArgsConstructorAndGetters() {

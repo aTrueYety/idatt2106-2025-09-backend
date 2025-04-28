@@ -2,7 +2,6 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import no.ntnu.stud.idatt2106.backend.mapper.ExtraResidentTypeMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResidentType;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
@@ -22,24 +21,32 @@ public class ExtraResidentTypeService {
   /**
    * Create a new extra resident type.
    *
-   * @param request the request containing the details of the extra resident type to create
+   * @param request the request containing the details of the extra resident type
+   *                to create
    */
   public void create(ExtraResidentTypeRequest request) {
     ExtraResidentType type = ExtraResidentTypeMapper.toModel(request);
     repository.save(type);
   }
 
+  /**
+   * Retrieves all extra resident types.
+   *
+   * @return a list of ExtraResidentTypeResponse representing all extra resident
+   *         types
+   */
   public List<ExtraResidentTypeResponse> getAll() {
     return repository.findAll().stream()
         .map(ExtraResidentTypeMapper::toResponse)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
    * Get extra resident type by ID.
    *
    * @param id the ID of the extra resident type to retrieve
-   * @return an Optional containing the ExtraResidentTypeResponse if found, empty otherwise
+   * @return an Optional containing the ExtraResidentTypeResponse if found, empty
+   *         otherwise
    */
   public Optional<ExtraResidentTypeResponse> getById(int id) {
     return repository.findById(id).map(ExtraResidentTypeMapper::toResponse);
@@ -48,8 +55,9 @@ public class ExtraResidentTypeService {
   /**
    * Update existing extra resident type.
    *
-   * @param id the ID of the extra resident type to update
-   * @param request the request containing the updated details of the extra resident type
+   * @param id      the ID of the extra resident type to update
+   * @param request the request containing the updated details of the extra
+   *                resident type
    * @return true if updated, false if not found
    */
   public boolean update(int id, ExtraResidentTypeRequest request) {
