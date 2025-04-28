@@ -164,6 +164,7 @@ public class HouseholdServiceTest {
     assertEquals("Test street", response.getAddress());
   }
 
+  @Test
   void getByIdShouldThrowExceptionWhenHouseholdDoesNotExist() {
     Long id = 999L;
     when(householdRepository.findById(id)).thenReturn(Optional.empty());
