@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - dev
-      - 40-create-pipeline-in-github
+      - '40-*'
 
 jobs:
   build:
