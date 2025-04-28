@@ -4,8 +4,8 @@ import lombok.Data;
 
 /**
  * Request object for creating or updating an extra resident type.
- * <p>
- * This class contains the necessary data to define a resident type
+ *
+ * <p>This class contains the necessary data to define a resident type
  * with specific water and food consumption values.
  * </p>
  */

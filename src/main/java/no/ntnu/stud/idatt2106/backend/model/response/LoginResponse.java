@@ -6,9 +6,14 @@ package no.ntnu.stud.idatt2106.backend.model.response;
  */
 public class LoginResponse {
   private String message;
-
   private String token;
 
+  /**
+   * Constructor for LoginResponse.
+   *
+   * @param message the message to be returned to the user
+   * @param token the token to be returned to the user
+   */
   public LoginResponse(String message, String token) {
     this.message = message;
     this.token = token;
