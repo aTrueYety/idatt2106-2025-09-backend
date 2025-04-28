@@ -9,10 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import java.util.List;
 import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -41,7 +39,7 @@ public class ExtraResidentServiceTest {
 
   @Test
   void shouldReturnAllResidents() {
-    ExtraResident resident = new ExtraResident(1, 1, 2);
+    ExtraResident resident = new ExtraResident(1, 1, 2, "John Doe");
     when(repository.findAll()).thenReturn(List.of(resident));
 
     List<ExtraResidentResponse> result = service.getAll();
@@ -49,11 +47,12 @@ public class ExtraResidentServiceTest {
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getHouseholdId()).isEqualTo(1);
     assertThat(result.get(0).getTypeId()).isEqualTo(2);
+    assertThat(result.get(0).getName()).isEqualTo("John Doe");
   }
 
   @Test
   void shouldGetResidentById() {
-    ExtraResident resident = new ExtraResident(1, 3, 4);
+    ExtraResident resident = new ExtraResident(1, 3, 4, "Jane Doe");
     when(repository.findById(1)).thenReturn(Optional.of(resident));
 
     Optional<ExtraResidentResponse> result = service.getById(1);

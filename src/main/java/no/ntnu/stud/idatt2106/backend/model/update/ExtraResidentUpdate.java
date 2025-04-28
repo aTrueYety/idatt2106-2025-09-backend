@@ -9,4 +9,5 @@ import lombok.Data;
 public class ExtraResidentUpdate {
   private int householdId;
   private int typeId;
+  private String name;
 }

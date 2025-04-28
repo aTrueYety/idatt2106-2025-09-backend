@@ -18,4 +18,5 @@ public class ExtraResident {
   private int id;
   private int householdid;
   private int typeId;
+  private String name;
 }
