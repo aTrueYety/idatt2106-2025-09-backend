@@ -34,6 +34,18 @@ public class UserRepository {
   };
 
   /**
+   * Retrieves a user by their ID.
+   *
+   * @param id the ID of the user to be retrieved
+   * @return the user with the specified ID, or null if not found
+   */
+  public User findById(Long id) {
+    String sql = "SELECT * FROM `user` WHERE id = ?";
+    List<User> users = jdbcTemplate.query(sql, userRowMapper, id);
+    return users.isEmpty() ? null : users.get(0);
+  }
+
+  /**
    * Adds a new user to the database.
    *
    * @param user the user to be added
@@ -75,7 +87,7 @@ public class UserRepository {
 
   /**
    * Finds all users with the given household ID.
-   * 
+   *
    * @param householdId the ID of the household to filter users by
    * @return a list of users belonging to the given household ID, or an empty list if none are found
    */
