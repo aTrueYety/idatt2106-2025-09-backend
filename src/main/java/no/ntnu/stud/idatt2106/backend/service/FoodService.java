@@ -154,7 +154,6 @@ public class FoodService {
           if (typeOpt.isEmpty()) {
             return null;
           }
-          List<Food> foodList = entry.getValue();
           FoodType type = typeOpt.get();
           List<Food> foodList = entry.getValue(); // Flyttet HER
           FoodDetailedResponse summary = new FoodDetailedResponse();
