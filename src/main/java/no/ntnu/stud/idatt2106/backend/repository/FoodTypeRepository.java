@@ -44,6 +44,12 @@ public interface FoodTypeRepository {
    */
   void deleteById(int id);
 
+  /**
+   * Finds all food types where the name contains the given query, ignoring case.
+   *
+   * @param query the search query to match against food type names
+   * @return a list of matching FoodType entities
+   */
   List<FoodType> findByNameContainingIgnoreCase(String query);
 
 }
