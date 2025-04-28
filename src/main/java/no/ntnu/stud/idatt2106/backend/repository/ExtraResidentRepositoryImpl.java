@@ -27,6 +27,7 @@ public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
     resident.setId(rs.getInt("id"));
     resident.setHouseholdid(rs.getInt("household_id"));
     resident.setTypeId(rs.getInt("type_id"));
+    resident.setName(rs.getString("name"));
     return resident;
   };
 
@@ -44,13 +45,14 @@ public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
 
   @Override
   public void save(ExtraResident extraResident) {
-    String sql = "INSERT INTO extra_resident (household_id, type_id) VALUES (?, ?)";
+    String sql = "INSERT INTO extra_resident (household_id, type_id, name) VALUES (?, ?, ?)";
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
     jdbc.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
       ps.setInt(1, extraResident.getHouseholdid());
       ps.setInt(2, extraResident.getTypeId());
+      ps.setString(3, extraResident.getName());
       return ps;
     }, keyHolder);
 
@@ -61,9 +63,10 @@ public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
 
   @Override
   public void update(ExtraResident extraResident) {
-    String sql = "UPDATE extra_resident SET household_id = ?, type_id = ? WHERE id = ?";
+    String sql = "UPDATE extra_resident SET household_id = ?, type_id = ?, name = ? WHERE id = ?";
     jdbc.update(
-        sql, extraResident.getHouseholdid(), extraResident.getTypeId(), extraResident.getId());
+        sql, extraResident.getHouseholdid(), extraResident.getTypeId(), extraResident.getName(), 
+        extraResident.getId());
   }
 
   @Override

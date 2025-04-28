@@ -19,6 +19,7 @@ import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -172,5 +173,57 @@ public class HouseholdServiceTest {
     assertThrows(NoSuchElementException.class, () -> {
       householdService.getById(id);
     });
+  }
+
+  @Nested
+  class GetByUserIdTests {
+
+    @Test
+    void shouldGetHouseholdResponseIfUserIsInHousehold() {
+      User mockUser = new User();
+      Household mockHousehold = new Household();
+      mockHousehold.setId(100L);
+      mockHousehold.setAdress("Test Address");
+      mockUser.setId(1L);
+      mockUser.setHouseholdId(100L);
+
+      Long userId = 1L;
+      when(userService.userExists(userId)).thenReturn(true);
+      when(userService.getUserById(userId)).thenReturn(mockUser);
+      when(householdRepository.findById(mockUser.getHouseholdId()))
+          .thenReturn(Optional.of(mockHousehold));
+      
+      HouseholdResponse response = householdService.getByUserId(userId);
+
+      assertNotNull(response);
+      assertEquals("Test Address", response.getAddress());
+    }
+
+    @Test
+    void shouldThrowExceptionIfUserDoesentExist() {
+      Long userId = 1L;
+      when(userService.userExists(userId)).thenReturn(false);
+
+      NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
+        householdService.getByUserId(userId);
+      });
+
+      assertEquals("No user with id = " + userId, exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionIfUserHasNoHousehold() {
+      User mockUser = new User();
+      mockUser.setId(1L);
+      Long userId = 1L;
+      when(userService.userExists(userId)).thenReturn(true);
+      when(userService.getUserById(userId)).thenReturn(mockUser);
+
+      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        householdService.getByUserId(userId);
+      });
+
+      assertEquals("User with id = " + userId + " is not in a household", exception.getMessage());
+    }
   }
 }

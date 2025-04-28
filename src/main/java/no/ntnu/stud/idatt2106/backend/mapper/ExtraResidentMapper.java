@@ -20,6 +20,7 @@ public class ExtraResidentMapper {
     ExtraResident resident = new ExtraResident();
     resident.setHouseholdid(request.getHouseholdId());
     resident.setTypeId(request.getTypeId());
+    resident.setName(request.getName());
     return resident;
   }
 
@@ -33,6 +34,7 @@ public class ExtraResidentMapper {
     ExtraResident resident = new ExtraResident();
     resident.setHouseholdid(update.getHouseholdId());
     resident.setTypeId(update.getTypeId());
+    resident.setName(update.getName());
     return resident;
   }
 
@@ -47,6 +49,7 @@ public class ExtraResidentMapper {
     response.setId(resident.getId());
     response.setHouseholdId(resident.getHouseholdid());
     response.setTypeId(resident.getTypeId());
+    response.setName(resident.getName());
     return response;
   }
 }

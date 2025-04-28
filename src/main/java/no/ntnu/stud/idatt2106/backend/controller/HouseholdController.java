@@ -8,6 +8,7 @@ import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
+import no.ntnu.stud.idatt2106.backend.service.JwtService;
 import no.ntnu.stud.idatt2106.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +37,9 @@ public class HouseholdController {
 
   @Autowired
   private UserService userService;
+
+  @Autowired
+  private JwtService jwtService;
 
   /**
    * Returns all of the registered households as HouseholdResponses.
@@ -123,6 +128,28 @@ public class HouseholdController {
     logger.info("Fetching user members for household with ID: {}", householdId);
     List<UserResponse> response = userService.getUsersByHouseholdId(householdId);
     logger.info("Found {} members for household ID: {}", response.size(), householdId);
+    return ResponseEntity.ok(response);
+  }
+
+  /**
+   * Handles request to get the household of the current user.
+   *
+   * @param token the jwt token of the user
+   * @return a ResponseEntity with the retrieved household
+   */
+  @Operation(
+      summary = "Retrieves the household of the currently logged in user",
+      description = """
+          Retrieves information about the household the current user is a part of.
+          """
+  )
+  @GetMapping("/me")
+  public ResponseEntity<HouseholdResponse> getCurrentUserHousehold(
+      @RequestHeader("Authorization") String token) {
+    logger.info("Fetching household of authenticated user");
+    Long userId = jwtService.extractUserId(token);
+    HouseholdResponse response = householdService.getByUserId(userId);
+    logger.info("Found household of user with ID: {}", userId);
     return ResponseEntity.ok(response);
   }
 }
