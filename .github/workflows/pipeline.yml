@@ -31,7 +31,7 @@ jobs:
 
         - name: Run tests
           run: mvn test
-        
+
     checkstyle:
       needs: build
       runs-on: ubuntu-latest
