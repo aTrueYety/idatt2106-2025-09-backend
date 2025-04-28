@@ -5,35 +5,36 @@ import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
 
 /**
- * Repository interface for managing food items.
+ * Repository interface for accessing and managing food items.
  */
 public interface FoodRepository {
+
   /**
    * Find a food item by its ID.
    *
    * @param id the ID of the food item
-   * @return an Optional containing the Food if found, empty otherwise
+   * @return an Optional containing the found food item, or empty if not found
    */
   Optional<Food> findById(int id);
 
   /**
    * Find all food items.
    *
-   * @return a list of all Food objects
+   * @return a list of all food items
    */
   List<Food> findAll();
 
   /**
-   * Save a new food item or update an existing one.
+   * Save a new food item.
    *
-   * @param food the Food object to save
+   * @param food the food item to save
    */
   void save(Food food);
 
   /**
    * Update an existing food item.
    *
-   * @param food the Food object to update
+   * @param food the food item with updated information
    */
   void update(Food food);
 
@@ -45,10 +46,10 @@ public interface FoodRepository {
   void deleteById(int id);
 
   /**
-   * Find all food items associated with a specific household ID.
+   * Find all food items belonging to a specific household.
    *
-   * @param householdId the ID of the household
-   * @return a list of Food objects associated with the specified household ID
+   * @param householdId the household ID
+   * @return a list of food items belonging to the given household
    */
   List<Food> findByHouseholdId(int householdId);
 }

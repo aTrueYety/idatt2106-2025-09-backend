@@ -14,10 +14,9 @@ import no.ntnu.stud.idatt2106.backend.model.response.FoodDetailedResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
-import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
+import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import org.springframework.stereotype.Service;
-
 /**
  * Service class for managing food items and related operations.
  */
@@ -39,7 +38,7 @@ public class FoodService {
   }
 
   /**
-   * Create a new food item.
+   * Creates a new food item.
    *
    * @param request the food request containing food details
    */
@@ -49,19 +48,19 @@ public class FoodService {
   }
 
   /**
-   * Get a food item by its ID.
+   * Gets a food item by its ID.
    *
    * @param id the ID of the food item
-   * @return Optional containing FoodResponse if found, empty otherwise
+   * @return an Optional containing FoodResponse if found, otherwise empty
    */
   public Optional<FoodResponse> getById(int id) {
     return repository.findById(id).map(FoodMapper::toResponse);
   }
 
   /**
-   * Get all food items.
+   * Gets all food items.
    *
-   * @return List of FoodResponse for all food items
+   * @return a list of all food items
    */
   public List<FoodResponse> getAll() {
     return repository.findAll().stream()
@@ -70,7 +69,7 @@ public class FoodService {
   }
 
   /**
-   * Update an existing food item.
+   * Updates an existing food item.
    *
    * @param id the ID of the food item to update
    * @param update the update request
@@ -87,7 +86,7 @@ public class FoodService {
   }
 
   /**
-   * Delete a food item by its ID.
+   * Deletes a food item by its ID.
    *
    * @param id the ID of the food item to delete
    * @return true if deleted, false if not found
@@ -101,10 +100,10 @@ public class FoodService {
   }
 
   /**
-   * Get food items by household ID.
+   * Gets food items by household ID.
    *
-   * @param householdId the household ID
-   * @return List of FoodResponse for the given household
+   * @param householdId the ID of the household
+   * @return a list of food items for the given household
    */
   public List<FoodResponse> getByHouseholdId(int householdId) {
     return repository.findByHouseholdId(householdId).stream()
@@ -113,11 +112,11 @@ public class FoodService {
   }
 
   /**
-   * Get food summary by household ID.
-   * Groups food by type and sums their amount.
+   * Gets food summary by household ID.
+   * Groups food items by type and sums their amount.
    *
-   * @param householdId the household ID
-   * @return List of FoodSummaryResponse grouped by type
+   * @param householdId the ID of the household
+   * @return a list of FoodSummaryResponse grouped by type
    */
   public List<FoodSummaryResponse> getFoodSummaryByHousehold(int householdId) {
     List<Food> foodList = repository.findByHouseholdId(householdId);
@@ -135,11 +134,11 @@ public class FoodService {
   }
 
   /**
-   * Get detailed food information by household ID.
+   * Gets detailed food information by household ID.
    * Includes food batches and type details.
    *
-   * @param householdId the household ID
-   * @return List of FoodDetailedResponse with detailed info
+   * @param householdId the ID of the household
+   * @return a list of FoodDetailedResponse with detailed info
    */
   public List<FoodDetailedResponse> getFoodDetailedByHousehold(int householdId) {
     List<Food> foods = repository.findByHouseholdId(householdId);
