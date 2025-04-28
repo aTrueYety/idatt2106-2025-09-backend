@@ -1,12 +1,10 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.mapper.UserMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.UserRepository;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +15,16 @@ import org.springframework.stereotype.Service;
 public class UserService {
   @Autowired
   private UserRepository userRepo;
+
+  /**
+   * Retrieves a user by their ID.
+   *
+   * @param id The ID of the user to be retrieved.
+   * @return The user with the specified ID, or null if not found.
+   */
+  public User getUserById(Long id) {
+    return userRepo.findById(id);
+  }
 
   /**
    * Adds a new user to the system.
