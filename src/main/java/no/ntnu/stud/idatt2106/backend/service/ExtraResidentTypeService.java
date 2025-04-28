@@ -30,9 +30,10 @@ public class ExtraResidentTypeService {
   }
 
   /**
-   * Retrieve all extra resident types.
+   * Retrieves all extra resident types.
    *
-   * @return a list of ExtraResidentTypeResponse objects
+   * @return a list of ExtraResidentTypeResponse representing all extra resident
+   *         types
    */
   public List<ExtraResidentTypeResponse> getAll() {
     return repository.findAll().stream()

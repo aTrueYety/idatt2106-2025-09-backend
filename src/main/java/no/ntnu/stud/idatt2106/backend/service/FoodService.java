@@ -150,13 +150,13 @@ public class FoodService {
     return grouped.entrySet().stream()
         .map(entry -> {
           int typeId = entry.getKey();
-
           Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
           if (typeOpt.isEmpty()) {
             return null;
           }
           List<Food> foodList = entry.getValue();
           FoodType type = typeOpt.get();
+          List<Food> foodList = entry.getValue(); // Flyttet HER
           FoodDetailedResponse summary = new FoodDetailedResponse();
           summary.setTypeId(typeId);
           summary.setTypeName(type.getName());

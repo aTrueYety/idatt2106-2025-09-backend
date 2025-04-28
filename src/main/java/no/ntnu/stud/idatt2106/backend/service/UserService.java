@@ -17,6 +17,16 @@ public class UserService {
   private UserRepository userRepo;
 
   /**
+   * Retrieves a user by their ID.
+   *
+   * @param id The ID of the user to be retrieved.
+   * @return The user with the specified ID, or null if not found.
+   */
+  public User getUserById(Long id) {
+    return userRepo.findById(id);
+  }
+
+  /**
    * Adds a new user to the system.
    *
    * @param user The user to be added.
