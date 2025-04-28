@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.MapObject;
 import no.ntnu.stud.idatt2106.backend.model.request.MapObjectRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.MapObjectResponse;
 import no.ntnu.stud.idatt2106.backend.service.MapObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +40,9 @@ public class MapObjectController {
   @Operation(summary = "Get map object by ID", 
       description = "Retrieve a specific map object by its ID.")
   @GetMapping("/{id}")
-  public ResponseEntity<MapObject> getMapObjectById(
+  public ResponseEntity<MapObjectResponse> getMapObjectById(
       @Parameter(description = "ID of the map object to retrieve") @PathVariable Long id) {
-    MapObject mapObject = mapObjectService.getMapObjectById(id);
+    MapObjectResponse mapObject = mapObjectService.getMapObjectById(id);
     if (mapObject == null) {
       return ResponseEntity.notFound().build();
     }
@@ -57,7 +58,7 @@ public class MapObjectController {
    */
   @Operation(summary = "Create a new map object", description = "Create a new map object.")
   @PostMapping
-  public ResponseEntity<MapObject> createMapObject(
+  public ResponseEntity<Void> createMapObject(
       @RequestBody MapObjectRequest mapObject,
       @Parameter(description = "JWT token for authentication") 
         @RequestHeader("Authorization") String token) {
@@ -75,7 +76,7 @@ public class MapObjectController {
   @Operation(summary = "Update an existing map object", 
       description = "Update an existing map object.")
   @PutMapping("/update")
-  public ResponseEntity<MapObject> updateMapObject(
+  public ResponseEntity<Void> updateMapObject(
       @RequestBody MapObject mapObject,
       @Parameter(description = "JWT token for authentication") 
         @RequestHeader("Authorization") String token) {
@@ -114,18 +115,43 @@ public class MapObjectController {
   @Operation(summary = "Get map objects in bounds", 
       description = "Retrieve map objects within specified geographical bounds.")
   @GetMapping("/bounds")
-  public ResponseEntity<List<MapObject>> getMapObjectsInBounds(
+  public ResponseEntity<List<MapObjectResponse>> getMapObjectsInBounds(
       @Parameter(description = "Minimum latitude of the bounding box") @RequestParam double minLat, 
       @Parameter(description = "Maximum latitude of the bounding box") @RequestParam double maxLat, 
       @Parameter(description = "Minimum longitude of the bounding box") 
         @RequestParam double minLong, 
       @Parameter(description = "Maximum longitude of the bounding box") 
         @RequestParam double maxLong) {
-    List<MapObject> mapObjects = mapObjectService.getMapObjectsInBounds(
+    List<MapObjectResponse> mapObjects = mapObjectService.getMapObjectsInBounds(
         minLat, maxLat, minLong, maxLong);
     if (mapObjects.isEmpty()) {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(mapObjects);
+  }
+
+
+  /**
+   * Retrives the closest map object to a given location of a specific type.
+   *
+   * @param latitude  The latitude of the location.
+   * @param longitude The longitude of the location.
+   * @param type      The type of the map object to search for.
+   * @return A ResponseEntity containing the closest map object to the specified location.
+   */
+  @Operation(summary = "Get closest map object", 
+      description = "Retrieve the closest map object to a given location of a specific type.")
+  @GetMapping("/closest")
+  public ResponseEntity<MapObjectResponse> getClosestMapObject(
+      @Parameter(description = "Latitude of the location") @RequestParam double latitude, 
+      @Parameter(description = "Longitude of the location") @RequestParam double longitude, 
+      @Parameter(description = "Type of the map object to search for") 
+        @RequestParam long type) {
+    MapObjectResponse closestMapObject = 
+        mapObjectService.getClosestMapObject(latitude, longitude, type);
+    if (closestMapObject == null) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(closestMapObject);
   }
 }

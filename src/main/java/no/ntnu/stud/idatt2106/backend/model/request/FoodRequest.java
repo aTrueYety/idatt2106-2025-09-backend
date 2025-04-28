@@ -4,8 +4,8 @@ import java.time.LocalDate;
 
 /**
  * Request DTO for creating a new food item.
- * <p>
- * Contains the type ID, household ID, expiration date, and amount of the food.
+ *
+ * <p>Contains the type ID, household ID, expiration date, and amount of the food.
  * </p>
  */
 public class FoodRequest {

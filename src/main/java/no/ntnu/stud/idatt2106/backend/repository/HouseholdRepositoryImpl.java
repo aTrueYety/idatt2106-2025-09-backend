@@ -83,8 +83,7 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
 
   /**
    * Retrieves all of the registered households.
-   * 
-   * 
+   *
    * @return a List of all registered households
    */
   @Override

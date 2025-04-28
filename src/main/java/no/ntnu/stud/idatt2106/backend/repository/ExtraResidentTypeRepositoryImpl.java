@@ -1,25 +1,26 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
+import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResidentType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Optional;
-
+/**
+ * Implements the methods defined in ExtraResidentTypeRepository using JDBC.
+ * This class is responsible for interacting with the database to perform CRUD
+ * operations on extra resident types.
+ */
 @Repository
 public class ExtraResidentTypeRepositoryImpl implements ExtraResidentTypeRepository {
-
-  private final JdbcTemplate jdbc;
-
-  public ExtraResidentTypeRepositoryImpl(JdbcTemplate jdbc) {
-    this.jdbc = jdbc;
-  }
+  @Autowired
+  private JdbcTemplate jdbc;
 
   private final RowMapper<ExtraResidentType> rowMapper = (rs, rowNum) -> {
     ExtraResidentType type = new ExtraResidentType();
@@ -44,7 +45,8 @@ public class ExtraResidentTypeRepositoryImpl implements ExtraResidentTypeReposit
 
   @Override
   public void save(ExtraResidentType type) {
-    String sql = "INSERT INTO extra_resident_type (name, consumption_water, consumption_food) VALUES (?, ?, ?)";
+    String sql = "INSERT INTO extra_resident_type (name, consumption_water, consumption_food) " 
+        + "VALUES (?, ?, ?)";
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
     jdbc.update(connection -> {
@@ -62,8 +64,14 @@ public class ExtraResidentTypeRepositoryImpl implements ExtraResidentTypeReposit
 
   @Override
   public void update(ExtraResidentType type) {
-    String sql = "UPDATE extra_resident_type SET name = ?, consumption_water = ?, consumption_food = ? WHERE id = ?";
-    jdbc.update(sql, type.getName(), type.getConsumptionWater(), type.getConsumptionFood(), type.getId());
+    String sql = "UPDATE extra_resident_type SET name = ?, consumption_water = ?, " 
+        + "consumption_food = ? WHERE id = ?";
+    jdbc.update(
+        sql, 
+        type.getName(), 
+        type.getConsumptionWater(), 
+        type.getConsumptionFood(), 
+        type.getId());
   }
 
   @Override

@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import jakarta.mail.MessagingException;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.LoginRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.RegisterRequest;
@@ -7,6 +8,7 @@ import no.ntnu.stud.idatt2106.backend.model.response.ChangeCredentialsResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.LoginResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.RegisterResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.CredentialsUpdate;
+import no.ntnu.stud.idatt2106.backend.util.EmailTemplates;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,22 +18,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
- * Service class for handling auth-related operations such as registration and login.
+ * Service class for handling auth-related operations such as registration and
+ * login.
  */
 @Service
 public class AuthService {
 
   @Autowired
   private JwtService jwtService;
-
   @Autowired
   AuthenticationManager authManager;
-
   @Autowired
   private UserService userService;
+  @Autowired
+  private EmailService emailService;
 
   private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-
 
   /**
    * Registers a new user in the system.
@@ -39,27 +41,22 @@ public class AuthService {
   public RegisterResponse register(RegisterRequest registerRequest) {
 
     Validate.that(registerRequest.getUsername(),
-        Validate.isNotBlankOrNull(), "Username cannot be blank or null"
-    );
+        Validate.isNotBlankOrNull(), "Username cannot be blank or null");
     Validate.that(userService.getUserByUsername(registerRequest.getUsername()),
-        Validate.isNull(), "Username is not available"
-    );
+        Validate.isNull(), "Username is not available");
 
     Validate.that(registerRequest.getPassword(),
         Validate.isNotBlankOrNull(),
         "New password cannot be blank or null");
     Validate.that(isPasswordValid(registerRequest.getPassword()),
         Validate.isTrue(),
-        "New password must be at least 8 characters long, including both a letter and a digit"
-    );
+        "New password must be at least 8 characters long, including both a letter and a digit");
 
     Validate.that(registerRequest.getEmail().matches(
-            "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"),
-        Validate.isTrue(), "Email is not valid"
-    );
+        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"),
+        Validate.isTrue(), "Email is not valid");
     Validate.that(userService.getUserByEmail(registerRequest.getEmail()),
-        Validate.isNull(), "Email is already in use"
-    );
+        Validate.isNull(), "Email is already in use");
 
     User user = new User();
 
@@ -69,6 +66,13 @@ public class AuthService {
     userService.addUser(user);
 
     String token = authenticateUser(registerRequest.getUsername(), registerRequest.getPassword());
+
+    String htmlContent = EmailTemplates.getWelcomeEmailTemplate(user.getUsername());
+    try {
+      emailService.sendHtmlEmail(user.getEmail(), "Welcome to Our Platform", htmlContent);
+    } catch (MessagingException e) {
+      throw new RuntimeException("Failed to send welcome email", e);
+    }
 
     return new RegisterResponse("Registration successful!", token);
   }
@@ -91,7 +95,7 @@ public class AuthService {
     if (authentication.isAuthenticated() && userService.getUserByUsername(username) != null) {
       User user = userService.getUserByUsername(username);
       return jwtService.generateToken(
-        user.getUsername(), user.getId(), user.isAdmin(), user.isSuperAdmin());
+          user.getUsername(), user.getId(), user.isAdmin(), user.isSuperAdmin());
     } else {
       return null;
     }
@@ -101,47 +105,39 @@ public class AuthService {
    * changes the credentials of a user.
    *
    * @param credentialsUpdate request containing old and new password
-   *                                 along with desired username
+   *                          along with desired username
    * @return response containing feedback message and new token
    */
   public ChangeCredentialsResponse changeCredentials(
       CredentialsUpdate credentialsUpdate,
-      String token
-  ) {
+      String token) {
     User user = userService.getUserByUsername(
-        jwtService.extractUserName(token.substring(7))
-    );
+        jwtService.extractUserName(token.substring(7)));
     Validate.that(credentialsUpdate.getUsername(),
         Validate.isNotBlankOrNull(),
-        "New username cannot be blank or null"
-    );
+        "New username cannot be blank or null");
     // check if new username is availanle if the request includes a new username,
     // skip if user is keeping old username
     if (!user.getUsername().equals(credentialsUpdate.getUsername())) {
       Validate.that(userService.getUserByUsername(credentialsUpdate.getUsername()),
           Validate.isNull(),
-          "New username is not available"
-      );
+          "New username is not available");
     }
     Validate.that(!encoder.matches(credentialsUpdate.getCurrentPassword(),
-            user.getPassword()),
-            Validate.isFalse(),
-        "Current password is incorrect"
-    );
+        user.getPassword()),
+        Validate.isFalse(),
+        "Current password is incorrect");
     Validate.that(credentialsUpdate.getNewPassword(),
         Validate.isNotBlankOrNull(),
         "New password cannot be blank or null");
     Validate.that(isPasswordValid(credentialsUpdate.getNewPassword()),
         Validate.isTrue(),
-        "New password must be at least 8 characters long, including both a letter and a digit"
-    );
+        "New password must be at least 8 characters long, including both a letter and a digit");
     Validate.that(
         credentialsUpdate.getCurrentPassword()
             .equals(credentialsUpdate.getNewPassword()),
         Validate.isFalse(),
-        "New password cannot be the same as current password"
-    );
-
+        "New password cannot be the same as current password");
 
     // saving the new credentials
     user.setPassword(encoder.encode(credentialsUpdate.getNewPassword()));
@@ -150,8 +146,7 @@ public class AuthService {
 
     String newToken = authenticateUser(
         credentialsUpdate.getUsername(),
-        credentialsUpdate.getNewPassword()
-    );
+        credentialsUpdate.getNewPassword());
     return new ChangeCredentialsResponse("Password changed successfully", newToken);
   }
 
@@ -160,7 +155,8 @@ public class AuthService {
    *
    * @param password password to check validity of
    * @return true if the password is valid,
-   *         meaning it is atleast 8 characters long and contains both a letter and digit,
+   *         meaning it is atleast 8 characters long and contains both a letter
+   *         and digit,
    *         false if otherwise
    */
   private boolean isPasswordValid(String password) {
@@ -190,10 +186,8 @@ public class AuthService {
    * Validates the provided JWT token.
    *
    * @param token the JWT token to validate
-   * @return true if the token is valid, false otherwise
    */
-  public boolean validateToken(String token) {
-    String username = jwtService.extractUserName(token.substring(7));
-    return true;
+  public void validateToken(String token) {
+    jwtService.extractUserName(token.substring(7));
   }
 }
