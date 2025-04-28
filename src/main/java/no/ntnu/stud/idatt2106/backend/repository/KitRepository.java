@@ -1,12 +1,8 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
-import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.base.Kit;
-import no.ntnu.stud.idatt2106.backend.model.response.KitResponse;
 
 /**
  * Repository interface for performing CRUD operations on {@link Kit} entities.
@@ -52,7 +48,7 @@ public interface KitRepository {
    */
   void deleteById(Long id);
 
-    /**
+  /**
    * Finds all food types where the name contains the given query, ignoring case.
    *
    * @param query the search query to match against food type names
