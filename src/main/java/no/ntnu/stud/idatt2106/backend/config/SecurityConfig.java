@@ -13,6 +13,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Security configuration class for the application.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -20,6 +23,13 @@ public class SecurityConfig {
   @Autowired
   private UserDetailsService userDetailsService;
 
+  /**
+   * Configures the security filter chain for the application.
+   *
+   * @param http the HttpSecurity object to configure
+   * @return the configured SecurityFilterChain
+   * @throws Exception if an error occurs during configuration
+   */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
@@ -42,6 +52,11 @@ public class SecurityConfig {
     return provider;
   }
 
+  /**
+   * Creates a UserDetailsService bean that uses the custom MyUserDetailsService.
+   *
+   * @return the UserDetailsService bean
+   */
   @Bean
   public AuthenticationManager authenticationManager(
       AuthenticationConfiguration authenticationConfiguration)
