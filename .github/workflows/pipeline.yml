@@ -20,32 +20,32 @@ jobs:
       - name: Build with Maven
         run: mvn clean compile
 
-test:
-    needs: build 
-    runs-on: ubuntu-latest
-    container:
-      image: maven:3.9.5-eclipse-temurin-21
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  test:
+      needs: build 
+      runs-on: ubuntu-latest
+      container:
+        image: maven:3.9.5-eclipse-temurin-21
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-      - name: Run tests
-        run: mvn test
+        - name: Run tests
+          run: mvn test
         
-  checkstyle:
-    needs: build
-    runs-on: ubuntu-latest
-    container:
-      image: maven:3.9.5-eclipse-temurin-21
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    checkstyle:
+      needs: build
+      runs-on: ubuntu-latest
+      container:
+        image: maven:3.9.5-eclipse-temurin-21
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-      - name: Run Checkstyle
-        run: mvn checkstyle:check
+        - name: Run Checkstyle
+          run: mvn checkstyle:check
 
-      - name: Checkstyle
-        uses: actions/upload-artifact@v4
-        with:
-          name: checkstyle-report
-          path: target/site/checkstyle.html
+        - name: Checkstyle
+          uses: actions/upload-artifact@v4
+          with:
+            name: checkstyle-report
+            path: target/site/checkstyle.html
