@@ -9,6 +9,8 @@ import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
+import no.ntnu.stud.idatt2106.backend.util.Validate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -128,5 +130,42 @@ public class HouseholdService {
    */
   public boolean householdExists(Long householdId) {
     return householdRepository.findById(householdId).isPresent();
+  }
+
+  /**
+   * Updates the household with the given ID.
+   *
+   * @param id the ID of the household to be updated
+   * @param request the new household values, request null values are not changed
+   * @return response object with the updated values
+   */
+  public HouseholdResponse updateHousehold(Long id, HouseholdRequest request) {
+    Household existingHousehold = householdRepository.findById(id).get();
+
+    Validate.that(existingHousehold,
+        Validate.isNotNull(), "Household with id = " + id + " not found");
+
+    if (request.getAdress() != null) {
+      existingHousehold.setAdress(request.getAdress());
+    }
+
+    if (request.getLatitude() != null) {
+      existingHousehold.setLatitude(request.getLatitude());
+    }
+
+    if (request.getLongitude() != null) {
+      existingHousehold.setLongitude(request.getLongitude());
+    }
+
+    if (request.getWaterAmountLiters() != null) {
+      existingHousehold.setWaterAmountLiters(request.getWaterAmountLiters());
+    }
+
+    if (request.getLastWaterChangeDate() != null) {
+      existingHousehold.setLastWaterChangeDate(request.getLastWaterChangeDate());
+    }
+
+    householdRepository.update(existingHousehold);
+    return HouseholdMapper.toResponse(existingHousehold);
   }
 }
