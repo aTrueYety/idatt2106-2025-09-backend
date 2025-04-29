@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddUserHouseholdRequest {
-  private String username;
-  private Long householdId;
+public class InviteUserHouseholdRequest {
+  private Long userId;
 }
