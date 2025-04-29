@@ -274,5 +274,21 @@ public class HouseholdServiceTest {
 
       assertTrue(exception.getMessage().contains("Household with ID = 2 not found"));
     }
+
+    @Test
+    void shouldNotUpdateWhenFieldsAreNull() {
+      HouseholdRequest request = new HouseholdRequest();
+
+      when(householdRepository.findById(1L)).thenReturn(Optional.of(existingHousehold));
+  
+      HouseholdResponse response = householdService.updateHousehold(1L, request);
+  
+      assertEquals("Test address", response.getAddress());
+      assertEquals(10.0, response.getLatitude());
+      assertEquals(20.0, response.getLongitude());
+      assertEquals(50.0, response.getWaterAmountLiters());
+  
+      verify(householdRepository).update(existingHousehold);
+    }
   }
 }
