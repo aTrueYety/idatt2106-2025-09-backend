@@ -10,7 +10,7 @@ import java.time.LocalDate;
  */
 public class FoodRequest {
   private int typeId;
-  public int householdId;
+  private int householdId;
   private LocalDate expirationDate;
   private int amount;
 
@@ -46,3 +46,6 @@ public class FoodRequest {
     this.amount = amount;
   }
 }
+
+
+

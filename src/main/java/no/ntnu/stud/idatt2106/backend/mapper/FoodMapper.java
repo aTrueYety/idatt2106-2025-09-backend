@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.mapper;
 
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.FoodBatchResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 
@@ -54,5 +55,20 @@ public class FoodMapper {
     response.setExpirationDate(food.getExpirationDate());
     response.setAmount(food.getAmount());
     return response;
+  }
+
+  /**
+   * Converts a Food entity to a BatchResponse DTO.
+   * <p>This method is used for creating batch summaries with ID, amount, and expiration date.</p>
+   *
+   * @param food the Food entity
+   * @return the corresponding BatchResponse DTO
+   */
+  public static FoodBatchResponse toBatchResponse(Food food) {
+    FoodBatchResponse foodBatchResponse = new FoodBatchResponse();
+    foodBatchResponse.setId(food.getId());
+    foodBatchResponse.setAmount(food.getAmount());
+    foodBatchResponse.setExpirationDate(food.getExpirationDate());
+    return foodBatchResponse;
   }
 }
