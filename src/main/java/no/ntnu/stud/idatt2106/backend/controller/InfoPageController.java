@@ -1,5 +1,9 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.InfoPage;
 import no.ntnu.stud.idatt2106.backend.model.request.InfoPageRequest;
@@ -32,6 +36,14 @@ public class InfoPageController {
    *
    * @return a list of all information pages
    */
+  @Operation(summary = "Retrieve all information pages", 
+      description = "Fetches a list of all information pages.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Successfully retrieved list of information pages"),
+      @ApiResponse(responseCode = "404", 
+          description = "No information pages found", content = @Content)
+  })
   @GetMapping("/all")
   public ResponseEntity<List<InfoPage>> getAllInfoPages() {
     List<InfoPage> infoPages = infoPageService.getAllInfoPages();
@@ -47,6 +59,14 @@ public class InfoPageController {
    * @param id the ID of the information page
    * @return the information page with the specified ID or 404 if not found
    */
+  @Operation(summary = "Retrieve an information page by ID", 
+      description = "Fetches an information page by its unique ID.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", 
+          description = "Successfully retrieved the information page"),
+      @ApiResponse(responseCode = "404", 
+          description = "Information page not found", content = @Content)
+  })
   @GetMapping("/{id}")
   public ResponseEntity<InfoPage> getInfoPageById(@PathVariable Long id) {
     InfoPage infoPage = infoPageService.getInfoPageById(id);
@@ -60,9 +80,15 @@ public class InfoPageController {
    * Create a new information page.
    *
    * @param infoPage the information page to create
-   * @param token the authorization token
+   * @param token    the authorization token
    * @return ResponseEntity indicating the result of the operation
    */
+  @Operation(summary = "Create a new information page", 
+      description = "Creates a new information page with the provided data.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "Successfully created the information page"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
+  })
   @PostMapping()
   public ResponseEntity<Void> createInfoPage(
       @RequestBody InfoPageRequest infoPage,
@@ -75,9 +101,15 @@ public class InfoPageController {
    * Update an existing information page.
    *
    * @param infoPage the updated information page data
-   * @param token the authorization token
+   * @param token    the authorization token
    * @return ResponseEntity indicating the result of the operation
    */
+  @Operation(summary = "Update an existing information page", 
+      description = "Updates an existing information page with the provided data.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204", description = "Successfully updated the information page"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
+  })
   @PutMapping
   public ResponseEntity<Void> updateInfoPage(
       @RequestBody InfoPageUpdate infoPage,
@@ -89,10 +121,16 @@ public class InfoPageController {
   /**
    * Delete an information page by its ID.
    *
-   * @param id the ID of the information page to delete
+   * @param id    the ID of the information page to delete
    * @param token the authorization token
    * @return ResponseEntity indicating the result of the operation
    */
+  @Operation(summary = "Delete an information page by ID", 
+      description = "Deletes an information page by its unique ID.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204", description = "Successfully deleted the information page"),
+      @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
+  })
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteInfoPage(
       @PathVariable Long id,
