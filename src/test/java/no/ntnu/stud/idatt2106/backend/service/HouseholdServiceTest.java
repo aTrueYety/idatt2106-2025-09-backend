@@ -3,6 +3,7 @@ package no.ntnu.stud.idatt2106.backend.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,6 +39,8 @@ public class HouseholdServiceTest {
   @InjectMocks
   private HouseholdService householdService;
 
+  private Household existingHousehold;
+
   @BeforeEach
   void setup() {
     MockitoAnnotations.openMocks(this);
@@ -51,6 +54,14 @@ public class HouseholdServiceTest {
       return h;
     });
     when(householdRepository.findById(1L)).thenReturn(Optional.of(new Household()));
+
+    existingHousehold = new Household();
+    existingHousehold.setId(1L);
+    existingHousehold.setAdress("Test address");
+    existingHousehold.setLatitude(10.0);
+    existingHousehold.setLongitude(20.0);
+    existingHousehold.setWaterAmountLiters(50.0);
+    existingHousehold.setLastWaterChangeDate(new Date());
   }
 
   @Test
@@ -202,7 +213,7 @@ public class HouseholdServiceTest {
         householdService.getByUserId(userId);
       });
 
-      assertEquals("No user with id = " + userId, exception.getMessage());
+      assertEquals("User with ID = " + userId + " not found", exception.getMessage());
     }
 
     @Test
@@ -217,7 +228,61 @@ public class HouseholdServiceTest {
         householdService.getByUserId(userId);
       });
 
-      assertEquals("User with id = " + userId + " is not in a household", exception.getMessage());
+      assertEquals("User with ID = " + userId + " is not in a household", exception.getMessage());
+    }
+  }
+
+  @Nested
+  class UpdateHouseholdTests {
+
+    @Test
+    void shouldUpdateHouseholdWhenValid() {
+      HouseholdRequest request = new HouseholdRequest();
+      request.setAdress("New Address");
+      request.setLatitude(30.0);
+      request.setLongitude(40.0);
+      request.setWaterAmountLiters(100.0);
+      request.setLastWaterChangeDate(new Date());
+
+      when(householdRepository.findById(1L)).thenReturn(Optional.of(existingHousehold));
+
+      HouseholdResponse response = householdService.updateHousehold(1L, request);
+
+      assertEquals("New Address", response.getAddress());
+      assertEquals(30.0, response.getLatitude());
+      assertEquals(40.0, response.getLongitude());
+      assertEquals(100.0, response.getWaterAmountLiters());
+
+      verify(householdRepository).update(existingHousehold);;
+    }
+
+    @Test
+    void shouldThrowExceptionWhenHouseholdNotFound() {
+      when(householdRepository.findById(2L)).thenReturn(Optional.empty());
+
+      HouseholdRequest request = new HouseholdRequest();
+
+      Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        householdService.updateHousehold(2L, request);
+      });
+
+      assertTrue(exception.getMessage().contains("Household with ID = 2 not found"));
+    }
+
+    @Test
+    void shouldNotUpdateWhenFieldsAreNull() {
+      HouseholdRequest request = new HouseholdRequest();
+
+      when(householdRepository.findById(1L)).thenReturn(Optional.of(existingHousehold));
+  
+      HouseholdResponse response = householdService.updateHousehold(1L, request);
+  
+      assertEquals("Test address", response.getAddress());
+      assertEquals(10.0, response.getLatitude());
+      assertEquals(20.0, response.getLongitude());
+      assertEquals(50.0, response.getWaterAmountLiters());
+  
+      verify(householdRepository).update(existingHousehold);
     }
   }
 }

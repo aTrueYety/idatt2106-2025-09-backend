@@ -9,7 +9,6 @@ import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
 import no.ntnu.stud.idatt2106.backend.service.JwtService;
-import no.ntnu.stud.idatt2106.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +34,6 @@ public class HouseholdController {
 
   @Autowired
   private HouseholdService householdService;
-
-  @Autowired
-  private UserService userService;
 
   @Autowired
   private JwtService jwtService;
@@ -169,7 +165,7 @@ public class HouseholdController {
   @GetMapping("/{householdId}/users")
   public ResponseEntity<List<UserResponse>> getHouseholdMembers(@PathVariable Long householdId) {
     logger.info("Fetching user members for household with ID: {}", householdId);
-    List<UserResponse> response = userService.getUsersByHouseholdId(householdId);
+    List<UserResponse> response = householdService.getMembers(householdId);
     logger.info("Found {} members for household ID: {}", response.size(), householdId);
     return ResponseEntity.ok(response);
   }
