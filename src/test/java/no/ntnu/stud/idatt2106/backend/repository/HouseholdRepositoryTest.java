@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -27,6 +30,28 @@ public class HouseholdRepositoryTest {
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
+
+  @BeforeEach
+  void setup() {
+    jdbcTemplate.update("DELETE FROM household");
+    jdbcTemplate.execute("ALTER TABLE household ALTER COLUMN id RESTART WITH 1");
+
+    jdbcTemplate.update("""
+        INSERT INTO household
+        (adress, latitude, longitude, amount_water, last_water_change)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        "Test adress", 64.34, 34.45, 23, new Date()
+    );
+
+    jdbcTemplate.update("""
+        INSERT INTO household
+        (adress, latitude, longitude, amount_water, last_water_change)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        "Test adress 2", 64.33, 31.45, 24, new Date()
+    );
+  }
 
   @Test
   void shouldSaveAndReturnWithId() {
@@ -50,13 +75,7 @@ public class HouseholdRepositoryTest {
 
   @Test
   void savedHouseholdsCanBeRetrievedById() {
-    jdbcTemplate.update("""
-        INSERT INTO household
-        (id, adress, latitude, longitude, amount_water, last_water_change)
-        VALUES (?, ?, ?, ?, ?, ?)
-        """,
-        1L, "Test adress", 64.34, 34.45, 23, new Date()
-    );
+
 
     var result = householdRepository.findById(1L);
 
@@ -70,26 +89,39 @@ public class HouseholdRepositoryTest {
 
   @Test
   void findAllShouldReturnAllHouseholds() {
-    jdbcTemplate.update("""
-        INSERT INTO household
-        (id, adress, latitude, longitude, amount_water, last_water_change)
-        VALUES (?, ?, ?, ?, ?, ?)
-        """,
-        1L, "Test adress", 64.34, 34.45, 23, new Date()
-    );
-
-    jdbcTemplate.update("""
-        INSERT INTO household
-        (id, adress, latitude, longitude, amount_water, last_water_change)
-        VALUES (?, ?, ?, ?, ?, ?)
-        """,
-        2L, "Test adress 2", 64.33, 31.45, 24, new Date()
-    );
-
     List<Household> result = householdRepository.findAll();
 
     assertEquals(2, result.size());
     assertTrue(result.stream().anyMatch(h -> h.getAdress().equals("Test adress")));
     assertTrue(result.stream().anyMatch(h -> h.getAdress().equals("Test adress")));
+  }
+
+  @Nested
+  class UpdateTests {
+
+    @Test
+    void shouldUpdateExistingHousehold() {
+      Long id = jdbcTemplate
+          .queryForObject("SELECT id FROM household LIMIT 1", Long.class);
+
+      Household updatedHousehold = new Household();
+      updatedHousehold.setId(id);
+      updatedHousehold.setAdress("New Address");
+      updatedHousehold.setLatitude(55.5);
+      updatedHousehold.setLongitude(66.6);
+      updatedHousehold.setWaterAmountLiters(200.0);
+      updatedHousehold.setLastWaterChangeDate(new Date());
+
+      // Act
+      householdRepository.update(updatedHousehold);
+
+      // Assert
+      Map<String, Object> result = 
+          jdbcTemplate.queryForMap("SELECT * FROM household WHERE id = ?", id);
+      assertEquals("New Address", result.get("adress"));
+      assertEquals(55.5, (Double) result.get("latitude"), 0.001);
+      assertEquals(66.6, (Double) result.get("longitude"), 0.001);
+      assertEquals(200.0, (Double) result.get("amount_water"), 0.001);
+    }
   }
 }
