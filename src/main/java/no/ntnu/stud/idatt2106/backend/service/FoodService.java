@@ -136,7 +136,7 @@ public class FoodService {
 
   /**
    * Gets detailed food information by household ID.
-   * Includes food batches and type details.
+   * Includes food batches, type details, and total calories.
    *
    * @param householdId the ID of the household
    * @return a list of FoodDetailedResponse with detailed info
@@ -155,18 +155,24 @@ public class FoodService {
             return null;
           }
           FoodType type = typeOpt.get();
-          List<Food> foodList = entry.getValue(); // Flyttet HER
+          List<Food> foodList = entry.getValue();
           FoodDetailedResponse summary = new FoodDetailedResponse();
           summary.setTypeId(typeId);
           summary.setTypeName(type.getName());
           summary.setUnit(type.getUnit());
-          summary.setTotalAmount(foodList.stream()
+
+          int totalAmount = foodList.stream()
               .mapToInt(Food::getAmount)
-              .sum());
+              .sum();
+          summary.setTotalAmount(totalAmount);
+
+          float totalCalories = totalAmount * type.getCaloriesPerUnit();
+          summary.setTotalCalories(totalCalories);
 
           List<FoodBatchResponse> batches = foodList.stream()
               .map(f -> {
                 FoodBatchResponse batch = new FoodBatchResponse();
+                batch.setId(f.getId());
                 batch.setAmount(f.getAmount());
                 batch.setExpirationDate(f.getExpirationDate());
                 return batch;
