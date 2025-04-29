@@ -10,6 +10,8 @@ import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
 import no.ntnu.stud.idatt2106.backend.service.JwtService;
 import no.ntnu.stud.idatt2106.backend.service.UserService;
+
+import org.apache.catalina.connector.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,6 +74,30 @@ public class HouseholdController {
     householdService.registerHousehold(householdRequest);
     logger.info("Household created successfully");
     return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Handles request to update existing household.
+   *
+   * @param id the id of the household to be updated
+   * @param request the new household info
+   * @return response object with the updated household
+   */
+  @Operation(
+      summary = "Updates an existing household",
+      description = """
+          Updates the household with the given ID. If no household is registered
+          with the given ID a BAD_REQUEST response code is returned. If values in the request
+          body are null they will not be updated. 
+          """
+  )
+  @PutMapping("/{id}")
+  public ResponseEntity<HouseholdResponse> 
+      updateHousehold(@PathVariable Long id, @RequestBody HouseholdRequest request) {
+    logger.info("Updating household with ID = {}", id);
+    HouseholdResponse response = householdService.updateHousehold(id, request);
+    logger.info("Household with ID = {} updated", id);
+    return ResponseEntity.ok(response);
   }
 
   /**
