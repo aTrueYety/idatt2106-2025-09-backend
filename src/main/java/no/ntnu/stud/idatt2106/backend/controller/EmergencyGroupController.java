@@ -7,7 +7,14 @@ import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
 import no.ntnu.stud.idatt2106.backend.service.EmergencyGroupService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * REST controller for managing emergency groups.
@@ -44,7 +51,7 @@ public class EmergencyGroupController {
    *
    * @param id      the ID of the emergency group to update
    * @param request the request object containing updated emergency group details
-   * @return a ResponseEntity indicating the result of the update operation
+   * @return a ResponseEntity indicating the result of the update operation.
    */
   @Operation(summary = "Update an emergency group by ID")
   @PutMapping("/{id}")
