@@ -9,6 +9,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,5 +170,15 @@ public class HouseholdService {
 
     householdRepository.update(validatedHousehold);
     return HouseholdMapper.toResponse(validatedHousehold);
+  }
+
+  /**
+   * Retrieves all the user members of the household with the given ID.
+   *
+   * @param id the ID of the household to get members from
+   * @return the members of the household mapped to response objects
+   */
+  public List<UserResponse> getMembers(Long id) {
+    return userService.getUsersByHouseholdId(id);
   }
 }
