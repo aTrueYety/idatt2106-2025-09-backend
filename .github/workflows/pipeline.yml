@@ -6,11 +6,6 @@ on:
       - main
       - dev
       - "40-*"
-  push:
-    branches:
-      - main
-      - dev
-      - "40-*"
 
 jobs:
   build:
