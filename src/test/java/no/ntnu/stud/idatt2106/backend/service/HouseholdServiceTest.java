@@ -3,6 +3,7 @@ package no.ntnu.stud.idatt2106.backend.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -259,6 +260,19 @@ public class HouseholdServiceTest {
       assertEquals(100.0, response.getWaterAmountLiters());
 
       verify(householdRepository).update(existingHousehold);;
+    }
+
+    @Test
+    void shouldThrowExceptionWhenHouseholdNotFound() {
+      when(householdRepository.findById(2L)).thenReturn(Optional.empty());
+
+      HouseholdRequest request = new HouseholdRequest();
+
+      Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        householdService.updateHousehold(2L, request);
+      });
+
+      assertTrue(exception.getMessage().contains("Household with ID = 2 not found"));
     }
   }
 }
