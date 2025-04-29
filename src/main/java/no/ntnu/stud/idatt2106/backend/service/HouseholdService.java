@@ -3,7 +3,6 @@ package no.ntnu.stud.idatt2106.backend.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
 import no.ntnu.stud.idatt2106.backend.mapper.HouseholdMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
@@ -14,8 +13,6 @@ import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import lombok.val;
 
 /**
  * Provides methods related to Households.
