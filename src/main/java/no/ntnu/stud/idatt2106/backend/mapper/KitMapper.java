@@ -30,8 +30,10 @@ public class KitMapper {
    */
   public static KitResponse toResponse(Kit kit) {
     KitResponse response = new KitResponse();
+    response.setId(kit.getId());
     response.setName(kit.getName());
     response.setDescription(kit.getDescription());
     return response;
   }
+
 }

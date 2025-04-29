@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KitResponse {
+  private Long id;
   private String name;
   private String description; 
 }

@@ -1,6 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
+import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.KitRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.KitResponse;
@@ -29,8 +30,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/kits")
 public class KitController {
 
-  @Autowired
-  private KitService service;
+  private final KitService service;
+
+  public KitController(KitService service) {
+    this.service = service;
+  }
 
   /**
    * Retrieves all kits.
@@ -50,12 +54,12 @@ public class KitController {
    *         Found if not found
    */
   @GetMapping("/{id}")
-  public ResponseEntity<KitResponse> getById(@RequestParam Long id) {
+  public ResponseEntity<KitResponse> getById(@PathVariable Long id) {
     return service.getById(id)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+          .map(ResponseEntity::ok)
+          .orElse(ResponseEntity.notFound().build());
   }
-
+  
   /**
    * Create a new kit.
    *
@@ -67,12 +71,14 @@ public class KitController {
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
+  
+
   /**
    * Update an existing kit.
    *
    * @param id the ID of the kit to update
    */
-  @PutMapping("path/{id}")
+  @PutMapping("/{id}")
   public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody KitRequest request) {
     boolean updated = service.update(id, request);
     if (!updated) {
