@@ -15,7 +15,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
-import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
@@ -121,8 +120,7 @@ public class HouseholdServiceTest {
     when(userService.getUserByUsername(username)).thenReturn(user);
     when(householdRepository.findById(householdId)).thenReturn(Optional.of(new Household()));
 
-    AddUserHouseholdRequest request = new AddUserHouseholdRequest(username, householdId);
-    householdService.addUserToHousehold(request);
+    householdService.addUserToHousehold(username, householdId);
 
     assertEquals(householdId, user.getHouseholdId());
     verify(userService).updateUserCredentials(user);
@@ -135,10 +133,8 @@ public class HouseholdServiceTest {
 
     when(userService.getUserByUsername(username)).thenReturn(null);
 
-    AddUserHouseholdRequest request = new AddUserHouseholdRequest(username, householdId);
-
     assertThrows(NoSuchElementException.class, () -> {
-      householdService.addUserToHousehold(request);
+      householdService.addUserToHousehold(username, householdId);
     });
   }
 
@@ -153,10 +149,8 @@ public class HouseholdServiceTest {
     when(userService.getUserByUsername(username)).thenReturn(user);
     when(householdRepository.findById(householdId)).thenReturn(Optional.empty());
 
-    AddUserHouseholdRequest request = new AddUserHouseholdRequest(username, householdId);
-
     assertThrows(NoSuchElementException.class, () -> {
-      householdService.addUserToHousehold(request);
+      householdService.addUserToHousehold(username, householdId);
     });
   }
 

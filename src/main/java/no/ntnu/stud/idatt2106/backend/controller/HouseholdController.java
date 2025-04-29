@@ -3,8 +3,8 @@ package no.ntnu.stud.idatt2106.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
@@ -95,22 +95,40 @@ public class HouseholdController {
   }
 
   /**
-   * Handles request to add a user to a household.
+   * Handles request to invite a user to a household.
    *
-   * @param request object with the id of the household and the username of the
-   *                user to be added
+   * @param request object with the id of the household and of the user to be added
    * @return a ResponseEntity with the response to the operation or an error
    *         message
    */
   @Operation(
-      summary = "Adds a user to a household",
-      description = "Adds the user with the specified username to the "
-        + "household with the specified ID"
+      summary = "Invites a user to a household",
+      description = """
+          Invites a user to a household. The user will be added to the household
+          if they accept the invitation, sent by email.
+          """
   )
-  @PostMapping("add-user")
-  public ResponseEntity<?> addUserToHousehold(@RequestBody AddUserHouseholdRequest request) {
-    householdService.addUserToHousehold(request);
-    logger.info("User added to household successfully");
+  @PostMapping("invite-user")
+  public ResponseEntity<?> inviteUserToHousehold(
+        @RequestBody InviteUserHouseholdRequest request,
+        @RequestHeader("Authorization") String token) {
+    householdService.inviteUserToHousehold(request, token);
+    logger.info("User invited to household successfully");
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Handles request to accept a household invite.
+   *
+   * @param inviteKey the key of the household invite to be accepted
+   * @return a ResponseEntity with the response to the operation or an error
+   *         message
+   */
+  @PostMapping("accept/{inviteKey}")
+  public ResponseEntity<?> acceptHouseholdInvite(
+      @PathVariable String inviteKey) {
+    householdService.acceptHouseholdInvite(inviteKey);
+    logger.info("User accepted household invite successfully");
     return ResponseEntity.ok().build();
   }
 

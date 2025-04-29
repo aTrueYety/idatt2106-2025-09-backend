@@ -5,12 +5,14 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.mapper.HouseholdMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
+import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
-import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
+import no.ntnu.stud.idatt2106.backend.util.EmailTemplates;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,12 +22,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class HouseholdService {
-
   @Autowired
   private HouseholdRepository householdRepository;
-
   @Autowired
   private UserService userService;
+  @Autowired
+  private JwtService jwtService;
+  @Autowired
+  private EmailService emailService;
+  @Autowired
+  private HouseholdInviteService householdInviteService;
 
   /**
    * Returns all registered households as a list of HouseholdResponse objects.
@@ -34,8 +40,8 @@ public class HouseholdService {
    */
   public List<HouseholdResponse> getAll() {
     return householdRepository.findAll().stream()
-      .map(HouseholdMapper::toResponse)
-      .toList();
+        .map(HouseholdMapper::toResponse)
+        .toList();
   }
 
   /**
@@ -43,7 +49,8 @@ public class HouseholdService {
    *
    * @param id the ID of the household to be retrieved
    * @return HouseholdResponse with the household with the specified ID
-   * @throws NoSuchElementException if there is no registered Household with the specified id
+   * @throws NoSuchElementException if there is no registered Household with the
+   *                                specified id
    */
   public HouseholdResponse getById(Long id) {   
     return householdRepository.findById(id).map(HouseholdMapper::toResponse)
@@ -92,28 +99,27 @@ public class HouseholdService {
 
     Household registeredHousehold = householdRepository.save(household);
 
-    //Adds the user creating the household to the household.
-    addUserToHousehold(new AddUserHouseholdRequest(
+    // Adds the user creating the household to the household.
+    addUserToHousehold(
         householdReqeust.getUsername(),
-        registeredHousehold.getId())
-    );
+        registeredHousehold.getId());
   }
 
   /**
    * Adds a user to an existing household.
    *
-   * @param addUserHouseholdRequest object containing the username of the
-   *     user and the id of the household the user is to be added to.
+   * @param username    the username of the user to be added
+   * @param householdId the ID of the household to add the user to
    * @throws NoSuchElementException if no user exists the the specified username,
-   *     or no household with the exists with the specified ID
+   *                                or no household with the exists with the
+   *                                specified ID
    */
-  public void addUserToHousehold(AddUserHouseholdRequest addUserHouseholdRequest) {
-    String username = addUserHouseholdRequest.getUsername();
-    Long householdId = addUserHouseholdRequest.getHouseholdId();
+  public void addUserToHousehold(String username, Long householdId) {
     User user = userService.getUserByUsername(username);
 
     if (user == null) {
       throw new NoSuchElementException("User with username = " + username + " not found");
+
     }
     if (!householdExists(householdId)) {
       throw new NoSuchElementException("Household with ID = " + householdId + " not found");
@@ -121,6 +127,59 @@ public class HouseholdService {
 
     user.setHouseholdId(householdId);
     userService.updateUserCredentials(user);
+  }
+
+  /**
+   * Invites a user to a household by sending an email and generating a invite
+   * link.
+   *
+   * @param inviteRequest the request containing the user ID and household ID
+   * @param token         the JWT token for authorization
+   */
+  public void inviteUserToHousehold(InviteUserHouseholdRequest inviteRequest, String token) {
+    Long senderHouseholdId = userService.getUserById(
+        jwtService.extractUserId(token.substring(7)))
+        .getHouseholdId();
+    Validate.that(senderHouseholdId,
+        Validate.isNotNull(), "You are not in a household");
+    Household household = householdRepository.findById(senderHouseholdId).get();
+    Validate.that(household,
+        Validate.isNotNull(), "Household with id = " + senderHouseholdId + " not found");
+    User user = userService.getUserById(inviteRequest.getUserId());
+    Validate.that(user,
+        Validate.isNotNull(), "User with id = " + inviteRequest.getUserId() + " not found");
+
+    String inviteKey = householdInviteService.createHouseholdInvite(
+        household.getId(), user.getId());
+
+    try {
+      emailService.sendHtmlEmail(
+          user.getEmail(),
+          "Du har blitt invitert til å bli med i en husstand",
+          EmailTemplates.getHouseholdInviteTemplate(household.getAdress(), inviteKey));
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to send email", e);
+    }
+  }
+
+  /**
+   * Accepts a household invite by updating the user's household ID and
+   * deleting the invite key.
+   *
+   * @param inviteKey the key of the household invite to be accepted
+   */
+  public void acceptHouseholdInvite(String inviteKey) {
+    Validate.that(inviteKey,
+        Validate.isNotBlankOrNull(), "Invite key cannot be null");
+
+    HouseholdInvite invite = householdInviteService.findByKey(inviteKey);
+    Validate.that(invite,
+        Validate.isNotNull(), "No invite with key = " + inviteKey + " found");
+
+    User user = userService.getUserById(invite.getUserId());
+    user.setHouseholdId(invite.getHouseholdId());
+    userService.updateUserCredentials(user);
+    householdInviteService.deleteInvite(inviteKey);
   }
 
   /**
@@ -136,7 +195,7 @@ public class HouseholdService {
   /**
    * Updates the household with the given ID.
    *
-   * @param id the ID of the household to be updated
+   * @param id      the ID of the household to be updated
    * @param request the new household values, request null values are not changed
    * @return response object with the updated values
    */
