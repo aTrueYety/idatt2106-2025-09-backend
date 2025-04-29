@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.mapper.HouseholdMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
@@ -139,32 +140,34 @@ public class HouseholdService {
    * @return response object with the updated values
    */
   public HouseholdResponse updateHousehold(Long id, HouseholdRequest request) {
-    Household existingHousehold = householdRepository.findById(id).get();
+    Optional<Household> existingHousehold = householdRepository.findById(id);
 
-    Validate.that(existingHousehold,
-        Validate.isNotNull(), "Household with id = " + id + " not found");
+    Validate.that(existingHousehold.isPresent(),
+        Validate.isTrue(), "Household with ID = " + id + " not found");
+
+    Household validatedHousehold = existingHousehold.get();
 
     if (request.getAdress() != null) {
-      existingHousehold.setAdress(request.getAdress());
+      validatedHousehold.setAdress(request.getAdress());
     }
 
     if (request.getLatitude() != null) {
-      existingHousehold.setLatitude(request.getLatitude());
+      validatedHousehold.setLatitude(request.getLatitude());
     }
 
     if (request.getLongitude() != null) {
-      existingHousehold.setLongitude(request.getLongitude());
+      validatedHousehold.setLongitude(request.getLongitude());
     }
 
     if (request.getWaterAmountLiters() != null) {
-      existingHousehold.setWaterAmountLiters(request.getWaterAmountLiters());
+      validatedHousehold.setWaterAmountLiters(request.getWaterAmountLiters());
     }
 
     if (request.getLastWaterChangeDate() != null) {
-      existingHousehold.setLastWaterChangeDate(request.getLastWaterChangeDate());
+      validatedHousehold.setLastWaterChangeDate(request.getLastWaterChangeDate());
     }
 
-    householdRepository.update(existingHousehold);
-    return HouseholdMapper.toResponse(existingHousehold);
+    householdRepository.update(validatedHousehold);
+    return HouseholdMapper.toResponse(validatedHousehold);
   }
 }
