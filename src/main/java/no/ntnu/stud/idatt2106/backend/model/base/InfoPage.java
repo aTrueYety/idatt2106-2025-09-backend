@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class InfoPage {
   private Long id;
   private String title;
+  private String shortDescription;
   private String content;
   private Timestamp createdAt;
   private Timestamp updatedAt;

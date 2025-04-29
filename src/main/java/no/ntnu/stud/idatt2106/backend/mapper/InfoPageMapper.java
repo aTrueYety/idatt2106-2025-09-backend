@@ -17,7 +17,8 @@ public class InfoPageMapper {
   public static InfoPage requestToInfoPage(InfoPageRequest infoPageRequest) {
     return new InfoPage(
       null, 
-      infoPageRequest.getTitle(), 
+      infoPageRequest.getTitle(),
+      infoPageRequest.getShortDescription(),
       infoPageRequest.getContent(),
       null,
       null
@@ -34,6 +35,7 @@ public class InfoPageMapper {
     return new InfoPage(
       infoPage.getId(), 
       infoPage.getTitle(), 
+      infoPage.getShortDescription(),
       infoPage.getContent(),
       null, 
       null

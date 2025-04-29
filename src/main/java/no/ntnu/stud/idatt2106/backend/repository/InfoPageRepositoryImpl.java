@@ -19,6 +19,7 @@ public class InfoPageRepositoryImpl implements InfoPageRepository {
     InfoPage infoPage = new InfoPage();
     infoPage.setId(rs.getLong("id"));
     infoPage.setTitle(rs.getString("title"));
+    infoPage.setShortDescription(rs.getString("short_description"));
     infoPage.setContent(rs.getString("content"));
     infoPage.setCreatedAt(rs.getTimestamp("created_at"));
     infoPage.setUpdatedAt(rs.getTimestamp("updated_at"));
@@ -27,9 +28,10 @@ public class InfoPageRepositoryImpl implements InfoPageRepository {
 
   @Override
   public void save(InfoPage infoPage) {
-    String sql = "INSERT INTO info_page (title, content) "
-        + "VALUES (?, ?)";
-    jdbcTemplate.update(sql, infoPage.getTitle(), infoPage.getContent());
+    String sql = "INSERT INTO info_page (title, short_description, content) "
+        + "VALUES (?, ?, ?)";
+    jdbcTemplate.update(
+          sql, infoPage.getTitle(), infoPage.getShortDescription(), infoPage.getContent());
   }
 
   @Override
@@ -47,9 +49,9 @@ public class InfoPageRepositoryImpl implements InfoPageRepository {
 
   @Override
   public void update(InfoPage infoPageUpdate) {
-    String sql = "UPDATE info_page SET title = ?, content = ? WHERE id = ?";
-    jdbcTemplate.update(sql, infoPageUpdate.getTitle(), infoPageUpdate.getContent(), 
-        infoPageUpdate.getId());
+    String sql = "UPDATE info_page SET title = ?, short_description = ?, content = ? WHERE id = ?";
+    jdbcTemplate.update(sql, infoPageUpdate.getTitle(), infoPageUpdate.getShortDescription(), 
+        infoPageUpdate.getContent(), infoPageUpdate.getId());
   }
 
   @Override

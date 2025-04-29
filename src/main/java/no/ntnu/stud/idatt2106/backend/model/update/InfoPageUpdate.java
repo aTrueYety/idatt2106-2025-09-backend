@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 public class InfoPageUpdate {
   private Long id;
   private String title;
+  private String shortDescription;
   private String content;
 }
