@@ -8,6 +8,7 @@ import lombok.Data;
  */
 @Data
 public class FoodBatchResponse {
+  private long id;
   private int amount;
   private LocalDate expirationDate;
 }
