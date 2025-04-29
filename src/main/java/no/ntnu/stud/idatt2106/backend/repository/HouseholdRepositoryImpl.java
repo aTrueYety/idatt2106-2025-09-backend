@@ -91,4 +91,27 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
     String sql = "SELECT * FROM household";
     return jdbcTemplate.query(sql, householdRowMapper);
   }
+
+  /**
+   * Updates an existing household with the same ID as the request household.
+   *
+   * @param household a household with the new values, has the ID of the household to be updated
+   */
+  @Override
+  public void update(Household household) {
+    String sql = """
+        UPDATE household
+        SET adress = ?, latitude = ?, longitude = ?, amount_water = ?, last_water_change = ?
+        WHERE id = ?
+        """;
+
+    jdbcTemplate.update(sql,
+        household.getAdress(),
+        household.getLatitude(),
+        household.getLongitude(),
+        household.getWaterAmountLiters(),
+        household.getLastWaterChangeDate(),
+        household.getId()
+    );
+  }
 }

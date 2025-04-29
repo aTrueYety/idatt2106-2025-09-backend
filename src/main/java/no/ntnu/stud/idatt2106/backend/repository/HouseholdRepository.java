@@ -34,4 +34,11 @@ public interface HouseholdRepository {
    *         household with the given ID was found
    */
   Optional<Household> findById(Long id);
+
+  /**
+   * Updates a registered household.
+   *
+   * @param household household with the new information
+   */
+  void update(Household household);
 }
