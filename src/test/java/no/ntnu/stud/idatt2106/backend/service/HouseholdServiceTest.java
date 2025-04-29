@@ -219,7 +219,7 @@ public class HouseholdServiceTest {
         householdService.getByUserId(userId);
       });
 
-      assertEquals("No user with id = " + userId, exception.getMessage());
+      assertEquals("User with ID = " + userId + " not found", exception.getMessage());
     }
 
     @Test
@@ -234,7 +234,7 @@ public class HouseholdServiceTest {
         householdService.getByUserId(userId);
       });
 
-      assertEquals("User with id = " + userId + " is not in a household", exception.getMessage());
+      assertEquals("User with ID = " + userId + " is not in a household", exception.getMessage());
     }
   }
 

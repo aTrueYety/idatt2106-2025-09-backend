@@ -9,6 +9,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.AddUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +46,8 @@ public class HouseholdService {
    * @throws NoSuchElementException if there is no registered Household with the specified id
    */
   public HouseholdResponse getById(Long id) {   
-    if (!householdExists(id)) {
-      throw new NoSuchElementException("No household present with id = " + id);
-    }
-
-    return householdRepository.findById(id).map(HouseholdMapper::toResponse).get();
+    return householdRepository.findById(id).map(HouseholdMapper::toResponse)
+        .orElseThrow(() -> new NoSuchElementException("Household with ID = " + id + " not found"));
   }
 
   /**
@@ -57,19 +55,18 @@ public class HouseholdService {
    *
    * @param id the ID of the user to get the household of
    * @return HouseholdResponse with the household the user with the id is a part of
-   * @throws NoSuchElementException if there is no user with the specfied ID
-   * @throws IllegalArgumentException if the user with the ID is not a part of a household
    */
   public HouseholdResponse getByUserId(Long id) {
-    if (!userService.userExists(id)) {
-      throw new NoSuchElementException("No user with id = " + id);
+    User user = userService.getUserById(id);
+    
+    if (user == null) {
+      throw new NoSuchElementException("User with ID = " + id + " not found");
     }
 
-    User user = userService.getUserById(id);
     Long householdId = user.getHouseholdId();
 
     if (householdId == null) {
-      throw new IllegalArgumentException("User with id = " + id + " is not in a household");
+      throw new IllegalArgumentException("User with ID = " + id + " is not in a household");
     }
 
     return householdRepository.findById(householdId).map(HouseholdMapper::toResponse).get();
@@ -81,6 +78,11 @@ public class HouseholdService {
    * @param householdReqeust DTO with information about the new household
    */
   public void registerHousehold(HouseholdRequest householdReqeust) {
+    Validate.that(householdReqeust.getLongitude(),
+        Validate.isNotNull(), "Longitude cannot be null");
+    Validate.that(householdReqeust.getLatitude(),
+        Validate.isNotNull(), "Latitude cannot be null");
+
     Household household = new Household();
     household.setAdress(householdReqeust.getAdress());
     household.setLatitude(householdReqeust.getLatitude());
@@ -108,14 +110,13 @@ public class HouseholdService {
   public void addUserToHousehold(AddUserHouseholdRequest addUserHouseholdRequest) {
     String username = addUserHouseholdRequest.getUsername();
     Long householdId = addUserHouseholdRequest.getHouseholdId();
-    
     User user = userService.getUserByUsername(username);
 
     if (user == null) {
-      throw new NoSuchElementException("No user present with username = " + username);
+      throw new NoSuchElementException("User with username = " + username + " not found");
     }
     if (!householdExists(householdId)) {
-      throw new NoSuchElementException("No household present with id = " + householdId);
+      throw new NoSuchElementException("Household with ID = " + householdId + " not found");
     }
 
     user.setHouseholdId(householdId);
@@ -169,5 +170,15 @@ public class HouseholdService {
 
     householdRepository.update(validatedHousehold);
     return HouseholdMapper.toResponse(validatedHousehold);
+  }
+
+  /**
+   * Retrieves all the user members of the household with the given ID.
+   *
+   * @param id the ID of the household to get members from
+   * @return the members of the household mapped to response objects
+   */
+  public List<UserResponse> getMembers(Long id) {
+    return userService.getUsersByHouseholdId(id);
   }
 }
