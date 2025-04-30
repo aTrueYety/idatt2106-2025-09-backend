@@ -20,21 +20,6 @@ public class EmailTemplates {
   }
 
   /**
-   * Generates a password reset email template.
-   *
-   * @param resetLink the link to reset the password
-   * @return the password reset email template as a String
-   */
-  public static String getPasswordResetTemplate(String resetLink) {
-    return "<html><body>"
-        + "<h1>Password Reset Request</h1>"
-        + "<p>Please click the link below to reset your password:</p>"
-        + "<p><a href='" + resetLink + "'>Reset Password</a></p>"
-        + "<p>If you didn't request this, please ignore this email.</p>"
-        + "</body></html>";
-  }
-
-  /**
    * Generates an email template for inviting a user to a household.
    *
    * @param householdName the name of the household
@@ -60,7 +45,7 @@ public class EmailTemplates {
    * @param resetKey the link to reset the password
    * @return the password reset email template as a String
    */
-  public static String getPasswordResetEmailTemplate(String resetKey) {
+  public static String getPasswordResetTemplate(String resetKey) {
     return "<html><body>"
       + "<h1>Tilbakestill passord</h1>"
       + "<p>Vennligst klikk på lenken nedenfor for å tilbakestille passordet ditt:</p>"
