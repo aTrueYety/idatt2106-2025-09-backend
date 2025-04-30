@@ -56,7 +56,7 @@ public class HouseholdRepositoryTest {
   @Test
   void shouldSaveAndReturnWithId() {
     Household household = new Household();
-    household.setAdress("Test street 2");
+    household.setAddress("Test street 2");
     household.setLatitude(32.43);
     household.setLongitude(453.4);
     household.setWaterAmountLiters(43.24);
@@ -81,7 +81,7 @@ public class HouseholdRepositoryTest {
 
     assertTrue(result.isPresent());
     assertEquals(1L, result.get().getId());
-    assertEquals("Test adress", result.get().getAdress());
+    assertEquals("Test adress", result.get().getAddress());
     assertEquals(64.34, result.get().getLatitude());
     assertEquals(34.45, result.get().getLongitude());
     assertEquals(23, result.get().getWaterAmountLiters());
@@ -92,8 +92,8 @@ public class HouseholdRepositoryTest {
     List<Household> result = householdRepository.findAll();
 
     assertEquals(2, result.size());
-    assertTrue(result.stream().anyMatch(h -> h.getAdress().equals("Test adress")));
-    assertTrue(result.stream().anyMatch(h -> h.getAdress().equals("Test adress")));
+    assertTrue(result.stream().anyMatch(h -> h.getAddress().equals("Test adress")));
+    assertTrue(result.stream().anyMatch(h -> h.getAddress().equals("Test adress")));
   }
 
   @Nested
@@ -106,7 +106,7 @@ public class HouseholdRepositoryTest {
 
       Household updatedHousehold = new Household();
       updatedHousehold.setId(id);
-      updatedHousehold.setAdress("New Address");
+      updatedHousehold.setAddress("New Address");
       updatedHousehold.setLatitude(55.5);
       updatedHousehold.setLongitude(66.6);
       updatedHousehold.setWaterAmountLiters(200.0);

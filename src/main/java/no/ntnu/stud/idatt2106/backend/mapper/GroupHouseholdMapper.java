@@ -8,9 +8,14 @@ import no.ntnu.stud.idatt2106.backend.model.response.GroupHouseholdResponse;
  * Mapper for converting between GroupHousehold entities and DTOs.
  */
 public class GroupHouseholdMapper {
-
+  /**
+   * Converts a GroupHouseholdRequest DTO to a GroupHousehold entity.
+   *
+   * @param request the GroupHouseholdRequest DTO to convert
+   * @return the corresponding GroupHousehold entity
+   */
   public static GroupHousehold toModel(GroupHouseholdRequest request) {
-    return new GroupHousehold(0, request.getHouseholdId(), request.getGroupId());
+    return new GroupHousehold(null, request.getHouseholdId(), request.getGroupId());
   }
 
   /**

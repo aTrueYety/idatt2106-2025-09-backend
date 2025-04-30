@@ -24,8 +24,9 @@ import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
-import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.LevelOfPreparednessResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
@@ -81,7 +82,7 @@ public class HouseholdServiceTest {
 
     existingHousehold = new Household();
     existingHousehold.setId(1L);
-    existingHousehold.setAdress("Test address");
+    existingHousehold.setAddress("Test address");
     existingHousehold.setLatitude(10.0);
     existingHousehold.setLongitude(20.0);
     existingHousehold.setWaterAmountLiters(50.0);
@@ -92,11 +93,11 @@ public class HouseholdServiceTest {
   void getAllShouldReturnAllHouseholds() {
     Household household1 = new Household();
     household1.setId(1L);
-    household1.setAdress("Test Street 1");
+    household1.setAddress("Test Street 1");
 
     Household household2 = new Household();
     household2.setId(2L);
-    household2.setAdress("Test Street 2");
+    household2.setAddress("Test Street 2");
 
     List<Household> households = new ArrayList<>();
     households.add(household1);
@@ -120,8 +121,8 @@ public class HouseholdServiceTest {
 
   @Test
   void shouldRegisterHousehold() {
-    HouseholdRequest request = new HouseholdRequest();
-    request.setAdress("Test");
+    CreateHouseholdRequest request = new CreateHouseholdRequest();
+    request.setAddress("Test");
     request.setLatitude(32.3);
     request.setLongitude(34.23);
     request.setWaterAmountLiters(32.23);
@@ -192,6 +193,7 @@ public class HouseholdServiceTest {
     LevelOfPreparednessResponse preparedness = new LevelOfPreparednessResponse();
     preparedness.setLevelOfPreparedness(0.8);
 
+
     when(householdRepository.findById(id)).thenReturn(Optional.of(household));
     HouseholdResponse householdResponse = new HouseholdResponse();
     householdResponse.setId(household.getId());
@@ -220,7 +222,7 @@ public class HouseholdServiceTest {
       User mockUser = new User();
       Household mockHousehold = new Household();
       mockHousehold.setId(100L);
-      mockHousehold.setAdress("Test Address");
+      mockHousehold.setAddress("Test Address");
       mockUser.setId(1L);
       mockUser.setHouseholdId(100L);
 
@@ -269,8 +271,8 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldUpdateHouseholdWhenValid() {
-      HouseholdRequest request = new HouseholdRequest();
-      request.setAdress("New Address");
+      UpdateHouseholdRequest request = new UpdateHouseholdRequest();
+      request.setAddress("New Address");
       request.setLatitude(30.0);
       request.setLongitude(40.0);
       request.setWaterAmountLiters(100.0);
@@ -293,7 +295,7 @@ public class HouseholdServiceTest {
     void shouldThrowExceptionWhenHouseholdNotFound() {
       when(householdRepository.findById(2L)).thenReturn(Optional.empty());
 
-      HouseholdRequest request = new HouseholdRequest();
+      UpdateHouseholdRequest request = new UpdateHouseholdRequest();
 
       Exception exception = assertThrows(IllegalArgumentException.class, () -> {
         householdService.updateHousehold(2L, request);
@@ -304,7 +306,7 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldNotUpdateWhenFieldsAreNull() {
-      HouseholdRequest request = new HouseholdRequest();
+      UpdateHouseholdRequest request = new UpdateHouseholdRequest();
 
       when(householdRepository.findById(1L)).thenReturn(Optional.of(existingHousehold));
 
@@ -420,7 +422,7 @@ public class HouseholdServiceTest {
       Long householdId = 10L;
       Household household = new Household();
       household.setId(householdId);
-      household.setAdress("Test Addresse");
+      household.setAddress("Test Addresse");
 
       String token = "Bearer validtoken";
       when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);

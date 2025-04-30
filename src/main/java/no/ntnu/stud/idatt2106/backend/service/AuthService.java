@@ -206,7 +206,7 @@ public class AuthService {
 
     User user = userService.getUserByEmail(request.getEmail());
 
-    String key = "";
+    String key = passwordResetKeyService.createPasswordResetKey(user.getId());
 
     String htmlContent = EmailTemplates.getPasswordResetTemplate(key);
     try {

@@ -3,8 +3,9 @@ package no.ntnu.stud.idatt2106.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
@@ -62,7 +63,7 @@ public class HouseholdController {
   @Operation(summary = "Creates a new household",
          description = "Creates a new household with the user creating it as a member")
   @PostMapping("/register")
-  public ResponseEntity<?> registerHousehold(@RequestBody HouseholdRequest householdRequest) {
+  public ResponseEntity<?> registerHousehold(@RequestBody CreateHouseholdRequest householdRequest) {
     householdService.registerHousehold(householdRequest);
     logger.info("Household created successfully");
     return ResponseEntity.ok().build();
@@ -82,7 +83,7 @@ public class HouseholdController {
       """)
   @PutMapping("/{id}")
   public ResponseEntity<HouseholdResponse> updateHousehold(@PathVariable Long id,
-      @RequestBody HouseholdRequest request) {
+      @RequestBody UpdateHouseholdRequest request) {
     logger.info("Updating household with ID = {}", id);
     HouseholdResponse response = householdService.updateHousehold(id, request);
     logger.info("Household with ID = {} updated", id);
