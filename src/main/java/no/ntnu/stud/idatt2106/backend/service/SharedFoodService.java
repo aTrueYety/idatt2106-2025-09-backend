@@ -21,7 +21,7 @@ import no.ntnu.stud.idatt2106.backend.repository.SharedFoodRepository;
 import org.springframework.stereotype.Service;
 
 /**
- * Service for managing shared food.
+ * Service class for handling operations related to shared food in group households.
  */
 @Service
 @RequiredArgsConstructor
@@ -31,14 +31,19 @@ public class SharedFoodService {
   private final FoodRepository foodRepository;
   private final FoodTypeRepository foodTypeRepository;
 
+  /**
+   * Creates a new shared food entry.
+   *
+   * @param request the shared food request to be persisted
+   */
   public void create(SharedFoodRequest request) {
     repository.save(SharedFoodMapper.toModel(request));
   }
 
   /**
-   * Retrieves all shared food entries.
+   * Retrieves all shared food entries in the system.
    *
-   * @return a list of shared food responses
+   * @return list of shared food responses
    */
   public List<SharedFoodResponse> getAll() {
     return repository.findAll().stream()
@@ -46,44 +51,74 @@ public class SharedFoodService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Updates an existing shared food amount.
+   *
+   * @param request shared food request with updated amount
+   * @return true if update was successful, false if not found
+   */
   public boolean update(SharedFoodRequest request) {
     return repository.update(SharedFoodMapper.toModel(request));
   }
 
+  /**
+   * Deletes a shared food entry based on composite key.
+   *
+   * @param foodId           the food ID
+   * @param groupHouseholdId the group household ID
+   * @return true if deleted, false if not found
+   */
   public boolean delete(int foodId, int groupHouseholdId) {
     return repository.deleteById(new SharedFoodKey(foodId, groupHouseholdId));
   }
 
   /**
-   * Moves a specified amount of food to a shared group.
+   * Moves a specified amount of food from a household to a shared group.
+   * <p>This operation will:</p>
+   * <ul>
+   *   <li>Reduce the amount in the original food item</li>
+   *   <li>Create a new food entry with the shared amount and same household</li>
+   *   <li>Link the new food item to the group household via SharedFood</li>
+   * </ul>
    *
-   * @param request the request containing food ID, group household ID, and amount
-   * @return true if the operation was successful, false otherwise
+   * @param request shared food request with food ID, group household ID, and amount
+   * @return true if move was successful, false if not enough amount or food not found
    */
   public boolean moveFoodToSharedGroup(SharedFoodRequest request) {
-    Optional<Food> optional = foodRepository.findById(request.getFoodId());
-    if (optional.isEmpty()) {
+    Optional<Food> originalOpt = foodRepository.findById(request.getFoodId());
+    if (originalOpt.isEmpty()) {
       return false;
     }
 
-    Food food = optional.get();
-    if (food.getAmount() < request.getAmount()) {
+    Food original = originalOpt.get();
+    if (original.getAmount() < request.getAmount()) {
       return false;
     }
 
-    food.setAmount(food.getAmount() - request.getAmount());
-    foodRepository.update(food);
+    original.setAmount(original.getAmount() - request.getAmount());
+    foodRepository.update(original);
 
-    repository.save(SharedFoodMapper.toModel(request));
+    Food cloned = new Food();
+    cloned.setTypeId(original.getTypeId());
+    cloned.setExpirationDate(original.getExpirationDate());
+    cloned.setAmount(request.getAmount());
+    cloned.setHouseholdId(original.getHouseholdId());
+
+    int newFoodId = foodRepository.save(cloned);
+
+    SharedFoodKey key = new SharedFoodKey(newFoodId, request.getGroupHouseholdId());
+    SharedFood shared = new SharedFood(key, request.getAmount());
+    repository.save(shared);
+
     return true;
   }
 
   /**
-   * Retrieves a detailed summary of shared food grouped by food type,
-   * for a specific group household.
+   * Retrieves a detailed summary of shared food grouped by food type.
+   * Includes total amount, calories, and individual batch info.
    *
    * @param groupHouseholdId the ID of the group household
-   * @return a list of detailed food responses
+   * @return list of detailed food summaries for the group
    */
   public List<FoodDetailedResponse> getSharedFoodSummaryByGroup(int groupHouseholdId) {
     List<SharedFood> sharedFoods = repository.findByGroupHouseholdId(groupHouseholdId);
@@ -96,7 +131,8 @@ public class SharedFoodService {
 
     Map<Integer, List<SharedFood>> groupedByType = sharedFoods.stream()
         .filter(sf -> foodMap.containsKey(sf.getId().getFoodId()))
-        .collect(Collectors.groupingBy(sf -> foodMap.get(sf.getId().getFoodId()).getTypeId()));
+        .collect(Collectors.groupingBy(
+            sf -> foodMap.get(sf.getId().getFoodId()).getTypeId()));
 
     return groupedByType.entrySet().stream()
         .map(entry -> {
@@ -117,6 +153,7 @@ public class SharedFoodService {
                 batch.setAmount(sf.getAmount());
                 return batch;
               })
+              .filter(Objects::nonNull)
               .toList();
 
           float totalAmount = (float) batches.stream()
@@ -132,10 +169,10 @@ public class SharedFoodService {
           response.setTotalAmount(totalAmount);
           response.setTotalCalories(totalCalories);
           response.setBatches(batches);
+
           return response;
         })
         .filter(Objects::nonNull)
         .toList();
   }
-
 }

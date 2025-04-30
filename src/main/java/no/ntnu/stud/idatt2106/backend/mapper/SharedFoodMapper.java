@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.mapper;
 
+
 import no.ntnu.stud.idatt2106.backend.model.base.SharedFood;
 import no.ntnu.stud.idatt2106.backend.model.base.SharedFoodKey;
 import no.ntnu.stud.idatt2106.backend.model.request.SharedFoodRequest;
@@ -22,9 +23,12 @@ public class SharedFoodMapper {
    * @return the corresponding SharedFoodResponse DTO
    */
   public static SharedFoodResponse toResponse(SharedFood food) {
-    return new SharedFoodResponse(
-        food.getId().getFoodId(),
-        food.getId().getGroupHouseholdId(),
-        food.getAmount());
+    int foodId = food.getId().getFoodId();
+    int groupHouseholdId = food.getId().getGroupHouseholdId();
+    float amount = food.getAmount();
+
+    return new SharedFoodResponse(foodId, groupHouseholdId, amount);
   }
 }
+
+
