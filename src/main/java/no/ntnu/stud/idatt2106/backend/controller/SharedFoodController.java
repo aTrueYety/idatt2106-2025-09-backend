@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import no.ntnu.stud.idatt2106.backend.model.request.SharedFoodRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.FoodDetailedResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.SharedFoodResponse;
 import no.ntnu.stud.idatt2106.backend.service.SharedFoodService;
 import org.springframework.http.ResponseEntity;
@@ -95,6 +96,19 @@ public class SharedFoodController {
     return service.moveFoodToSharedGroup(request)
         ? ResponseEntity.ok().build()
         : ResponseEntity.badRequest().build();
+  }
+
+  /**
+   * Retrieves a detailed summary of shared food for a specific group household.
+   *
+   * @param groupHouseholdId the ID of the group household
+   * @return ResponseEntity containing a list of detailed food responses
+   */
+  @Operation(summary = "Get detailed summary of shared food for a group")
+  @GetMapping("/summary/detailed/{groupHouseholdId}")
+  public ResponseEntity<List<FoodDetailedResponse>> getSharedFoodSummary(
+      @PathVariable int groupHouseholdId) {
+    return ResponseEntity.ok(service.getSharedFoodSummaryByGroup(groupHouseholdId));
   }
 
 }

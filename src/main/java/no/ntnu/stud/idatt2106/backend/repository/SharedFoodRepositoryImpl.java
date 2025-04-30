@@ -65,4 +65,11 @@ public class SharedFoodRepositoryImpl implements SharedFoodRepository {
     int deleted = jdbcTemplate.update(sql, id.getFoodId(), id.getGroupHouseholdId());
     return deleted > 0;
   }
+
+  @Override
+  public List<SharedFood> findByGroupHouseholdId(int groupHouseholdId) {
+    String sql = "SELECT * FROM shared_food WHERE group_household_id = ?";
+    return jdbcTemplate.query(sql, rowMapper, groupHouseholdId);
+  }
+
 }

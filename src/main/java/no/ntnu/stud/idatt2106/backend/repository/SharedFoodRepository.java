@@ -18,4 +18,7 @@ public interface SharedFoodRepository {
   boolean update(SharedFood food);
 
   boolean deleteById(SharedFoodKey id);
+  
+  List<SharedFood> findByGroupHouseholdId(int groupHouseholdId);
+
 }
