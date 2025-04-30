@@ -19,7 +19,7 @@ public class SeverityRepository {
 
   private final RowMapper<Severity> severityRowMapper = (rs, rowNum) -> {
     return new Severity(
-        rs.getLong("id"),
+        rs.getObject("id", Long.class),
         rs.getString("colour"),
         rs.getString("name"),
         rs.getString("description"));

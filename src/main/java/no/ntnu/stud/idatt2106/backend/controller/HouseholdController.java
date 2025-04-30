@@ -176,14 +176,17 @@ public class HouseholdController {
    * @param token the jwt token of the user
    * @return a ResponseEntity with the retrieved household
    */
-  @Operation(summary = "Retrieves the household of the currently logged in user", description = """
-      Retrieves information about the household the current user is a part of.
-      """)
-  @GetMapping("/me")
+  @Operation(
+      summary = "Retrieves the household of the currently logged in user",
+      description = """
+          Retrieves information about the household the current user is a part of.
+          """
+  )
+  @GetMapping("/my-household")
   public ResponseEntity<HouseholdResponse> getCurrentUserHousehold(
       @RequestHeader("Authorization") String token) {
     logger.info("Fetching household of authenticated user");
-    Long userId = jwtService.extractUserId(token);
+    Long userId = jwtService.extractUserId(token.substring(7));
     HouseholdResponse response = householdService.getByUserId(userId);
     logger.info("Found household of user with ID: {}", userId);
     return ResponseEntity.ok(response);

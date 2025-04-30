@@ -18,7 +18,7 @@ public class MapObjectTypeRepositoryImpl implements MapObjectTypeRepository {
 
   private final RowMapper<MapObjectType> mapObjectTypeRowMapper = (rs, rowNum) -> {
     MapObjectType mapObjectType = new MapObjectType();
-    mapObjectType.setId(rs.getLong("id"));
+    mapObjectType.setId(rs.getObject("id", Long.class));
     mapObjectType.setName(rs.getString("name"));
     mapObjectType.setIcon(rs.getString("icon"));
     return mapObjectType;

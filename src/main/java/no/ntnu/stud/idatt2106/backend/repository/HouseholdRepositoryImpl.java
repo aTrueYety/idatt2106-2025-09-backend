@@ -23,11 +23,11 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
 
   private RowMapper<Household> householdRowMapper = (rs, rowNum) -> {
     return new Household(
-        rs.getLong("id"),
+        rs.getObject("id", Long.class),
         rs.getString("adress"),
-        rs.getDouble("longitude"),
-        rs.getDouble("latitude"),
-        rs.getDouble("amount_water"),
+        rs.getObject("longitude", Double.class),
+        rs.getObject("latitude", Double.class),
+        rs.getObject("amount_water", Double.class),
         rs.getTimestamp("last_water_change")
     );
   };
@@ -113,5 +113,16 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
         household.getLastWaterChangeDate(),
         household.getId()
     );
+  }
+
+  /**
+   * Deletes the registered household with the specified ID.
+   *
+   * @param id the ID of the household t be deleted
+   */
+  @Override
+  public void deleteById(Long id) {
+    String sql = "DELETE FROM household WHERE id = ?";
+    jdbcTemplate.update(sql, id);
   }
 }
