@@ -5,6 +5,10 @@ import no.ntnu.stud.idatt2106.backend.repository.PasswordResetKeyRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class for managing password reset keys.
+ * This class provides methods to generate, create, find, and delete password reset keys.
+ */
 @Service
 public class PasswordResetService {
   @Autowired
