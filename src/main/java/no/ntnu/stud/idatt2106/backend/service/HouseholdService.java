@@ -32,6 +32,8 @@ public class HouseholdService {
   private EmailService emailService;
   @Autowired
   private HouseholdInviteService householdInviteService;
+  @Autowired
+  private LevelOfPreparednessService levelOfPreparednessService;
 
   /**
    * Returns all registered households as a list of HouseholdResponse objects.
@@ -52,8 +54,23 @@ public class HouseholdService {
    * @throws NoSuchElementException if there is no registered Household with the
    *                                specified id
    */
+  public HouseholdResponse getByIdWithPreparedness(Long id) {
+    HouseholdResponse response = householdRepository.findById(id).map(HouseholdMapper::toResponse)
+        .orElseThrow(() -> new NoSuchElementException("Household with ID = " + id + " not found"));
+    response.setLevelOfPreparedness(levelOfPreparednessService
+        .getPreparednessForHousehold(getById(id)));
+    return response;
+  }
+
+  /**
+   * Retrieves a Household by its ID.
+   *
+   * @param id the ID of the household to be retrieved
+   * @return the Household object with the specified ID
+   */
   public HouseholdResponse getById(Long id) {
-    return householdRepository.findById(id).map(HouseholdMapper::toResponse)
+    return householdRepository.findById(id)
+        .map(HouseholdMapper::toResponse)
         .orElseThrow(() -> new NoSuchElementException("Household with ID = " + id + " not found"));
   }
 
@@ -77,7 +94,11 @@ public class HouseholdService {
       throw new IllegalArgumentException("User with ID = " + id + " is not in a household");
     }
 
-    return householdRepository.findById(householdId).map(HouseholdMapper::toResponse).get();
+    HouseholdResponse householdResponse = householdRepository.findById(householdId)
+        .map(HouseholdMapper::toResponse).get();
+    householdResponse.setLevelOfPreparedness(levelOfPreparednessService
+        .getPreparednessForHousehold(getById(householdId)));
+    return householdResponse;
   }
 
   /**
@@ -259,5 +280,4 @@ public class HouseholdService {
         .orElseThrow(() -> new NoSuchElementException("No household with id = " + householdId))
         .getWaterAmountLiters();
   }
-
 }

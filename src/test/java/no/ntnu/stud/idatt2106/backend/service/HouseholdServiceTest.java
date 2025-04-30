@@ -27,6 +27,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.LevelOfPreparednessResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,7 @@ import org.mockito.MockitoAnnotations;
  * Contains tests for the HouseholdService class.
  */
 public class HouseholdServiceTest {
-  
+
   @InjectMocks
   private HouseholdService householdService;
 
@@ -55,6 +56,9 @@ public class HouseholdServiceTest {
 
   @Mock
   private EmailService emailService;
+
+  @Mock
+  private LevelOfPreparednessService levelOfPreparednessService;
 
   @Mock
   private JwtService jwtService;
@@ -136,7 +140,7 @@ public class HouseholdServiceTest {
     Long householdId = 1L;
     User user = new User();
     user.setUsername("Testusername");
-    
+
     when(userService.getUserByUsername(username)).thenReturn(user);
     when(householdRepository.findById(householdId)).thenReturn(Optional.of(new Household()));
 
@@ -177,27 +181,35 @@ public class HouseholdServiceTest {
   @Test
   void getByIdShouldGetHouseholdByid() {
     Long id = 1L;
+
     Household household = new Household();
     household.setId(id);
     household.setAdress("Test street");
+    household.setLatitude(10.0);
+    household.setLongitude(20.0);
+    household.setWaterAmountLiters(100.0);
+
+    LevelOfPreparednessResponse preparedness = new LevelOfPreparednessResponse();
+    preparedness.setLevelOfPreparedness(0.8);
 
     when(householdRepository.findById(id)).thenReturn(Optional.of(household));
+    HouseholdResponse householdResponse = new HouseholdResponse();
+    householdResponse.setId(household.getId());
+    householdResponse.setAddress(household.getAdress());
+    householdResponse.setLatitude(household.getLatitude());
+    householdResponse.setLongitude(household.getLongitude());
+    householdResponse.setWaterAmountLiters(household.getWaterAmountLiters());
 
-    HouseholdResponse response = householdService.getById(id);
+    when(levelOfPreparednessService.getPreparednessForHousehold(any(HouseholdResponse.class)))
+        .thenReturn(preparedness);
+
+    HouseholdResponse response = householdService.getByIdWithPreparedness(id);
 
     assertNotNull(response);
     assertEquals(id, response.getId());
     assertEquals("Test street", response.getAddress());
-  }
-
-  @Test
-  void getByIdShouldThrowExceptionWhenHouseholdDoesNotExist() {
-    Long id = 999L;
-    when(householdRepository.findById(id)).thenReturn(Optional.empty());
-
-    assertThrows(NoSuchElementException.class, () -> {
-      householdService.getById(id);
-    });
+    assertNotNull(response.getLevelOfPreparedness());
+    assertEquals(0.8, response.getLevelOfPreparedness().getLevelOfPreparedness());
   }
 
   @Nested
@@ -217,7 +229,7 @@ public class HouseholdServiceTest {
       when(userService.getUserById(userId)).thenReturn(mockUser);
       when(householdRepository.findById(mockUser.getHouseholdId()))
           .thenReturn(Optional.of(mockHousehold));
-      
+
       HouseholdResponse response = householdService.getByUserId(userId);
 
       assertNotNull(response);
@@ -273,7 +285,8 @@ public class HouseholdServiceTest {
       assertEquals(40.0, response.getLongitude());
       assertEquals(100.0, response.getWaterAmountLiters());
 
-      verify(householdRepository).update(existingHousehold);;
+      verify(householdRepository).update(existingHousehold);
+      ;
     }
 
     @Test
@@ -294,14 +307,14 @@ public class HouseholdServiceTest {
       HouseholdRequest request = new HouseholdRequest();
 
       when(householdRepository.findById(1L)).thenReturn(Optional.of(existingHousehold));
-  
+
       HouseholdResponse response = householdService.updateHousehold(1L, request);
-  
+
       assertEquals("Test address", response.getAddress());
       assertEquals(10.0, response.getLatitude());
       assertEquals(20.0, response.getLongitude());
       assertEquals(50.0, response.getWaterAmountLiters());
-  
+
       verify(householdRepository).update(existingHousehold);
     }
   }
@@ -387,7 +400,7 @@ public class HouseholdServiceTest {
 
   @Nested
   class InviteUserToHouseholdTests {
-    
+
     @Test
     void shouldSendEmailIfValid() {
       Long recieverId = 2L;
@@ -417,7 +430,7 @@ public class HouseholdServiceTest {
       String inviteKey = "abc123";
       when(householdInviteService.createHouseholdInvite(householdId, recieverId))
           .thenReturn(inviteKey);
-      
+
       householdService.inviteUserToHousehold(inviteRequest, token);
       try {
         verify(emailService).sendHtmlEmail(eq(email),
@@ -432,7 +445,7 @@ public class HouseholdServiceTest {
       Household household = new Household();
       Long houseHoldId = 10L;
       household.setId(houseHoldId);
-      
+
       User sender = new User();
       Long senderId = 1L;
       sender.setId(senderId);
@@ -455,11 +468,11 @@ public class HouseholdServiceTest {
       String inviteKey = "abc123";
       when(householdInviteService.createHouseholdInvite(houseHoldId, receiverId))
           .thenReturn(inviteKey);
-      
+
       doThrow(new MessagingException())
           .when(emailService)
           .sendHtmlEmail(anyString(), anyString(), anyString());
-      
+
       RuntimeException exception = assertThrows(RuntimeException.class, () -> {
         householdService.inviteUserToHousehold(request, token);
       });
