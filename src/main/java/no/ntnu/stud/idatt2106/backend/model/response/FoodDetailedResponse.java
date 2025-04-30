@@ -12,7 +12,7 @@ public class FoodDetailedResponse {
   private int typeId;
   private String typeName;
   private String unit;
-  private int totalAmount;
+  private float totalAmount;
   private float totalCalories;
   private List<FoodBatchResponse> batches;
 }

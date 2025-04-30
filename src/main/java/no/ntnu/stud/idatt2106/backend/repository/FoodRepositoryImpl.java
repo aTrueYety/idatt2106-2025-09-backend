@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class FoodRepositoryImpl implements FoodRepository {
+  
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
@@ -24,7 +25,7 @@ public class FoodRepositoryImpl implements FoodRepository {
     food.setTypeId(rs.getInt("type_id"));
     food.setHouseholdId(rs.getInt("household_id"));
     food.setExpirationDate(rs.getDate("expiration_date").toLocalDate());
-    food.setAmount(rs.getInt("amount"));
+    food.setAmount(rs.getFloat("amount"));
     return food;
   };
 

@@ -123,14 +123,17 @@ public class FoodService {
     List<Food> foodList = repository.findByHouseholdId(householdId);
 
     return foodList.stream()
-        .collect(Collectors.groupingBy(Food::getTypeId, Collectors.summingInt(Food::getAmount)))
+        .collect(Collectors.groupingBy(Food::getTypeId,
+            Collectors.summingDouble(f -> f.getAmount())))
         .entrySet().stream()
         .map(entry -> {
           FoodSummaryResponse response = new FoodSummaryResponse();
           response.setTypeId(entry.getKey());
-          response.setTotalAmount(entry.getValue());
+          response.setTotalAmount(((Double) entry.getValue()).floatValue()
+          );
           return response;
         })
+
         .toList();
   }
 
@@ -161,8 +164,8 @@ public class FoodService {
           summary.setTypeName(type.getName());
           summary.setUnit(type.getUnit());
 
-          int totalAmount = foodList.stream()
-              .mapToInt(Food::getAmount)
+          float totalAmount = (float) foodList.stream()
+              .mapToDouble(Food::getAmount)
               .sum();
           summary.setTotalAmount(totalAmount);
 

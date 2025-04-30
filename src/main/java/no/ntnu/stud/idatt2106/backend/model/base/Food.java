@@ -20,5 +20,5 @@ public class Food {
   private int typeId;
   private int householdId;
   private LocalDate expirationDate;
-  private int amount;
+  private float amount;
 }
