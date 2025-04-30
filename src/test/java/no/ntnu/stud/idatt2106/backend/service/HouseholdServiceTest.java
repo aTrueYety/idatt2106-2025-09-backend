@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +20,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -314,6 +316,33 @@ public class HouseholdServiceTest {
       verify(userService).updateUserCredentials(user);
       verify(householdInviteService).deleteInvite(inviteKey);
       verify(householdRepository).deleteById(10L);
+    }
+
+    @Test
+    void shouldAcceptAndNotDeleteIfOldHouseholdNotEmptry() {
+      String inviteKey = "abc123";
+      Long newHouseholdId = 2L;
+      Long userId = 100L;
+
+      HouseholdInvite invite = new HouseholdInvite();
+      invite.setInviteKey(inviteKey);
+      invite.setHouseholdId(newHouseholdId);
+      invite.setUserId(userId);
+      when(householdInviteService.findByKey(inviteKey)).thenReturn(invite);
+
+      Long oldHouseholdId = 1L;
+      User user = new User();
+      user.setHouseholdId(oldHouseholdId);
+      when(userService.getUserById(userId)).thenReturn(user);
+
+      when(householdService.getMembers(oldHouseholdId))
+          .thenReturn(List.of(new UserResponse(), new UserResponse()));
+
+      householdService.acceptHouseholdInvite(inviteKey);
+
+      verify(userService).updateUserCredentials(user);
+      verify(householdInviteService).deleteInvite(inviteKey);
+      verify(householdRepository, never()).deleteById(oldHouseholdId);
     }
 
     @Test
