@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HouseholdRequest {
-  private String adress;
+  private String address;
   private Double longitude;
   private Double latitude;
   private Double waterAmountLiters;
