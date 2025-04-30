@@ -177,8 +177,14 @@ public class HouseholdService {
         Validate.isNotNull(), "No invite with key = " + inviteKey + " found");
 
     User user = userService.getUserById(invite.getUserId());
+    Long oldHouseholdId = user.getHouseholdId();
     user.setHouseholdId(invite.getHouseholdId());
     userService.updateUserCredentials(user);
+
+    if (getMembers(oldHouseholdId).size() == 0) {
+      householdRepository.deleteById(oldHouseholdId);
+    }
+
     householdInviteService.deleteInvite(inviteKey);
   }
 

@@ -124,4 +124,31 @@ public class HouseholdRepositoryTest {
       assertEquals(200.0, (Double) result.get("amount_water"), 0.001);
     }
   }
+
+  @Nested
+  class DeleteTests {
+
+    @Test
+    void shouldDeleteExistingHousehold() {
+      jdbcTemplate.update("""
+          INSERT INTO household (adress, latitude, longitude, amount_water, last_water_change)
+          VALUES (?, ?, ?, ?, ?)
+          """, "Test address", 10.0, 20.0, 100.0, new Date());
+
+
+      Integer countBefore = jdbcTemplate.queryForObject(
+          "SELECT COUNT(*) FROM household WHERE id = ?",
+          Integer.class,
+          1L);
+      assertEquals(1, countBefore);
+
+      householdRepository.deleteById(1L);
+
+      Integer countAfter = jdbcTemplate.queryForObject(
+          "SELECT COUNT(*) FROM household WHERE id = ?",
+          Integer.class,
+          1L);
+      assertEquals(0, countAfter);
+    }
+  }
 }

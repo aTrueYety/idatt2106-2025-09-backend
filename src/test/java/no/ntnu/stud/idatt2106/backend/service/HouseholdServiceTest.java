@@ -5,18 +5,22 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
+import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -35,6 +39,9 @@ public class HouseholdServiceTest {
 
   @Mock
   private UserService userService;
+
+  @Mock
+  private HouseholdInviteService householdInviteService;
 
   @InjectMocks
   private HouseholdService householdService;
@@ -283,6 +290,85 @@ public class HouseholdServiceTest {
       assertEquals(50.0, response.getWaterAmountLiters());
   
       verify(householdRepository).update(existingHousehold);
+    }
+  }
+
+  @Nested
+  class AcceptHouseholdInviteTests {
+
+    @Test
+    void shouldAcceptAndDeleteOldHouseholdIfEmpty() {
+      String inviteKey = "abd123";
+      HouseholdInvite invite = new HouseholdInvite();
+      invite.setUserId(1L);
+      invite.setHouseholdId(2L);
+      invite.setInviteKey(inviteKey);
+
+      Long oldHouseholdId = 10L;
+      User user = new User();
+      user.setId(1L);
+      user.setHouseholdId(oldHouseholdId);
+
+      when(householdInviteService.findByKey(inviteKey)).thenReturn(invite);
+      when(userService.getUserById(1L)).thenReturn(user);
+      when(householdService.getMembers(10L)).thenReturn(Collections.emptyList());
+
+      householdService.acceptHouseholdInvite(inviteKey);
+
+      verify(userService).updateUserCredentials(user);
+      verify(householdInviteService).deleteInvite(inviteKey);
+      verify(householdRepository).deleteById(oldHouseholdId);
+    }
+
+    @Test
+    void shouldAcceptAndNotDeleteIfOldHouseholdNotEmptry() {
+      String inviteKey = "abc123";
+      Long newHouseholdId = 2L;
+      Long userId = 100L;
+
+      HouseholdInvite invite = new HouseholdInvite();
+      invite.setInviteKey(inviteKey);
+      invite.setHouseholdId(newHouseholdId);
+      invite.setUserId(userId);
+      when(householdInviteService.findByKey(inviteKey)).thenReturn(invite);
+
+      Long oldHouseholdId = 1L;
+      User user = new User();
+      user.setHouseholdId(oldHouseholdId);
+      when(userService.getUserById(userId)).thenReturn(user);
+
+      when(householdService.getMembers(oldHouseholdId))
+          .thenReturn(List.of(new UserResponse(), new UserResponse()));
+
+      householdService.acceptHouseholdInvite(inviteKey);
+
+      verify(userService).updateUserCredentials(user);
+      verify(householdInviteService).deleteInvite(inviteKey);
+      verify(householdRepository, never()).deleteById(oldHouseholdId);
+    }
+
+    @Test
+    void shouldThrowIfInviteKeyIsNull() {
+      assertThrows(IllegalArgumentException.class, () -> {
+        householdService.acceptHouseholdInvite(null);
+      });
+    }
+
+    @Test
+    void shouldThrowIfInviteKeyIsBlank() {
+      assertThrows(IllegalArgumentException.class, () -> {
+        householdService.acceptHouseholdInvite("");
+      });
+    }
+
+    @Test
+    void shouldThrowIfInviteNotFound() {
+      String inviteKey = "notAKey";
+      when(householdInviteService.findByKey(inviteKey)).thenReturn(null);
+
+      assertThrows(IllegalArgumentException.class, () -> {
+        householdService.acceptHouseholdInvite(inviteKey);
+      });
     }
   }
 }
