@@ -9,6 +9,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
@@ -206,7 +207,7 @@ public class HouseholdService {
    * @param request the new household values, request null values are not changed
    * @return response object with the updated values
    */
-  public HouseholdResponse updateHousehold(Long id, CreateHouseholdRequest request) {
+  public HouseholdResponse updateHousehold(Long id, UpdateHouseholdRequest request) {
     Optional<Household> existingHousehold = householdRepository.findById(id);
 
     Validate.that(existingHousehold.isPresent(),
