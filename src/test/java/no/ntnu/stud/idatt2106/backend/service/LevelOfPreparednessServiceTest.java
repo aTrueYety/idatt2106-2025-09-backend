@@ -39,7 +39,7 @@ public class LevelOfPreparednessServiceTest {
     userService = mock(UserService.class);
 
     preparednessService = new LevelOfPreparednessService(
-        foodService, householdService, householdKitService,
+        foodService, householdKitService,
         kitService, extraResidentService, extraResidentTypeService, userService);
 
     // Shared test data
@@ -62,24 +62,27 @@ public class LevelOfPreparednessServiceTest {
   @Test
   void testCalculateLevelOfPreparednessWater_notEnoughWater() {
     long householdId = 1L;
+    HouseholdResponse householdResponse = new HouseholdResponse();
+    householdResponse.setId(householdId);
+    householdResponse.setWaterAmountLiters(6.0);
 
-    when(householdService
-        .getWaterAmount(householdId)).thenReturn(6.0); // Only 6L of water available
     when(userService.getUsersByHouseholdId(householdId))
         .thenReturn(List.of(new UserResponse(), new UserResponse())); // 2 users
     when(extraResidentService.getAll()).thenReturn(List.of());
 
     // 40/6 = 0.66667
+    double result = preparednessService.calculateLevelOfPreparednessWater(householdResponse);
 
-    double result = preparednessService.calculateLevelOfPreparednessWater(householdId);
     assertEquals(0.15, result); // (2 users * 20L = 40L) -> 6/40 = 0.15
   }
 
   @Test
   void testCalculateLevelOfPreparednessWater_withExtraResidents() {
     long householdId = 2L;
+    HouseholdResponse householdResponse = new HouseholdResponse();
+    householdResponse.setId(householdId);
+    householdResponse.setWaterAmountLiters(18.0);
 
-    when(householdService.getWaterAmount(householdId)).thenReturn(18.0); // 18L of water available
     when(userService.getUsersByHouseholdId(householdId))
         .thenReturn(List.of(new UserResponse())); // 1 user
 
@@ -104,7 +107,7 @@ public class LevelOfPreparednessServiceTest {
     when(extraResidentTypeService.getById(2L))
         .thenReturn(Optional.of(type2)); // 2L/day for type 2
 
-    double result = preparednessService.calculateLevelOfPreparednessWater(householdId);
+    double result = preparednessService.calculateLevelOfPreparednessWater(householdResponse);
     assertEquals(0.65454, result, 0.00001);
     // (1 user * 20L + (1L + 1.5L) * 3d = 27.5L) -> 18/27.5 = 0.65454545
   }
@@ -113,12 +116,15 @@ public class LevelOfPreparednessServiceTest {
   void testCalculateLevelOfPreparednessWater_noWater() {
     long householdId = 3L;
 
-    when(householdService.getWaterAmount(householdId)).thenReturn(0.0); // No water available
+    HouseholdResponse householdResponse = new HouseholdResponse();
+    householdResponse.setId(householdId);
+    householdResponse.setWaterAmountLiters(0.0);
+
     when(userService.getUsersByHouseholdId(householdId))
         .thenReturn(List.of(new UserResponse(), new UserResponse())); // 2 users
     when(extraResidentService.getAll()).thenReturn(List.of());
 
-    double result = preparednessService.calculateLevelOfPreparednessWater(householdId);
+    double result = preparednessService.calculateLevelOfPreparednessWater(householdResponse);
     assertEquals(0.0, result); // (2 users * 2L * 3d = 12L) -> 0/12 = 0.0
   }
 
@@ -126,11 +132,14 @@ public class LevelOfPreparednessServiceTest {
   void testCalculateLevelOfPreparednessWater_noUsersOrResidents() {
     long householdId = 4L;
 
-    when(householdService.getWaterAmount(householdId)).thenReturn(10.0); // 10L of water available
+    HouseholdResponse householdResponse = new HouseholdResponse();
+    householdResponse.setId(householdId);
+    householdResponse.setWaterAmountLiters(10.0);
+
     when(userService.getUsersByHouseholdId(householdId)).thenReturn(List.of()); // No users
     when(extraResidentService.getAll()).thenReturn(List.of()); // No extra residents
 
-    double result = preparednessService.calculateLevelOfPreparednessWater(householdId);
+    double result = preparednessService.calculateLevelOfPreparednessWater(householdResponse);
     assertEquals(0.0, result); // No users or residents -> no consumption -> 0/0 = 0.0
   }
 
@@ -168,38 +177,43 @@ public class LevelOfPreparednessServiceTest {
   void testCalculateOverallLevelOfPreparedness_average() {
     long householdId = 4L;
 
-    // Mock individual preparedness levels
+    HouseholdResponse householdResponse = new HouseholdResponse();
+    householdResponse.setId(householdId);
+    householdResponse.setWaterAmountLiters(12.0);
+
+    // Mock individual preparedness data
     when(foodService.getCaloriesByHouseholdId(householdId)).thenReturn(6000.0);
     when(userService.getUsersByHouseholdId(householdId)).thenReturn(List.of(new UserResponse()));
     when(extraResidentService.getAll()).thenReturn(List.of());
-    when(householdService.getWaterAmount(householdId)).thenReturn(12.0);
     when(householdKitService.getByHouseholdId(householdId))
         .thenReturn(List.of(new HouseholdKitResponse(),
             new HouseholdKitResponse(),
             new HouseholdKitResponse()));
-    when(kitService.getAll()).thenReturn(List.of(new KitResponse(),
-        new KitResponse(), new KitResponse()));
+    when(kitService.getAll()).thenReturn(List.of(
+        new KitResponse(), new KitResponse(), new KitResponse()));
 
-    double result = preparednessService.calculateOverallLevelOfPreparedness(householdId);
-    assertEquals(0.86667, result, 0.00001); // all components return 1.0
+    double result = preparednessService.calculateOverallLevelOfPreparedness(householdResponse);
+    assertEquals(0.86667, result, 0.00001);
   }
 
   @Test
   void testGetPreparednessForHousehold_returnsPerfectPreparedness() {
     long householdId = 5L;
 
+    HouseholdResponse householdResponse = new HouseholdResponse();
+    householdResponse.setId(householdId);
+    householdResponse.setWaterAmountLiters(40.0);
+
     when(foodService.getCaloriesByHouseholdId(householdId)).thenReturn(6000.0);
     when(userService.getUsersByHouseholdId(householdId)).thenReturn(List.of(new UserResponse()));
     when(extraResidentService.getAll()).thenReturn(List.of());
-    when(householdService.getWaterAmount(householdId)).thenReturn(40.0);
     when(householdKitService.getByHouseholdId(householdId))
         .thenReturn(List.of(new HouseholdKitResponse(),
             new HouseholdKitResponse(), new HouseholdKitResponse()));
     when(kitService.getAll()).thenReturn(List.of(new KitResponse(),
         new KitResponse(), new KitResponse()));
 
-    LevelOfPreparednessResponse response = preparednessService
-        .getPreparednessForHousehold(householdId);
+    LevelOfPreparednessResponse response = preparednessService.getPreparednessForHousehold(householdResponse);
 
     assertNotNull(response);
     assertEquals(1.0, response.getLevelOfPreparedness());
@@ -212,18 +226,20 @@ public class LevelOfPreparednessServiceTest {
   public void testGetPreparednessFOrHouseholdNotPerfectPreparedness() {
     long householdId = 6L;
 
+    HouseholdResponse householdResponse = new HouseholdResponse();
+    householdResponse.setId(householdId);
+    householdResponse.setWaterAmountLiters(2.0);
+
     when(foodService.getCaloriesByHouseholdId(householdId)).thenReturn(5000.0);
     when(userService.getUsersByHouseholdId(householdId)).thenReturn(List.of(new UserResponse()));
     when(extraResidentService.getAll()).thenReturn(List.of());
-    when(householdService.getWaterAmount(householdId)).thenReturn(2.0);
     when(householdKitService.getByHouseholdId(householdId))
         .thenReturn(List.of(new HouseholdKitResponse(),
             new HouseholdKitResponse(), new HouseholdKitResponse()));
     when(kitService.getAll()).thenReturn(List.of(new KitResponse(),
         new KitResponse(), new KitResponse()));
 
-    LevelOfPreparednessResponse response = preparednessService
-        .getPreparednessForHousehold(householdId);
+    LevelOfPreparednessResponse response = preparednessService.getPreparednessForHousehold(householdResponse);
 
     assertNotNull(response);
     assertEquals(0.83333, response.getLevelOfPreparednessFood(), 0.0001);
@@ -236,18 +252,23 @@ public class LevelOfPreparednessServiceTest {
   void testCalculateLevelOfPreparednessWater_waterDecreases() {
     long householdId = 7L;
 
-    when(householdService.getWaterAmount(householdId)).thenReturn(6.0);
+    HouseholdResponse householdResponse = new HouseholdResponse();
+    householdResponse.setId(householdId);
+    householdResponse.setWaterAmountLiters(6.0);
+
     when(userService.getUsersByHouseholdId(householdId))
-        .thenReturn(List.of(new UserResponse(), new UserResponse()));
-    when(extraResidentService.getAll()).thenReturn(List.of());
+        .thenReturn(List.of(new UserResponse(), new UserResponse())); // 2 users
+    when(extraResidentService.getAll()).thenReturn(List.of()); // No extra residents
 
-    double initialResult = preparednessService.calculateLevelOfPreparednessWater(householdId);
-    assertEquals(0.15, initialResult);
+    // 2 users => 2 * 20L = 40L needed
+    // Initial: 6 / 40 = 0.15
+    double initialResult = preparednessService.calculateLevelOfPreparednessWater(householdResponse);
+    assertEquals(0.15, initialResult, 0.0001);
 
-    // Water decreases
-    when(householdService.getWaterAmount(householdId)).thenReturn(3.0);
-    double decreasedResult = preparednessService.calculateLevelOfPreparednessWater(householdId);
-    assertEquals(0.075, decreasedResult);
+    // Water decreases to 3L -> 3 / 40 = 0.075
+    householdResponse.setWaterAmountLiters(3.0);
+    double decreasedResult = preparednessService.calculateLevelOfPreparednessWater(householdResponse);
+    assertEquals(0.075, decreasedResult, 0.0001);
   }
 
   @Test
@@ -268,27 +289,34 @@ public class LevelOfPreparednessServiceTest {
   }
 
   @Test
-  void testCalculateOverallLevelOfPreparedness_preparednessDecreases() {
-    long householdId = 10L;
+void testCalculateOverallLevelOfPreparedness_preparednessDecreases() {
+  long householdId = 10L;
 
-    // Initial state
-    when(foodService.getCaloriesByHouseholdId(householdId)).thenReturn(6000.0);
-    when(userService.getUsersByHouseholdId(householdId)).thenReturn(List.of(new UserResponse()));
-    when(extraResidentService.getAll()).thenReturn(List.of());
-    when(householdService.getWaterAmount(householdId)).thenReturn(20.0);
-    when(householdKitService.getByHouseholdId(householdId))
-        .thenReturn(List.of(new HouseholdKitResponse(),
-            new HouseholdKitResponse(),
-            new HouseholdKitResponse()));
-    when(kitService.getAll()).thenReturn(List.of(new KitResponse(),
-        new KitResponse(), new KitResponse()));
+  HouseholdResponse householdResponse = new HouseholdResponse();
+  householdResponse.setId(householdId);
+  householdResponse.setWaterAmountLiters(20.0); 
 
-    double initialResult = preparednessService.calculateOverallLevelOfPreparedness(householdId);
-    assertEquals(1.0, initialResult);
+  when(foodService.getCaloriesByHouseholdId(householdId)).thenReturn(6000.0);
+  when(userService.getUsersByHouseholdId(householdId)).thenReturn(List.of(new UserResponse()));
+  when(extraResidentService.getAll()).thenReturn(List.of());
 
-    // Water decreases
-    when(householdService.getWaterAmount(householdId)).thenReturn(6.0); // Water reduced
-    double decreasedResult = preparednessService.calculateOverallLevelOfPreparedness(householdId);
-    assertTrue(decreasedResult < 1.0); // Overall preparedness should decrease
-  }
+  when(householdKitService.getByHouseholdId(householdId))
+      .thenReturn(List.of(
+          new HouseholdKitResponse(),
+          new HouseholdKitResponse(),
+          new HouseholdKitResponse()));
+  when(kitService.getAll()).thenReturn(List.of(
+      new KitResponse(),
+      new KitResponse(),
+      new KitResponse()));
+
+  double initialResult = preparednessService.calculateOverallLevelOfPreparedness(householdResponse);
+  assertEquals(1.0, initialResult, 0.0001);
+
+  householdResponse.setWaterAmountLiters(6.0);
+  double decreasedResult = preparednessService.calculateOverallLevelOfPreparedness(householdResponse);
+  assertTrue(decreasedResult < 1.0);
+  assertTrue(decreasedResult < initialResult);
+}
+
 }

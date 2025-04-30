@@ -7,11 +7,9 @@ import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
-import no.ntnu.stud.idatt2106.backend.model.response.LevelOfPreparednessResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
 import no.ntnu.stud.idatt2106.backend.service.JwtService;
-import no.ntnu.stud.idatt2106.backend.service.LevelOfPreparednessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +38,6 @@ public class HouseholdController {
 
   @Autowired
   private JwtService jwtService;
-
-  @Autowired
-  private LevelOfPreparednessService levelOfPreparednessService;
 
   /**
    * Returns all of the registered households as HouseholdResponses.
@@ -143,13 +138,8 @@ public class HouseholdController {
       """)
   @GetMapping("/{id}")
   public ResponseEntity<HouseholdResponse> getById(@PathVariable Long id) {
-    HouseholdResponse response = householdService.getById(id);
+    HouseholdResponse response = householdService.getByIdWithPreparedness(id);
     logger.info("Retrieved household successfully");
-
-    LevelOfPreparednessResponse levelOfPreparedness = levelOfPreparednessService
-          .getPreparednessForHousehold(id);
-    response.setLevelOfPreparedness(levelOfPreparedness);
-    logger.info("Level of preparedness for household with ID = {} retrieved successfully", id);
     return ResponseEntity.ok().body(response);
   }
 

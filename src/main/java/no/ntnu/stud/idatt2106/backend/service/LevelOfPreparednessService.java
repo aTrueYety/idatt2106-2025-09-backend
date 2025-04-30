@@ -3,6 +3,7 @@ package no.ntnu.stud.idatt2106.backend.service;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.LevelOfPreparednessResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 public class LevelOfPreparednessService {
 
   private final FoodService foodService;
-  private final HouseholdService householdService;
   private final HouseholdKitService householdKitService;
   private final KitService kitService;
   private final ExtraResidentService extraResidentService;
@@ -26,16 +26,13 @@ public class LevelOfPreparednessService {
    * household.
    *
    * @param foodService         Service for managing food items
-   * @param householdService    Service for managing households, handles water for
-   *                            a household
    * @param householdKitService Service for managing household kits
    */
   public LevelOfPreparednessService(FoodService foodService,
-      HouseholdService householdService, HouseholdKitService householdKitService,
+      HouseholdKitService householdKitService,
       KitService kitService, ExtraResidentService extraResidentService,
       ExtraResidentTypeService extraResidentTypeService, UserService userService) {
     this.foodService = foodService;
-    this.householdService = householdService;
     this.householdKitService = householdKitService;
     this.kitService = kitService;
     this.extraResidentService = extraResidentService;
@@ -70,17 +67,17 @@ public class LevelOfPreparednessService {
    * Calculates the level of preparedness for a household based on the food items
    * and household kit.
    *
-   * @param householdId The ID of the household to calculate the level of
+   * @param household The ID of the household to calculate the level of
    *                    preparedness for
    * @return The level of preparedness as a double value
    */
-  public double calculateLevelOfPreparednessWater(Long householdId) {
+  public double calculateLevelOfPreparednessWater(HouseholdResponse household) {
 
-    double householdWaterAmount = householdService.getWaterAmount(householdId);
-    List<UserResponse> users = userService.getUsersByHouseholdId(householdId);
+    double householdWaterAmount = household.getWaterAmountLiters();
+    List<UserResponse> users = userService.getUsersByHouseholdId(household.getId());
     double amountOfUsersInHousehold = users != null ? users.size() : 0;
 
-    double extraResidentsWaterWeek = getDailyWaterNeedExtraResidents(householdId) * 3;
+    double extraResidentsWaterWeek = getDailyWaterNeedExtraResidents(household.getId()) * 3;
     double totalWaterNeed = (amountOfUsersInHousehold * 20) + extraResidentsWaterWeek;
 
     // 1 in value equals 4 liters of water per day per person
@@ -180,31 +177,31 @@ public class LevelOfPreparednessService {
    * Calculates the overall level of preparedness for a household based on food,
    * water, and kit preparedness.
    *
-   * @param householdId The ID of the household to calculate the overall level of
+   * @param household The ID of the household to calculate the overall level of
    *                    preparedness for
    * @return The overall level of preparedness as a double value
    */
-  public double calculateOverallLevelOfPreparedness(long householdId) {
-    double foodPreparedness = calculateLevelOfFoodPreparedness(householdId);
-    double waterPreparedness = calculateLevelOfPreparednessWater(householdId);
-    double kitPreparedness = calculateLevelOfPreparednessKit(householdId);
+  public double calculateOverallLevelOfPreparedness(HouseholdResponse household) {
+    double foodPreparedness = calculateLevelOfFoodPreparedness(household.getId());
+    double waterPreparedness = calculateLevelOfPreparednessWater(household);
+    double kitPreparedness = calculateLevelOfPreparednessKit(household.getId());
     return (foodPreparedness + waterPreparedness + kitPreparedness) / 3;
   }
 
   /**
    * Retrieves the preparedness levels for a specific household.
    *
-   * @param householdId The ID of the household to retrieve preparedness levels
+   * @param household The ID of the household to retrieve preparedness levels
    *                    for
    * @return A LevelOfPreparednessResponse object containing the preparedness
    *         levels
    */
-  public LevelOfPreparednessResponse getPreparednessForHousehold(Long householdId) {
+  public LevelOfPreparednessResponse getPreparednessForHousehold(HouseholdResponse household) {
     LevelOfPreparednessResponse preparedness = new LevelOfPreparednessResponse();
-    preparedness.setLevelOfPreparednessWater(calculateLevelOfPreparednessWater(householdId));
-    preparedness.setLevelOfPreparednessFood(calculateLevelOfFoodPreparedness(householdId));
-    preparedness.setLevelOfPreparednessKit(calculateLevelOfPreparednessKit(householdId));
-    preparedness.setLevelOfPreparedness(calculateOverallLevelOfPreparedness(householdId));
+    preparedness.setLevelOfPreparednessWater(calculateLevelOfPreparednessWater(household));
+    preparedness.setLevelOfPreparednessFood(calculateLevelOfFoodPreparedness(household.getId()));
+    preparedness.setLevelOfPreparednessKit(calculateLevelOfPreparednessKit(household.getId()));
+    preparedness.setLevelOfPreparedness(calculateOverallLevelOfPreparedness(household));
     return preparedness;
   }
 
