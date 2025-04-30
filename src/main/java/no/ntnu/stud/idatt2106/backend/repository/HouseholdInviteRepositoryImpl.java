@@ -18,8 +18,8 @@ public class HouseholdInviteRepositoryImpl implements HouseholdInviteRepository 
 
   private final RowMapper<HouseholdInvite> rowMapper = (rs, rowNum) -> {
     HouseholdInvite invite = new HouseholdInvite();
-    invite.setUserId(rs.getLong("user_id"));
-    invite.setHouseholdId(rs.getLong("household_id"));
+    invite.setUserId(rs.getObject("user_id", Long.class));
+    invite.setHouseholdId(rs.getObject("household_id", Long.class));
     invite.setInviteKey(rs.getString("invite_key"));
     return invite;
   };

@@ -65,7 +65,7 @@ public class KitRepositoryImpl implements KitRepository {
     @Override
     public Kit mapRow(ResultSet rs, int rowNum) throws SQLException {
       Kit kit = new Kit();
-      kit.setId(rs.getLong("id"));
+      kit.setId(rs.getObject("id", Long.class));
       kit.setName(rs.getString("name"));
       kit.setDescription(rs.getString("description"));
       return kit;
