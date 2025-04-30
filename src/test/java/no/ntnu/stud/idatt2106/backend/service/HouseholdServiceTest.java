@@ -6,12 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -422,6 +425,46 @@ public class HouseholdServiceTest {
       } catch (Exception e) {
         fail("Expected emailService.sendHTMLEmail to be called, but exception was thrown");
       }
+    }
+
+    @Test
+    void shouldThrowRuntimeExceptionWhenFailedToSendMail() throws MessagingException {
+      Household household = new Household();
+      Long houseHoldId = 10L;
+      household.setId(houseHoldId);
+      
+      User sender = new User();
+      Long senderId = 1L;
+      sender.setId(senderId);
+      sender.setHouseholdId(houseHoldId);
+
+      User receiver = new User();
+      Long receiverId = 2L;
+      receiver.setId(receiverId);
+      receiver.setEmail("user@example.com");
+
+      InviteUserHouseholdRequest request = new InviteUserHouseholdRequest();
+      request.setUserId(receiverId);
+
+      String token = "Bearer token";
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);
+      when(userService.getUserById(senderId)).thenReturn(sender);
+      when(householdRepository.findById(houseHoldId)).thenReturn(Optional.of(household));
+      when(userService.getUserById(receiverId)).thenReturn(receiver);
+
+      String inviteKey = "abc123";
+      when(householdInviteService.createHouseholdInvite(houseHoldId, receiverId))
+          .thenReturn(inviteKey);
+      
+      doThrow(new MessagingException())
+          .when(emailService)
+          .sendHtmlEmail(anyString(), anyString(), anyString());
+      
+      RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        householdService.inviteUserToHousehold(request, token);
+      });
+
+      assertTrue(exception.getMessage().contains("Failed to send email"));
     }
   }
 }
