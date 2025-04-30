@@ -5,13 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Entity representing the relation between a household and an emergency group.
+ * Model class representing a group invitation.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupHousehold {
-  private Long id;
-  private Long householdId;
+public class GroupInvite {
   private Long groupId;
+  private Long householdId;
 }
