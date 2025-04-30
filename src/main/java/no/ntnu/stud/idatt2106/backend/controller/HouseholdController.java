@@ -48,7 +48,8 @@ public class HouseholdController {
    *
    * @return the registered households with a status code
    */
-  @Operation(summary = "Retrieve all registered households", description = "Retrieves information about all of the registered households")
+  @Operation(summary = "Retrieve all registered households",
+       description = "Retrieves information about all of the registered households")
   @GetMapping
   public ResponseEntity<List<HouseholdResponse>> getAll() {
     List<HouseholdResponse> households = householdService.getAll();
@@ -63,7 +64,8 @@ public class HouseholdController {
    * @return a ResponseEntity containing the registration response or an error
    *         message.
    */
-  @Operation(summary = "Creates a new household", description = "Creates a new household with the user creating it as a member")
+  @Operation(summary = "Creates a new household",
+         description = "Creates a new household with the user creating it as a member")
   @PostMapping("/register")
   public ResponseEntity<?> registerHousehold(@RequestBody HouseholdRequest householdRequest) {
     householdService.registerHousehold(householdRequest);
@@ -143,8 +145,10 @@ public class HouseholdController {
     HouseholdResponse response = householdService.getById(id);
     logger.info("Retrieved household successfully");
 
-    LevelOfPreparednessResponse levelOfPreparedness = levelOfPreparednessService.getPreparednessForHousehold(id);
-
+    LevelOfPreparednessResponse levelOfPreparedness = levelOfPreparednessService
+          .getPreparednessForHousehold(id);
+    response.setLevelOfPreparedness(levelOfPreparedness);
+    logger.info("Level of preparedness for household with ID = {} retrieved successfully", id);
     return ResponseEntity.ok().body(response);
   }
 
