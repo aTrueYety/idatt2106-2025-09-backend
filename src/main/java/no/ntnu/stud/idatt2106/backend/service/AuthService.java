@@ -1,8 +1,11 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import jakarta.mail.MessagingException;
+import no.ntnu.stud.idatt2106.backend.model.base.PasswordResetKey;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.LoginRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetKeyRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.RegisterRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ChangeCredentialsResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.LoginResponse;
@@ -32,6 +35,8 @@ public class AuthService {
   private UserService userService;
   @Autowired
   private EmailService emailService;
+  @Autowired
+  private PasswordResetService passwordResetKeyService;
 
   private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -163,22 +168,18 @@ public class AuthService {
     if (password == null || password.length() < 8) {
       return false;
     }
-
     boolean hasLetter = false;
     boolean hasNumber = false;
-
     for (char c : password.toCharArray()) {
       if (Character.isLetter(c)) {
         hasLetter = true;
       } else if (Character.isDigit(c)) {
         hasNumber = true;
       }
-
       if (hasLetter && hasNumber) {
         return true;
       }
     }
-
     return false;
   }
 
@@ -189,5 +190,49 @@ public class AuthService {
    */
   public void validateToken(String token) {
     jwtService.extractUserName(token.substring(7));
+  }
+
+  /**
+   * Requests a password reset link to be sent to the user's email address.
+   * It generates a unique key and sends an email with the reset link.
+   *
+   * @param request the email address of the user requesting the password reset
+   */
+  public void requestPasswordReset(PasswordResetKeyRequest request) {
+    Validate.that(request.getEmail(), Validate.isNotBlankOrNull(), "Email cannot be blank or null");
+    Validate.that(request.getEmail().matches(
+        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"),
+        Validate.isTrue(), "Email is not valid");
+
+    User user = userService.getUserByEmail(request.getEmail());
+
+    String key = "";
+
+    String htmlContent = EmailTemplates.getPasswordResetTemplate(key);
+    try {
+      emailService.sendHtmlEmail(user.getEmail(), "Tilbakestill passord", htmlContent);
+    } catch (MessagingException e) {
+      throw new RuntimeException("Failed to send password reset email", e);
+    }
+  }
+
+  /**
+   * Handles password reset requests. It verifies the provided key, and password
+   * and updates the password.
+   *
+   * @param request the request containing the key and new password
+   */
+  public void resetPassword(PasswordResetRequest request) {
+    Validate.isValid(isPasswordValid(request.getNewPassword()), 
+        "New password must be at least 8 characters long, including both a letter and a digit");
+    Validate.that(request.getKey(), Validate.isNotBlankOrNull(), "Key cannot be blank or null");
+
+    PasswordResetKey passwordResetKey = passwordResetKeyService.findByKey(request.getKey());
+    Validate.that(passwordResetKey, Validate.isNotNull(), "Key not found");
+    User user = userService.getUserById(passwordResetKey.getUserId());
+    Validate.that(user, Validate.isNotNull(), "User not found");
+    user.setPassword(encoder.encode(request.getNewPassword()));
+    userService.updateUserCredentials(user);
+    passwordResetKeyService.deletePasswordResetKey(request.getKey());
   }
 }

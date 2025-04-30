@@ -3,6 +3,8 @@ package no.ntnu.stud.idatt2106.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.ntnu.stud.idatt2106.backend.model.request.LoginRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetKeyRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.RegisterRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ChangeCredentialsResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.LoginResponse;
@@ -12,6 +14,7 @@ import no.ntnu.stud.idatt2106.backend.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -98,5 +101,38 @@ public class AuthController {
   public ResponseEntity<Void> test(@RequestHeader("Authorization") String token) {
     service.validateToken(token);
     return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Requests a password reset link to be sent to the user's email address.
+   * It generates a unique key and sends an email with the reset link.
+   *
+   * @param email the email address of the user requesting the password reset
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Request password reset", 
+      description = "Sends a password reset link to the user's email address")
+  @PostMapping("/request-password-reset")
+  public ResponseEntity<Void> requestPasswordReset(@RequestBody PasswordResetKeyRequest email) {
+    service.requestPasswordReset(email);
+    logger.info("Password reset requested for email: {}", email);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  /**
+   * Handles password reset requests. It verifies the provided key, and password
+   * and updates the password.
+   *
+   * @param passwordChangeRequest the request containing the key and new password
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Reset password", 
+      description = "Updates the user's password after verifying the provided key and password")
+  @PostMapping("/reset-password")
+  public ResponseEntity<Void> resetPassword(
+      @RequestBody PasswordResetRequest passwordChangeRequest) {
+    service.resetPassword(passwordChangeRequest);
+    logger.info("Password reset successfully");
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 }
