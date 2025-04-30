@@ -34,7 +34,7 @@ public class ExtraResidentController {
 
   /** Get a specific extra resident by ID. */
   @GetMapping("/{id}")
-  public ResponseEntity<ExtraResidentResponse> getById(@PathVariable int id) {
+  public ResponseEntity<ExtraResidentResponse> getById(@PathVariable long id) {
     return service.getById(id)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
@@ -50,14 +50,14 @@ public class ExtraResidentController {
   /** Update an existing extra resident. */
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(
-      @PathVariable int id, @RequestBody ExtraResidentUpdate request) {
+      @PathVariable Long id, @RequestBody ExtraResidentUpdate request) {
     boolean success = service.update(id, request);
     return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
   }
 
   /** Delete a resident by ID. */
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable int id) {
+  public ResponseEntity<Void> delete(@PathVariable long id) {
     return service.delete(id)
         ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();

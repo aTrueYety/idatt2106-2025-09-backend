@@ -58,7 +58,7 @@ public class ExtraResidentService {
    * @return an Optional containing the ExtraResidentResponse if found, empty
    *         otherwise
    */
-  public Optional<ExtraResidentResponse> getById(int id) {
+  public Optional<ExtraResidentResponse> getById(Long id) {
     return repository.findById(id)
         .map(ExtraResidentMapper::toResponse);
   }
@@ -71,7 +71,7 @@ public class ExtraResidentService {
    *                resident
    * @return true if updated, false if not found
    */
-  public boolean update(int id, ExtraResidentUpdate request) {
+  public boolean update(Long id, ExtraResidentUpdate request) {
     if (repository.findById(id).isEmpty()) {
       return false;
     }
@@ -87,7 +87,7 @@ public class ExtraResidentService {
    * @param id the ID of the extra resident to delete
    * @return true if deleted, false if not found
    */
-  public boolean delete(int id) {
+  public boolean delete(Long id) {
     if (repository.findById(id).isEmpty()) {
       return false;
     }

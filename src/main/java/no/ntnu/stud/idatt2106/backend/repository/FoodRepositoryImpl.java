@@ -112,7 +112,7 @@ public class FoodRepositoryImpl implements FoodRepository {
    * @return a list of food items for the specified household
    */
   @Override
-  public List<Food> findByHouseholdId(int householdId) {
+  public List<Food> findByHouseholdId(long householdId) {
     String sql = "SELECT * FROM food WHERE household_id = ?";
     return jdbcTemplate.query(sql, rowMapper, householdId);
   }

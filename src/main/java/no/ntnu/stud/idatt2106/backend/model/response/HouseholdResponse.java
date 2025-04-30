@@ -18,4 +18,5 @@ public class HouseholdResponse {
   private double latitude;
   private double waterAmountLiters;
   private Date lastWaterChangeDate;
+  private LevelOfPreparednessResponse levelOfPreparedness;
 }

@@ -1,6 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import no.ntnu.stud.idatt2106.backend.mapper.FoodTypeMapper;
@@ -102,5 +103,18 @@ public class FoodTypeService {
     return repository.findByNameContainingIgnoreCase(query).stream()
         .map(FoodTypeMapper::toResponse)
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Get calories per unit for a given food type ID.
+   *
+   * @param id the ID of the food type
+   * @return calories per unit
+   * @throws NoSuchElementException if the food type is not found
+   */
+  public float getCaloriesById(int id) {
+    return repository.findById(id)
+        .map(FoodType::getCaloriesPerUnit)
+        .orElseThrow(() -> new NoSuchElementException("Food type not found with id = " + id));
   }
 }

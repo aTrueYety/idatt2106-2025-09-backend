@@ -52,5 +52,5 @@ public interface FoodRepository {
    * @param householdId the household ID
    * @return a list of food items belonging to the given household
    */
-  List<Food> findByHouseholdId(int householdId);
+  List<Food> findByHouseholdId(long householdId);
 }

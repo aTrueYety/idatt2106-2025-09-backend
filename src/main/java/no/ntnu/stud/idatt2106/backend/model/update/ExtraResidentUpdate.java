@@ -7,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class ExtraResidentUpdate {
-  private int householdId;
-  private int typeId;
+  private long householdId;
+  private long typeId;
   private String name;
 }

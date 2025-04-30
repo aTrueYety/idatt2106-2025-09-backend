@@ -7,7 +7,7 @@ import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
  * Utility class for mapping different household objects to eachother.
  */
 public class HouseholdMapper {
-  
+
   /**
    * Maps a base Household to a response Household.
    *
