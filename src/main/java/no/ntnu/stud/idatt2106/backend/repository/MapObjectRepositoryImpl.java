@@ -36,12 +36,12 @@ public class MapObjectRepositoryImpl implements MapObjectRepository {
 
   private final RowMapper<MapObjectResponse> mapObjectResponseRowMapper = (rs, rowNum) -> {
     MapObjectResponse mapObject = new MapObjectResponse();
-    mapObject.setId(rs.getLong("id"));
-    mapObject.setTypeId(rs.getLong("type_id"));
+    mapObject.setId(rs.getObject("id", Long.class));
+    mapObject.setTypeId(rs.getObject("type_id", Long.class));
     mapObject.setTypeName(rs.getString("type_name"));
     mapObject.setTypeIcon(rs.getString("type_icon"));
-    mapObject.setLatitude(rs.getFloat("latitude"));
-    mapObject.setLongitude(rs.getFloat("longitude"));
+    mapObject.setLatitude(rs.getObject("latitude", Float.class));
+    mapObject.setLongitude(rs.getObject("longitude", Float.class));
     mapObject.setOpening(rs.getTimestamp("opening"));
     mapObject.setClosing(rs.getTimestamp("closing"));
     mapObject.setContactPhone(rs.getString("contact_phone"));

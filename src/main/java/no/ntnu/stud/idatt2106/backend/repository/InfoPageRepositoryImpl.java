@@ -17,7 +17,7 @@ public class InfoPageRepositoryImpl implements InfoPageRepository {
 
   private final RowMapper<InfoPage> rowMapper = (rs, rowNum) -> {
     InfoPage infoPage = new InfoPage();
-    infoPage.setId(rs.getLong("id"));
+    infoPage.setId(rs.getObject("id", Long.class));
     infoPage.setTitle(rs.getString("title"));
     infoPage.setContent(rs.getString("content"));
     infoPage.setCreatedAt(rs.getTimestamp("created_at"));
