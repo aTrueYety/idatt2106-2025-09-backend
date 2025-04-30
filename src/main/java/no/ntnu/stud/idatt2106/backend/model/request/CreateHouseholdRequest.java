@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HouseholdRequest {
+public class CreateHouseholdRequest {
   private String address;
   private Double longitude;
   private Double latitude;
