@@ -9,7 +9,7 @@ public class FoodUpdate {
   private int typeId;
   private int householdId;
   private LocalDate expirationDate;
-  private int amount;
+  private float amount;
 
   public int getTypeId() {
     return typeId;
@@ -35,11 +35,11 @@ public class FoodUpdate {
     this.expirationDate = expirationDate;
   }
 
-  public int getAmount() {
+  public float getAmount() {
     return amount;
   }
 
-  public void setAmount(int amount) {
+  public void setAmount(float amount) {
     this.amount = amount;
   }
 }

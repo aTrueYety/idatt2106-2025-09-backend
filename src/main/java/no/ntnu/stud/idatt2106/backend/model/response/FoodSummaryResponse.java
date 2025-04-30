@@ -8,5 +8,5 @@ import lombok.Data;
 @Data
 public class FoodSummaryResponse {
   private int typeId;
-  private int totalAmount;
+  private float totalAmount;
 }
