@@ -185,7 +185,7 @@ public class HouseholdServiceTest {
 
     Household household = new Household();
     household.setId(id);
-    household.setAdress("Test street");
+    household.setAddress("Test street");
     household.setLatitude(10.0);
     household.setLongitude(20.0);
     household.setWaterAmountLiters(100.0);
@@ -197,7 +197,7 @@ public class HouseholdServiceTest {
     when(householdRepository.findById(id)).thenReturn(Optional.of(household));
     HouseholdResponse householdResponse = new HouseholdResponse();
     householdResponse.setId(household.getId());
-    householdResponse.setAddress(household.getAdress());
+    householdResponse.setAddress(household.getAddress());
     householdResponse.setLatitude(household.getLatitude());
     householdResponse.setLongitude(household.getLongitude());
     householdResponse.setWaterAmountLiters(household.getWaterAmountLiters());
