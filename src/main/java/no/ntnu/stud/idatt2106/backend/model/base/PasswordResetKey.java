@@ -1,0 +1,18 @@
+package no.ntnu.stud.idatt2106.backend.model.base;
+
+import java.sql.Timestamp;
+import lombok.AllArgsConstructor;
+import lombok.Data; 
+import lombok.NoArgsConstructor;
+
+/**
+ * Model class representing a password change key.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class PasswordResetKey {
+  private Long userId;
+  private String key;
+  private Timestamp createdAt;
+}
