@@ -11,4 +11,5 @@ public class FoodBatchResponse {
   private long id;
   private float amount;
   private LocalDate expirationDate;
+  private int householdId;
 }
