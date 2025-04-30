@@ -24,8 +24,9 @@ import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
-import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
@@ -116,8 +117,8 @@ public class HouseholdServiceTest {
 
   @Test
   void shouldRegisterHousehold() {
-    HouseholdRequest request = new HouseholdRequest();
-    request.setAdress("Test");
+    CreateHouseholdRequest request = new CreateHouseholdRequest();
+    request.setAddress("Test");
     request.setLatitude(32.3);
     request.setLongitude(34.23);
     request.setWaterAmountLiters(32.23);
@@ -257,8 +258,8 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldUpdateHouseholdWhenValid() {
-      HouseholdRequest request = new HouseholdRequest();
-      request.setAdress("New Address");
+      UpdateHouseholdRequest request = new UpdateHouseholdRequest();
+      request.setAddress("New Address");
       request.setLatitude(30.0);
       request.setLongitude(40.0);
       request.setWaterAmountLiters(100.0);
@@ -280,7 +281,7 @@ public class HouseholdServiceTest {
     void shouldThrowExceptionWhenHouseholdNotFound() {
       when(householdRepository.findById(2L)).thenReturn(Optional.empty());
 
-      HouseholdRequest request = new HouseholdRequest();
+      UpdateHouseholdRequest request = new UpdateHouseholdRequest();
 
       Exception exception = assertThrows(IllegalArgumentException.class, () -> {
         householdService.updateHousehold(2L, request);
@@ -291,7 +292,7 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldNotUpdateWhenFieldsAreNull() {
-      HouseholdRequest request = new HouseholdRequest();
+      UpdateHouseholdRequest request = new UpdateHouseholdRequest();
 
       when(householdRepository.findById(1L)).thenReturn(Optional.of(existingHousehold));
   

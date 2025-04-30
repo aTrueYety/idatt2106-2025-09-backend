@@ -6,16 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Data transfer object for creating a new household.
+ * Data transfer object for updating an existing household.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HouseholdRequest {
-  private String adress;
+public class UpdateHouseholdRequest {
+  private String address;
   private Double longitude;
   private Double latitude;
   private Double waterAmountLiters;
   private Date lastWaterChangeDate;
-  private String username;
 }

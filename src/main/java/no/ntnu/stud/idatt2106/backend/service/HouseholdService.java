@@ -7,8 +7,9 @@ import no.ntnu.stud.idatt2106.backend.mapper.HouseholdMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
-import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
@@ -85,14 +86,14 @@ public class HouseholdService {
    *
    * @param householdReqeust DTO with information about the new household
    */
-  public void registerHousehold(HouseholdRequest householdReqeust) {
+  public void registerHousehold(CreateHouseholdRequest householdReqeust) {
     Validate.that(householdReqeust.getLongitude(),
         Validate.isNotNull(), "Longitude cannot be null");
     Validate.that(householdReqeust.getLatitude(),
         Validate.isNotNull(), "Latitude cannot be null");
 
     Household household = new Household();
-    household.setAdress(householdReqeust.getAdress());
+    household.setAdress(householdReqeust.getAddress());
     household.setLatitude(householdReqeust.getLatitude());
     household.setLongitude(householdReqeust.getLongitude());
     household.setWaterAmountLiters(householdReqeust.getWaterAmountLiters());
@@ -206,7 +207,7 @@ public class HouseholdService {
    * @param request the new household values, request null values are not changed
    * @return response object with the updated values
    */
-  public HouseholdResponse updateHousehold(Long id, HouseholdRequest request) {
+  public HouseholdResponse updateHousehold(Long id, UpdateHouseholdRequest request) {
     Optional<Household> existingHousehold = householdRepository.findById(id);
 
     Validate.that(existingHousehold.isPresent(),
@@ -214,8 +215,8 @@ public class HouseholdService {
 
     Household validatedHousehold = existingHousehold.get();
 
-    if (request.getAdress() != null) {
-      validatedHousehold.setAdress(request.getAdress());
+    if (request.getAddress() != null) {
+      validatedHousehold.setAdress(request.getAddress());
     }
 
     if (request.getLatitude() != null) {
