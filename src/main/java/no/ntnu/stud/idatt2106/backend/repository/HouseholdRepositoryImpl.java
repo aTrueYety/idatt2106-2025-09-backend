@@ -49,7 +49,7 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
 
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-      ps.setString(1, household.getAdress());
+      ps.setString(1, household.getAddress());
       ps.setDouble(2, household.getLatitude());
       ps.setDouble(3, household.getLongitude());
       ps.setDouble(4, household.getWaterAmountLiters());
@@ -106,7 +106,7 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
         """;
 
     jdbcTemplate.update(sql,
-        household.getAdress(),
+        household.getAddress(),
         household.getLatitude(),
         household.getLongitude(),
         household.getWaterAmountLiters(),

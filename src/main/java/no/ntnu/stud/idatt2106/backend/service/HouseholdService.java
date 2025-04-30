@@ -93,7 +93,7 @@ public class HouseholdService {
         Validate.isNotNull(), "Latitude cannot be null");
 
     Household household = new Household();
-    household.setAdress(householdReqeust.getAddress());
+    household.setAddress(householdReqeust.getAddress());
     household.setLatitude(householdReqeust.getLatitude());
     household.setLongitude(householdReqeust.getLongitude());
     household.setWaterAmountLiters(householdReqeust.getWaterAmountLiters());
@@ -158,7 +158,7 @@ public class HouseholdService {
       emailService.sendHtmlEmail(
           user.getEmail(),
           "Du har blitt invitert til å bli med i en husstand",
-          EmailTemplates.getHouseholdInviteTemplate(household.getAdress(), inviteKey));
+          EmailTemplates.getHouseholdInviteTemplate(household.getAddress(), inviteKey));
     } catch (Exception e) {
       throw new RuntimeException("Failed to send email", e);
     }
@@ -216,7 +216,7 @@ public class HouseholdService {
     Household validatedHousehold = existingHousehold.get();
 
     if (request.getAddress() != null) {
-      validatedHousehold.setAdress(request.getAddress());
+      validatedHousehold.setAddress(request.getAddress());
     }
 
     if (request.getLatitude() != null) {
