@@ -52,7 +52,7 @@ public class HouseholdService {
    * @throws NoSuchElementException if there is no registered Household with the
    *                                specified id
    */
-  public HouseholdResponse getById(Long id) {   
+  public HouseholdResponse getById(Long id) {
     return householdRepository.findById(id).map(HouseholdMapper::toResponse)
         .orElseThrow(() -> new NoSuchElementException("Household with ID = " + id + " not found"));
   }
@@ -61,11 +61,12 @@ public class HouseholdService {
    * Returns a HouseholdResponse of the Household the user is a part of.
    *
    * @param id the ID of the user to get the household of
-   * @return HouseholdResponse with the household the user with the id is a part of
+   * @return HouseholdResponse with the household the user with the id is a part
+   *         of
    */
   public HouseholdResponse getByUserId(Long id) {
     User user = userService.getUserById(id);
-    
+
     if (user == null) {
       throw new NoSuchElementException("User with ID = " + id + " not found");
     }
@@ -240,4 +241,17 @@ public class HouseholdService {
   public List<UserResponse> getMembers(Long id) {
     return userService.getUsersByHouseholdId(id);
   }
+
+  /**
+   * Gets the amount of water in liters for a given household.
+   *
+   * @param householdId the ID of the household to retrieve the water amount for
+   * @return the amount of water in liters for the specified household
+   */
+  public double getWaterAmount(Long householdId) {
+    return householdRepository.findById(householdId)
+        .orElseThrow(() -> new NoSuchElementException("No household with id = " + householdId))
+        .getWaterAmountLiters();
+  }
+
 }

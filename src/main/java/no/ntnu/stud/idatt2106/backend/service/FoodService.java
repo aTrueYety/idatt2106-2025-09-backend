@@ -113,6 +113,20 @@ public class FoodService {
   }
 
   /**
+   * Get the total amount of calories in a household by its ID.
+   *
+   * @param householdId the ID of the household
+   * @return the total calories in the household
+   */
+  public double getCaloriesByHouseholdId(long householdId) {
+    FoodTypeService foodTypeService = new FoodTypeService(foodTypeRepository);
+
+    return repository.findByHouseholdId(householdId).stream()
+        .mapToDouble(food -> food.getAmount() * foodTypeService.getCaloriesById(food.getTypeId()))
+        .sum();
+  }
+
+  /**
    * Gets food summary by household ID.
    * Groups food items by type and sums their amount.
    *

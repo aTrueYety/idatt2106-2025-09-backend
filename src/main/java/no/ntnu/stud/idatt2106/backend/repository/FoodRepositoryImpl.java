@@ -42,26 +42,26 @@ public class FoodRepositoryImpl implements FoodRepository {
 
   @Override
   public void save(Food food) {
-    String sql = "INSERT INTO food (type_id, household_id, expiration_date, amount) " 
+    String sql = "INSERT INTO food (type_id, household_id, expiration_date, amount) "
         + "VALUES (?, ?, ?, ?)";
     jdbcTemplate.update(
-        sql, 
-        food.getTypeId(), 
-        food.getHouseholdId(), 
+        sql,
+        food.getTypeId(),
+        food.getHouseholdId(),
         Date.valueOf(food.getExpirationDate()),
         food.getAmount());
   }
 
   @Override
   public void update(Food food) {
-    String sql = "UPDATE food SET type_id = ?, household_id = ?, expiration_date = ?, " 
+    String sql = "UPDATE food SET type_id = ?, household_id = ?, expiration_date = ?, "
         + "amount = ? WHERE id = ?";
     jdbcTemplate.update(
-        sql, 
-        food.getTypeId(), 
-        food.getHouseholdId(), 
+        sql,
+        food.getTypeId(),
+        food.getHouseholdId(),
         Date.valueOf(food.getExpirationDate()),
-        food.getAmount(), 
+        food.getAmount(),
         food.getId());
   }
 
@@ -71,7 +71,7 @@ public class FoodRepositoryImpl implements FoodRepository {
   }
 
   @Override
-  public List<Food> findByHouseholdId(int householdId) {
+  public List<Food> findByHouseholdId(long householdId) {
     String sql = "SELECT * FROM food WHERE household_id = ?";
     return jdbcTemplate.query(sql, rowMapper, householdId);
   }
