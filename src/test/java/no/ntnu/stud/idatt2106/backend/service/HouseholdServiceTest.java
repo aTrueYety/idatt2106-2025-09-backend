@@ -78,7 +78,7 @@ public class HouseholdServiceTest {
 
     existingHousehold = new Household();
     existingHousehold.setId(1L);
-    existingHousehold.setAdress("Test address");
+    existingHousehold.setAddress("Test address");
     existingHousehold.setLatitude(10.0);
     existingHousehold.setLongitude(20.0);
     existingHousehold.setWaterAmountLiters(50.0);
@@ -89,11 +89,11 @@ public class HouseholdServiceTest {
   void getAllShouldReturnAllHouseholds() {
     Household household1 = new Household();
     household1.setId(1L);
-    household1.setAdress("Test Street 1");
+    household1.setAddress("Test Street 1");
 
     Household household2 = new Household();
     household2.setId(2L);
-    household2.setAdress("Test Street 2");
+    household2.setAddress("Test Street 2");
 
     List<Household> households = new ArrayList<>();
     households.add(household1);
@@ -180,7 +180,7 @@ public class HouseholdServiceTest {
     Long id = 1L;
     Household household = new Household();
     household.setId(id);
-    household.setAdress("Test street");
+    household.setAddress("Test street");
 
     when(householdRepository.findById(id)).thenReturn(Optional.of(household));
 
@@ -209,7 +209,7 @@ public class HouseholdServiceTest {
       User mockUser = new User();
       Household mockHousehold = new Household();
       mockHousehold.setId(100L);
-      mockHousehold.setAdress("Test Address");
+      mockHousehold.setAddress("Test Address");
       mockUser.setId(1L);
       mockUser.setHouseholdId(100L);
 
@@ -408,7 +408,7 @@ public class HouseholdServiceTest {
       Long householdId = 10L;
       Household household = new Household();
       household.setId(householdId);
-      household.setAdress("Test Addresse");
+      household.setAddress("Test Addresse");
 
       String token = "Bearer validtoken";
       when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);
