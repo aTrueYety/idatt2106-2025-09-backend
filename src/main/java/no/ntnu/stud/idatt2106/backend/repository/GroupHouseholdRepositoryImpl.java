@@ -18,9 +18,10 @@ public class GroupHouseholdRepositoryImpl implements GroupHouseholdRepository {
   private final JdbcTemplate jdbcTemplate;
 
   private final RowMapper<GroupHousehold> rowMapper = (rs, rowNum) -> new GroupHousehold(
-      rs.getInt("id"),
-      rs.getInt("household_id"),
-      rs.getInt("group_id"));
+      rs.getObject("id", Long.class),
+      rs.getObject("household_id", Long.class),
+      rs.getObject("group_id", Long.class)
+  );
 
   @Override
   public void save(GroupHousehold groupHousehold) {
@@ -29,7 +30,7 @@ public class GroupHouseholdRepositoryImpl implements GroupHouseholdRepository {
   }
 
   @Override
-  public Optional<GroupHousehold> findById(int id) {
+  public Optional<GroupHousehold> findById(Long id) {
     String sql = "SELECT * FROM group_household WHERE id = ?";
     List<GroupHousehold> result = jdbcTemplate.query(sql, rowMapper, id);
     return result.stream().findFirst();
@@ -42,13 +43,20 @@ public class GroupHouseholdRepositoryImpl implements GroupHouseholdRepository {
   }
 
   @Override
-  public List<GroupHousehold> findByGroupId(int groupId) {
+  public List<GroupHousehold> findByGroupId(Long groupId) {
     String sql = "SELECT * FROM group_household WHERE group_id = ?";
     return jdbcTemplate.query(sql, rowMapper, groupId);
   }
 
   @Override
-  public boolean deleteById(int id) {
+  public GroupHousehold findByHouseholdIdAndGroupId(Long householdId, Long groupId) {
+    String sql = "SELECT * FROM group_household WHERE household_id = ? AND group_id = ?";
+    List<GroupHousehold> result = jdbcTemplate.query(sql, rowMapper, householdId, groupId);
+    return result.isEmpty() ? null : result.get(0);
+  }
+
+  @Override
+  public boolean deleteById(Long id) {
     String sql = "DELETE FROM group_household WHERE id = ?";
     return jdbcTemplate.update(sql, id) > 0;
   }
