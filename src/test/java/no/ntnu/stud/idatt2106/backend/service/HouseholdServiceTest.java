@@ -4,11 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -19,6 +25,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
@@ -34,6 +41,9 @@ import org.mockito.MockitoAnnotations;
  */
 public class HouseholdServiceTest {
   
+  @InjectMocks
+  private HouseholdService householdService;
+
   @Mock
   private HouseholdRepository householdRepository;
 
@@ -43,8 +53,11 @@ public class HouseholdServiceTest {
   @Mock
   private HouseholdInviteService householdInviteService;
 
-  @InjectMocks
-  private HouseholdService householdService;
+  @Mock
+  private EmailService emailService;
+
+  @Mock
+  private JwtService jwtService;
 
   private Household existingHousehold;
 
@@ -369,6 +382,89 @@ public class HouseholdServiceTest {
       assertThrows(IllegalArgumentException.class, () -> {
         householdService.acceptHouseholdInvite(inviteKey);
       });
+    }
+  }
+
+  @Nested
+  class InviteUserToHouseholdTests {
+    
+    @Test
+    void shouldSendEmailIfValid() {
+      Long recieverId = 2L;
+      InviteUserHouseholdRequest inviteRequest = new InviteUserHouseholdRequest(recieverId);
+      inviteRequest.setUserId(recieverId);
+
+      Long senderId = 1L;
+      User sender = new User();
+      sender.setId(senderId);
+      sender.setHouseholdId(10L);
+
+      String email = "user@example.com";
+      User receiver = new User();
+      receiver.setId(recieverId);
+      receiver.setEmail(email);
+
+      Long householdId = 10L;
+      Household household = new Household();
+      household.setId(householdId);
+      household.setAdress("Test Addresse");
+
+      String token = "Bearer validtoken";
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);
+      when(householdRepository.findById(householdId)).thenReturn(Optional.of(household));
+      when(userService.getUserById(recieverId)).thenReturn(receiver);
+      when(userService.getUserById(senderId)).thenReturn(sender);
+      String inviteKey = "abc123";
+      when(householdInviteService.createHouseholdInvite(householdId, recieverId))
+          .thenReturn(inviteKey);
+      
+      householdService.inviteUserToHousehold(inviteRequest, token);
+      try {
+        verify(emailService).sendHtmlEmail(eq(email),
+            contains("Du har blitt invitert"), contains("Test Addresse"));
+      } catch (Exception e) {
+        fail("Expected emailService.sendHTMLEmail to be called, but exception was thrown");
+      }
+    }
+
+    @Test
+    void shouldThrowRuntimeExceptionWhenFailedToSendMail() throws MessagingException {
+      Household household = new Household();
+      Long houseHoldId = 10L;
+      household.setId(houseHoldId);
+      
+      User sender = new User();
+      Long senderId = 1L;
+      sender.setId(senderId);
+      sender.setHouseholdId(houseHoldId);
+
+      User receiver = new User();
+      Long receiverId = 2L;
+      receiver.setId(receiverId);
+      receiver.setEmail("user@example.com");
+
+      InviteUserHouseholdRequest request = new InviteUserHouseholdRequest();
+      request.setUserId(receiverId);
+
+      String token = "Bearer token";
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);
+      when(userService.getUserById(senderId)).thenReturn(sender);
+      when(householdRepository.findById(houseHoldId)).thenReturn(Optional.of(household));
+      when(userService.getUserById(receiverId)).thenReturn(receiver);
+
+      String inviteKey = "abc123";
+      when(householdInviteService.createHouseholdInvite(houseHoldId, receiverId))
+          .thenReturn(inviteKey);
+      
+      doThrow(new MessagingException())
+          .when(emailService)
+          .sendHtmlEmail(anyString(), anyString(), anyString());
+      
+      RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        householdService.inviteUserToHousehold(request, token);
+      });
+
+      assertTrue(exception.getMessage().contains("Failed to send email"));
     }
   }
 }
