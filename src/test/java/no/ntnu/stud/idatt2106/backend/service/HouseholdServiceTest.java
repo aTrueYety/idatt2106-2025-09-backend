@@ -26,6 +26,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
@@ -257,7 +258,7 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldUpdateHouseholdWhenValid() {
-      CreateHouseholdRequest request = new CreateHouseholdRequest();
+      UpdateHouseholdRequest request = new UpdateHouseholdRequest();
       request.setAddress("New Address");
       request.setLatitude(30.0);
       request.setLongitude(40.0);
@@ -280,7 +281,7 @@ public class HouseholdServiceTest {
     void shouldThrowExceptionWhenHouseholdNotFound() {
       when(householdRepository.findById(2L)).thenReturn(Optional.empty());
 
-      CreateHouseholdRequest request = new CreateHouseholdRequest();
+      UpdateHouseholdRequest request = new UpdateHouseholdRequest();
 
       Exception exception = assertThrows(IllegalArgumentException.class, () -> {
         householdService.updateHousehold(2L, request);
@@ -291,7 +292,7 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldNotUpdateWhenFieldsAreNull() {
-      CreateHouseholdRequest request = new CreateHouseholdRequest();
+      UpdateHouseholdRequest request = new UpdateHouseholdRequest();
 
       when(householdRepository.findById(1L)).thenReturn(Optional.of(existingHousehold));
   
