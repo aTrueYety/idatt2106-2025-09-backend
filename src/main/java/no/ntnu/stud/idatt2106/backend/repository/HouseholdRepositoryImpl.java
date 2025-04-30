@@ -117,12 +117,12 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
 
   /**
    * Deletes the registered household with the specified ID.
-   * 
+   *
    * @param id the ID of the household t be deleted
    */
   @Override
-    public void deleteById(Long id) {
-      String sql = "DELETE FROM household WHERE id = ?";
-      jdbcTemplate.update(sql, id);
-    }
+  public void deleteById(Long id) {
+    String sql = "DELETE FROM household WHERE id = ?";
+    jdbcTemplate.update(sql, id);
+  }
 }
