@@ -186,7 +186,7 @@ public class HouseholdController {
   public ResponseEntity<HouseholdResponse> getCurrentUserHousehold(
       @RequestHeader("Authorization") String token) {
     logger.info("Fetching household of authenticated user");
-    Long userId = jwtService.extractUserId(token);
+    Long userId = jwtService.extractUserId(token.substring(7));
     HouseholdResponse response = householdService.getByUserId(userId);
     logger.info("Found household of user with ID: {}", userId);
     return ResponseEntity.ok(response);
