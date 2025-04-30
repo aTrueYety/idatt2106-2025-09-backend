@@ -182,7 +182,7 @@ public class HouseholdController {
           Retrieves information about the household the current user is a part of.
           """
   )
-  @GetMapping("/me")
+  @GetMapping("/my-household")
   public ResponseEntity<HouseholdResponse> getCurrentUserHousehold(
       @RequestHeader("Authorization") String token) {
     logger.info("Fetching household of authenticated user");
