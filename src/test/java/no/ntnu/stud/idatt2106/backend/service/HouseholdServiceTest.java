@@ -303,9 +303,11 @@ public class HouseholdServiceTest {
       invite.setUserId(1L);
       invite.setHouseholdId(2L);
       invite.setInviteKey(inviteKey);
+
+      Long oldHouseholdId = 10L;
       User user = new User();
       user.setId(1L);
-      user.setHouseholdId(10L);
+      user.setHouseholdId(oldHouseholdId);
 
       when(householdInviteService.findByKey(inviteKey)).thenReturn(invite);
       when(userService.getUserById(1L)).thenReturn(user);
@@ -315,7 +317,7 @@ public class HouseholdServiceTest {
 
       verify(userService).updateUserCredentials(user);
       verify(householdInviteService).deleteInvite(inviteKey);
-      verify(householdRepository).deleteById(10L);
+      verify(householdRepository).deleteById(oldHouseholdId);
     }
 
     @Test
