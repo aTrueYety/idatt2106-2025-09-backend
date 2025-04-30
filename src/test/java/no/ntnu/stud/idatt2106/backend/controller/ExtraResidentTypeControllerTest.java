@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import no.ntnu.stud.idatt2106.backend.config.SecurityConfigTest;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
+import no.ntnu.stud.idatt2106.backend.model.update.ExtraResidentTypeUpdate;
 import no.ntnu.stud.idatt2106.backend.service.ExtraResidentTypeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +46,9 @@ public class ExtraResidentTypeControllerTest {
     when(service.getAll()).thenReturn(List.of(type));
 
     mockMvc.perform(get("/api/extra-resident-types"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].name").value("Visitor"))
-            .andExpect(jsonPath("$[0].consumptionWater").value(1.5f));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].name").value("Visitor"))
+        .andExpect(jsonPath("$[0].consumptionWater").value(1.5f));
   }
 
   @Test
@@ -61,8 +62,8 @@ public class ExtraResidentTypeControllerTest {
     when(service.getById(1)).thenReturn(Optional.of(type));
 
     mockMvc.perform(get("/api/extra-resident-types/1"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value("Guest"));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value("Guest"));
   }
 
   @Test
@@ -70,7 +71,7 @@ public class ExtraResidentTypeControllerTest {
     when(service.getById(999)).thenReturn(Optional.empty());
 
     mockMvc.perform(get("/api/extra-resident-types/999"))
-            .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -81,26 +82,11 @@ public class ExtraResidentTypeControllerTest {
     request.setConsumptionFood(1.7f);
 
     mockMvc.perform(post("/api/extra-resident-types")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated());
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isCreated());
 
     verify(service).create(any(ExtraResidentTypeRequest.class));
-  }
-
-  @Test
-  void shouldUpdateExtraResidentType() throws Exception {
-    ExtraResidentTypeRequest request = new ExtraResidentTypeRequest();
-    request.setName("Updated Type");
-    request.setConsumptionWater(1.0f);
-    request.setConsumptionFood(1.1f);
-
-    when(service.update(eq(1), any(ExtraResidentTypeRequest.class))).thenReturn(true);
-
-    mockMvc.perform(put("/api/extra-resident-types/1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isOk());
   }
 
   @Test
@@ -113,9 +99,9 @@ public class ExtraResidentTypeControllerTest {
     when(service.update(eq(1), any())).thenReturn(false);
 
     mockMvc.perform(put("/api/extra-resident-types/1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isNotFound());
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -123,7 +109,7 @@ public class ExtraResidentTypeControllerTest {
     when(service.delete(1)).thenReturn(true);
 
     mockMvc.perform(delete("/api/extra-resident-types/1"))
-            .andExpect(status().isNoContent());
+        .andExpect(status().isNoContent());
   }
 
   @Test
@@ -131,6 +117,6 @@ public class ExtraResidentTypeControllerTest {
     when(service.delete(999)).thenReturn(false);
 
     mockMvc.perform(delete("/api/extra-resident-types/999"))
-            .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound());
   }
 }

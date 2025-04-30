@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @ActiveProfiles("test")
-@Import({ExtraResidentTypeService.class, ExtraResidentTypeRepositoryImpl.class})
+@Import({ ExtraResidentTypeService.class, ExtraResidentTypeRepositoryImpl.class })
 public class ExtraResidentTypeServiceIntegrationTest {
 
   @Autowired
@@ -45,7 +45,7 @@ public class ExtraResidentTypeServiceIntegrationTest {
     request.setConsumptionFood(1.4f);
     service.create(request);
 
-    int id = service.getAll().get(0).getId();
+    long id = service.getAll().get(0).getId();
     var result = service.getById(id);
 
     assertThat(result).isPresent();
@@ -60,7 +60,7 @@ public class ExtraResidentTypeServiceIntegrationTest {
     request.setConsumptionFood(1.0f);
     service.create(request);
 
-    int id = service.getAll().get(0).getId();
+    long id = service.getAll().get(0).getId();
 
     ExtraResidentTypeRequest update = new ExtraResidentTypeRequest();
     update.setName("Updated Child");
@@ -83,7 +83,7 @@ public class ExtraResidentTypeServiceIntegrationTest {
     request.setConsumptionFood(1.1f);
     service.create(request);
 
-    int id = service.getAll().get(0).getId();
+    long id = service.getAll().get(0).getId();
 
     boolean deleted = service.delete(id);
     assertThat(deleted).isTrue();

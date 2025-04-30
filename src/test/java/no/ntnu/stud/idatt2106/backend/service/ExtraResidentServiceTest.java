@@ -55,7 +55,7 @@ public class ExtraResidentServiceTest {
     ExtraResident resident = new ExtraResident(1, 3, 4, "Jane Doe");
     when(repository.findById(1)).thenReturn(Optional.of(resident));
 
-    Optional<ExtraResidentResponse> result = service.getById(1);
+    Optional<ExtraResidentResponse> result = service.getById(1L);
 
     assertThat(result).isPresent();
     assertThat(result.get().getTypeId()).isEqualTo(4);
@@ -69,7 +69,7 @@ public class ExtraResidentServiceTest {
     update.setHouseholdId(5);
     update.setTypeId(6);
 
-    boolean success = service.update(1, update);
+    boolean success = service.update(1L, update);
 
     assertThat(success).isTrue();
     verify(repository).update(any(ExtraResident.class));
@@ -80,7 +80,7 @@ public class ExtraResidentServiceTest {
     when(repository.findById(999)).thenReturn(Optional.empty());
 
     ExtraResidentUpdate update = new ExtraResidentUpdate();
-    boolean success = service.update(999, update);
+    boolean success = service.update(999L, update);
 
     assertThat(success).isFalse();
     verify(repository, never()).update(any());
@@ -90,7 +90,7 @@ public class ExtraResidentServiceTest {
   void shouldDeleteIfExists() {
     when(repository.findById(1)).thenReturn(Optional.of(new ExtraResident()));
 
-    boolean result = service.delete(1);
+    boolean result = service.delete(1L);
 
     assertThat(result).isTrue();
     verify(repository).deleteById(1);
@@ -100,7 +100,7 @@ public class ExtraResidentServiceTest {
   void shouldNotDeleteIfNotFound() {
     when(repository.findById(1)).thenReturn(Optional.empty());
 
-    boolean result = service.delete(1);
+    boolean result = service.delete(1L);
 
     assertThat(result).isFalse();
     verify(repository, never()).deleteById(anyInt());

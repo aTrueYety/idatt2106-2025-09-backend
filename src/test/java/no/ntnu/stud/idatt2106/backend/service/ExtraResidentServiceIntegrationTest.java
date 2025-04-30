@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @ActiveProfiles("test")
-@Import({ExtraResidentService.class, ExtraResidentRepositoryImpl.class})
+@Import({ ExtraResidentService.class, ExtraResidentRepositoryImpl.class })
 public class ExtraResidentServiceIntegrationTest {
 
   @Autowired
@@ -39,8 +39,8 @@ public class ExtraResidentServiceIntegrationTest {
     var householdKey = new GeneratedKeyHolder();
     jdbc.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
-        "INSERT INTO household (adress, latitude, longitude, amount_water, last_water_change) VALUES (?, ?, ?, ?, CURRENT_DATE)",
-        Statement.RETURN_GENERATED_KEYS);
+          "INSERT INTO household (adress, latitude, longitude, amount_water, last_water_change) VALUES (?, ?, ?, ?, CURRENT_DATE)",
+          Statement.RETURN_GENERATED_KEYS);
       ps.setString(1, "Test Street");
       ps.setFloat(2, 1.1f);
       ps.setFloat(3, 2.2f);
@@ -53,8 +53,8 @@ public class ExtraResidentServiceIntegrationTest {
     var typeKey = new GeneratedKeyHolder();
     jdbc.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
-        "INSERT INTO extra_resident_type (name, consumption_water, consumption_food) VALUES (?, ?, ?)",
-        Statement.RETURN_GENERATED_KEYS);
+          "INSERT INTO extra_resident_type (name, consumption_water, consumption_food) VALUES (?, ?, ?)",
+          Statement.RETURN_GENERATED_KEYS);
       ps.setString(1, "Guest");
       ps.setFloat(2, 1.5f);
       ps.setFloat(3, 1.2f);
@@ -87,7 +87,7 @@ public class ExtraResidentServiceIntegrationTest {
     request.setName("Test Resident");
     service.create(request);
 
-    int id = service.getAll().get(0).getId();
+    long id = service.getAll().get(0).getId();
 
     ExtraResidentUpdate update = new ExtraResidentUpdate();
     update.setHouseholdId(householdId);
@@ -108,7 +108,7 @@ public class ExtraResidentServiceIntegrationTest {
     request.setName("Test Resident");
     service.create(request);
 
-    int id = service.getAll().get(0).getId();
+    long id = service.getAll().get(0).getId();
     boolean deleted = service.delete(id);
     assertThat(deleted).isTrue();
     assertThat(service.getAll()).isEmpty();
