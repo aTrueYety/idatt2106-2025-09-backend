@@ -24,15 +24,15 @@ public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
 
   private final RowMapper<ExtraResident> rowMapper = (rs, rowNum) -> {
     ExtraResident resident = new ExtraResident();
-    resident.setId(rs.getInt("id"));
-    resident.setHouseholdid(rs.getInt("household_id"));
-    resident.setTypeId(rs.getInt("type_id"));
+    resident.setId(rs.getObject("id", Long.class));
+    resident.setHouseholdid(rs.getObject("household_id", Long.class));
+    resident.setTypeId(rs.getObject("type_id", Long.class));
     resident.setName(rs.getString("name"));
     return resident;
   };
 
   @Override
-  public Optional<ExtraResident> findById(int id) {
+  public Optional<ExtraResident> findById(long id) {
     String sql = "SELECT * FROM extra_resident WHERE id = ?";
     return jdbc.query(sql, rowMapper, id).stream().findFirst();
   }
@@ -50,8 +50,8 @@ public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
 
     jdbc.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-      ps.setInt(1, extraResident.getHouseholdid());
-      ps.setInt(2, extraResident.getTypeId());
+      ps.setLong(1, extraResident.getHouseholdid());
+      ps.setLong(2, extraResident.getTypeId());
       ps.setString(3, extraResident.getName());
       return ps;
     }, keyHolder);
@@ -65,12 +65,12 @@ public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
   public void update(ExtraResident extraResident) {
     String sql = "UPDATE extra_resident SET household_id = ?, type_id = ?, name = ? WHERE id = ?";
     jdbc.update(
-        sql, extraResident.getHouseholdid(), extraResident.getTypeId(), extraResident.getName(), 
+        sql, extraResident.getHouseholdid(), extraResident.getTypeId(), extraResident.getName(),
         extraResident.getId());
   }
 
   @Override
-  public void deleteById(int id) {
+  public void deleteById(long id) {
     jdbc.update("DELETE FROM extra_resident WHERE id = ?", id);
   }
 }
