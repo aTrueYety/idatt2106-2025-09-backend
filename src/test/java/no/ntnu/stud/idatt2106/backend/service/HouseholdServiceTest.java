@@ -9,11 +9,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
+import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
@@ -35,6 +37,9 @@ public class HouseholdServiceTest {
 
   @Mock
   private UserService userService;
+
+  @Mock
+  private HouseholdInviteService householdInviteService;
 
   @InjectMocks
   private HouseholdService householdService;
@@ -283,6 +288,56 @@ public class HouseholdServiceTest {
       assertEquals(50.0, response.getWaterAmountLiters());
   
       verify(householdRepository).update(existingHousehold);
+    }
+  }
+
+  @Nested
+  class AcceptHouseholdInviteTests {
+
+    @Test
+    void shouldAcceptAndDeleteOldHouseholdIfEmpty() {
+      String inviteKey = "abd123";
+      HouseholdInvite invite = new HouseholdInvite();
+      invite.setUserId(1L);
+      invite.setHouseholdId(2L);
+      invite.setInviteKey(inviteKey);
+      User user = new User();
+      user.setId(1L);
+      user.setHouseholdId(10L);
+
+      when(householdInviteService.findByKey(inviteKey)).thenReturn(invite);
+      when(userService.getUserById(1L)).thenReturn(user);
+      when(householdService.getMembers(10L)).thenReturn(Collections.emptyList());
+
+      householdService.acceptHouseholdInvite(inviteKey);
+
+      verify(userService).updateUserCredentials(user);
+      verify(householdInviteService).deleteInvite(inviteKey);
+      verify(householdRepository).deleteById(10L);
+    }
+
+    @Test
+    void shouldThrowIfInviteKeyIsNull() {
+      assertThrows(IllegalArgumentException.class, () -> {
+        householdService.acceptHouseholdInvite(null);
+      });
+    }
+
+    @Test
+    void shouldThrowIfInviteKeyIsBlank() {
+      assertThrows(IllegalArgumentException.class, () -> {
+        householdService.acceptHouseholdInvite("");
+      });
+    }
+
+    @Test
+    void shouldThrowIfInviteNotFound() {
+      String inviteKey = "notAKey";
+      when(householdInviteService.findByKey(inviteKey)).thenReturn(null);
+
+      assertThrows(IllegalArgumentException.class, () -> {
+        householdService.acceptHouseholdInvite(inviteKey);
+      });
     }
   }
 }
