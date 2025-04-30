@@ -117,7 +117,7 @@ public class HouseholdServiceTest {
   @Test
   void shouldRegisterHousehold() {
     HouseholdRequest request = new HouseholdRequest();
-    request.setAdress("Test");
+    request.setAddress("Test");
     request.setLatitude(32.3);
     request.setLongitude(34.23);
     request.setWaterAmountLiters(32.23);
@@ -258,7 +258,7 @@ public class HouseholdServiceTest {
     @Test
     void shouldUpdateHouseholdWhenValid() {
       HouseholdRequest request = new HouseholdRequest();
-      request.setAdress("New Address");
+      request.setAddress("New Address");
       request.setLatitude(30.0);
       request.setLongitude(40.0);
       request.setWaterAmountLiters(100.0);

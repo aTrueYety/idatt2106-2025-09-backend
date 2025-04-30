@@ -92,7 +92,7 @@ public class HouseholdService {
         Validate.isNotNull(), "Latitude cannot be null");
 
     Household household = new Household();
-    household.setAdress(householdReqeust.getAdress());
+    household.setAdress(householdReqeust.getAddress());
     household.setLatitude(householdReqeust.getLatitude());
     household.setLongitude(householdReqeust.getLongitude());
     household.setWaterAmountLiters(householdReqeust.getWaterAmountLiters());
@@ -214,8 +214,8 @@ public class HouseholdService {
 
     Household validatedHousehold = existingHousehold.get();
 
-    if (request.getAdress() != null) {
-      validatedHousehold.setAdress(request.getAdress());
+    if (request.getAddress() != null) {
+      validatedHousehold.setAdress(request.getAddress());
     }
 
     if (request.getLatitude() != null) {
