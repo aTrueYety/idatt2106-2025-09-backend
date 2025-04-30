@@ -151,6 +151,7 @@ public class SharedFoodService {
                 batch.setId(food.getId());
                 batch.setExpirationDate(food.getExpirationDate());
                 batch.setAmount(sf.getAmount());
+                batch.setHouseholdId(food.getHouseholdId());
                 return batch;
               })
               .filter(Objects::nonNull)
