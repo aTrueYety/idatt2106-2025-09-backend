@@ -46,7 +46,7 @@ public class EmailTemplates {
         + "<h1>Du er invitert!</h1>"
         + "<p>Du har blitt invitert til å bli med i hustanden: " + householdName + "</p>"
         + "<p>Trykk på linken under for å akseptere invitasjonen:</p>"
-        + "<p><a href='http://localhost:3000/households/join/" 
+        + "<p><a href='http://localhost:3000/household/join/" 
         + inviteKey + "'>Bli med i husholdningen</a></p>"
         + "<p>Alternativt kan du skrive inn denne koden under hustand siden på Krisfeiker:</p>"
         + "<p>" + inviteKey + "</p>"
