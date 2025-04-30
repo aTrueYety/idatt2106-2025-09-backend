@@ -3,6 +3,7 @@ package no.ntnu.stud.idatt2106.backend.repository;
 import java.util.List;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
+import no.ntnu.stud.idatt2106.backend.model.base.SharedFoodKey;
 
 /**
  * Repository interface for accessing and managing food items.
@@ -29,7 +30,7 @@ public interface FoodRepository {
    *
    * @param food the food item to save
    */
-  void save(Food food);
+  int save(Food food);
 
   /**
    * Update an existing food item.

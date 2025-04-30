@@ -14,4 +14,5 @@ public class SharedFoodResponse {
   private int foodId;
   private int groupHouseholdId;
   private float amount;
+ 
 }
