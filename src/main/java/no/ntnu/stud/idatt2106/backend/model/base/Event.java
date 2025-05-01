@@ -19,6 +19,6 @@ public class Event {
   private double radius;
   private Timestamp startTime;
   private Timestamp endTime;
-  private long severityId;
+  private Long severityId;
   private String recomendation;
 }
