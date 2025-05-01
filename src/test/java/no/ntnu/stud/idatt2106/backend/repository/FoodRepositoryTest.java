@@ -42,7 +42,5 @@ public class FoodRepositoryTest {
     Food result = all.get(0);
     assertThat(result.getHouseholdId()).isEqualTo(42);
     assertThat(result.getAmount()).isEqualTo(3);
-
-    System.out.println("Saved food to household : " + result);
   }
 }

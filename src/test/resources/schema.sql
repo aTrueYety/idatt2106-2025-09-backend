@@ -80,3 +80,32 @@ CREATE TABLE map_object (
   FOREIGN KEY (type_id) REFERENCES map_object_type(id) ON DELETE CASCADE
 );
 
+CREATE TABLE severity (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    colour VARCHAR(15) NOT NULL,
+    name VARCHAR(50),
+    description VARCHAR(100)
+);
+
+CREATE TABLE info_page (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    short_description TEXT,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE event (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    info_page_id INT NULL,
+    latitude FLOAT NOT NULL,
+    longitude FLOAT NOT NULL,
+    radius FLOAT NOT NULL,
+    start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    end_time TIMESTAMP,
+    severity_id INT NOT NULL,
+    recomendation TEXT,
+    FOREIGN KEY (info_page_id) REFERENCES info_page(id) ON DELETE SET NULL,
+    FOREIGN KEY (severity_id) REFERENCES severity(id) ON DELETE CASCADE
+);
