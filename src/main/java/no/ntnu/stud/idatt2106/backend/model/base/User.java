@@ -16,6 +16,8 @@ public class User {
   private String lastName;
   private boolean sharePositionHousehold = false;
   private boolean sharePositionGroup = false;
+  private float lastLatidude;
+  private float lastLongitude;
   private byte[] picture;
 
   /**
@@ -118,6 +120,22 @@ public class User {
 
   public void setSharePositionGroup(boolean sharePositionGroup) {
     this.sharePositionGroup = sharePositionGroup;
+  }
+
+  public float getLastLatidude() {
+    return lastLatidude;
+  }
+
+  public void setLastLatidude(float lastLatidude) {
+    this.lastLatidude = lastLatidude;
+  }
+
+  public float getLastLongitude() {
+    return lastLongitude;
+  }
+
+  public void setLastLongitude(float lastLongitude) {
+    this.lastLongitude = lastLongitude;
   }
 
   public byte[] getPicture() {

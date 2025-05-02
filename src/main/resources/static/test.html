@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebSocket Household Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS (uten integrity) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
+    .leaflet-popup-content-wrapper {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    // Kartoppsett
+    const map = L.map('map').setView([63.42, 10.42], 13);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    }).addTo(map);
+
+    window.addEventListener("load", () => {
+      map.invalidateSize();
+    });
+
+    // Egendefinert ikon for bruker
+    const userIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
+      iconSize: [30, 30],
+      iconAnchor: [15, 30],
+      popupAnchor: [0, -30]
+    });
+
+    // Marker per bruker
+    const userMarkers = {};
+
+    // Koble til WebSocket
+    const socket = new SockJS("http://localhost:8080/ws/location");
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, () => {
+      console.log("Connected to WebSocket");
+
+      // Abonner på husholdningsstrøm
+      stompClient.subscribe("/topic/household.1", (message) => {
+        const data = JSON.parse(message.body);
+        const { userId, latitude, longitude } = data;
+        const position = [latitude, longitude];
+        console.log("Posisjon mottatt:", data);
+
+        if (userMarkers[userId]) {
+          userMarkers[userId].setLatLng(position);
+        } else {
+          const marker = L.marker(position, { icon: userIcon })
+            .addTo(map)
+            .bindPopup("Bruker " + userId)
+            .openPopup();
+          userMarkers[userId] = marker;
+        }
+
+        map.panTo(position); // sentrer på ny posisjon
+      });
+
+      // Send testdata for bruker 1 (valgfritt)
+      stompClient.send("/app/location", {}, JSON.stringify({
+        userId: 1,
+        latitude: 63.42,
+        longitude: 10.42
+      }));
+    });
+  </script>
+</body>
+</html>
