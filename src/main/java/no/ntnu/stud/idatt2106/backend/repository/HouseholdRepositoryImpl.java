@@ -25,6 +25,7 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
     return new Household(
         rs.getObject("id", Long.class),
         rs.getString("adress"),
+        rs.getString("name"),
         rs.getObject("longitude", Double.class),
         rs.getObject("latitude", Double.class),
         rs.getObject("amount_water", Double.class),
@@ -41,8 +42,8 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   @Override
   public Household save(Household household) {
     String sql = "INSERT INTO household "
-        + "(adress, latitude, longitude, amount_water, last_water_change) "
-        + "VALUES (?, ?, ?, ?, ?)";
+        + "(adress, name, latitude, longitude, amount_water, last_water_change) "
+        + "VALUES (?, ?, ?, ?, ?, ?)";
     
     
     KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -50,10 +51,11 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
       ps.setString(1, household.getAddress());
-      ps.setDouble(2, household.getLatitude());
-      ps.setDouble(3, household.getLongitude());
-      ps.setDouble(4, household.getWaterAmountLiters());
-      ps.setDate(5, new java.sql.Date(household
+      ps.setString(2, household.getName());
+      ps.setDouble(3, household.getLatitude());
+      ps.setDouble(4, household.getLongitude());
+      ps.setDouble(5, household.getWaterAmountLiters());
+      ps.setDate(6, new java.sql.Date(household
           .getLastWaterChangeDate().getTime()));
       return ps;
     }, keyHolder);
@@ -101,12 +103,13 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   public void update(Household household) {
     String sql = """
         UPDATE household
-        SET adress = ?, latitude = ?, longitude = ?, amount_water = ?, last_water_change = ?
-        WHERE id = ?
+        SET adress = ?, name = ?, latitude = ?, longitude = ?, amount_water = ?, 
+        last_water_change = ? WHERE id = ?
         """;
 
     jdbcTemplate.update(sql,
         household.getAddress(),
+        household.getName(),
         household.getLatitude(),
         household.getLongitude(),
         household.getWaterAmountLiters(),
