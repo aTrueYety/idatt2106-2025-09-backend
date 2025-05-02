@@ -158,8 +158,9 @@ public class EventRepositoryImpl implements EventRepository {
    * @return the number of rows affected
    */
   public int update(Event event) {
-    String sql = "UPDATE event SET name = ?, info_page_id = ?, latitude = ?, longitude = ?, radius = ?, "
-        + "start_time = ?, end_time = ?, severity_id = ?, recomendation = ? WHERE id = ?";
+    String sql = "UPDATE event SET name = ?, info_page_id = ?, latitude = ?, longitude = ?, " 
+        + "radius = ?, start_time = ?, end_time = ?, severity_id = ?, recomendation = ? " 
+        + "WHERE id = ?";
     return jdbcTemplate.update(sql,
         event.getName(),
         event.getInfoPageId(),
