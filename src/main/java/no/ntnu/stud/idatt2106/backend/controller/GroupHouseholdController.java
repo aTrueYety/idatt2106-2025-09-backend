@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import no.ntnu.stud.idatt2106.backend.model.request.GroupHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.GroupHouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.service.GroupHouseholdService;
+import no.ntnu.stud.idatt2106.backend.service.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,13 +27,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class GroupHouseholdController {
 
+  private static final Logger logger = LoggerFactory.getLogger(GroupHouseholdController.class);
+
   private final GroupHouseholdService service;
+  private final JwtService jwtService;
 
   /**
    * Invites a household to a group.
    *
    * @param request the request object containing the details of the group-household relation
-   * @param token the JWT token of the user inviting the household
+   * @param token   the JWT token of the user inviting the household
    * @return a ResponseEntity indicating the result of the operation
    */
   @Operation(summary = "Invite a household to a group")
@@ -46,7 +52,7 @@ public class GroupHouseholdController {
    * Accepts an invitation for a household to join a group.
    *
    * @param groupId the ID of the group to join
-   * @param token the JWT token of the user accepting the invitation
+   * @param token   the JWT token of the user accepting the invitation
    * @return a ResponseEntity indicating the result of the operation
    */
   @Operation(summary = "Accept an invitation for a household to join a group")
@@ -85,7 +91,30 @@ public class GroupHouseholdController {
   @Operation(summary = "Delete a group-household relation by ID")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
-    return service.delete(id) ? ResponseEntity.noContent().build() 
-      : ResponseEntity.notFound().build();
+    return service.delete(id) ? ResponseEntity.noContent().build()
+        : ResponseEntity.notFound().build();
+  }
+
+  /**
+   * Retrieves all group memberships for the household of the current user.
+   *
+   * @param token the JWT token of the authenticated user
+   * @return a list of group-household relations for the user's household
+   */
+  @Operation(
+      summary = "Get all group memberships for the household of the current user",
+      description = """
+          Retrieves all group-household relations associated with the household that
+          the currently authenticated user belongs to.
+          """
+  )
+  @GetMapping("/my-groups")
+  public ResponseEntity<List<GroupHouseholdResponse>> getGroupsForCurrentUserHousehold(
+      @RequestHeader("Authorization") String token) {
+    logger.info("Fetching group-households for authenticated user's household");
+    Long userId = jwtService.extractUserId(token.substring(7));
+    List<GroupHouseholdResponse> responses = service.getByUserId(userId);
+    logger.info("Found {} group-households for user ID: {}", responses.size(), userId);
+    return ResponseEntity.ok(responses);
   }
 }

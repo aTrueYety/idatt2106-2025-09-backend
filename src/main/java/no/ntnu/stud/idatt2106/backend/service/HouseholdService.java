@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -36,6 +37,18 @@ public class HouseholdService {
   @Autowired
   private LevelOfPreparednessService levelOfPreparednessService;
 
+  private HouseholdResponse toResponse(Household household) {
+    HouseholdResponse response = HouseholdMapper.toResponse(household);
+    if (household.getLastWaterChangeDate() == null) {
+      return response;
+    }
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(household.getLastWaterChangeDate());
+    calendar.add(Calendar.YEAR, 1);
+    response.setNextWaterChangeDate(calendar.getTime());
+    return response;
+  }
+
   /**
    * Returns all registered households as a list of HouseholdResponse objects.
    *
@@ -43,7 +56,7 @@ public class HouseholdService {
    */
   public List<HouseholdResponse> getAll() {
     return householdRepository.findAll().stream()
-        .map(HouseholdMapper::toResponse)
+        .map(this::toResponse)
         .toList();
   }
 
@@ -56,7 +69,7 @@ public class HouseholdService {
    *                                specified id
    */
   public HouseholdResponse getByIdWithPreparedness(Long id) {
-    HouseholdResponse response = householdRepository.findById(id).map(HouseholdMapper::toResponse)
+    HouseholdResponse response = householdRepository.findById(id).map(this::toResponse)
         .orElseThrow(() -> new NoSuchElementException("Household with ID = " + id + " not found"));
     response.setLevelOfPreparedness(levelOfPreparednessService
         .getPreparednessForHousehold(getById(id)));
@@ -71,32 +84,34 @@ public class HouseholdService {
    */
   public HouseholdResponse getById(Long id) {
     return householdRepository.findById(id)
-        .map(HouseholdMapper::toResponse)
+        .map(this::toResponse)
         .orElseThrow(() -> new NoSuchElementException("Household with ID = " + id + " not found"));
   }
 
   /**
    * Returns a HouseholdResponse of the Household the user is a part of.
    *
-   * @param id the ID of the user to get the household of
+   * @param token the JWT token of the user
    * @return HouseholdResponse with the household the user with the id is a part
    *         of
    */
-  public HouseholdResponse getByUserId(Long id) {
-    User user = userService.getUserById(id);
+  public HouseholdResponse getByUserId(String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+
+    User user = userService.getUserById(userId);
 
     if (user == null) {
-      throw new NoSuchElementException("User with ID = " + id + " not found");
+      throw new NoSuchElementException("User with ID = " + userId + " not found");
     }
 
     Long householdId = user.getHouseholdId();
 
     if (householdId == null) {
-      throw new IllegalArgumentException("User with ID = " + id + " is not in a household");
+      return null;
     }
 
     HouseholdResponse householdResponse = householdRepository.findById(householdId)
-        .map(HouseholdMapper::toResponse).get();
+        .map(this::toResponse).get();
     householdResponse.setLevelOfPreparedness(levelOfPreparednessService
         .getPreparednessForHousehold(getById(householdId)));
     return householdResponse;
@@ -168,9 +183,9 @@ public class HouseholdService {
     Household household = householdRepository.findById(senderHouseholdId).get();
     Validate.that(household,
         Validate.isNotNull(), "Household with id = " + senderHouseholdId + " not found");
-    User user = userService.getUserById(inviteRequest.getUserId());
+    User user = userService.getUserByUsername(inviteRequest.getUsername());
     Validate.that(user,
-        Validate.isNotNull(), "User with id = " + inviteRequest.getUserId() + " not found");
+        Validate.isNotNull(), "User with username = " + inviteRequest.getUsername() + " not found");
 
     String inviteKey = householdInviteService.createHouseholdInvite(
         household.getId(), user.getId());
@@ -257,7 +272,7 @@ public class HouseholdService {
     }
 
     householdRepository.update(validatedHousehold);
-    return HouseholdMapper.toResponse(validatedHousehold);
+    return toResponse(validatedHousehold);
   }
 
   /**

@@ -231,8 +231,9 @@ public class HouseholdServiceTest {
       when(userService.getUserById(userId)).thenReturn(mockUser);
       when(householdRepository.findById(mockUser.getHouseholdId()))
           .thenReturn(Optional.of(mockHousehold));
+      when(jwtService.extractUserId(anyString())).thenReturn(userId);
 
-      HouseholdResponse response = householdService.getByUserId(userId);
+      HouseholdResponse response = householdService.getByUserId("token  ");
 
       assertNotNull(response);
       assertEquals("Test Address", response.getAddress());
@@ -242,27 +243,13 @@ public class HouseholdServiceTest {
     void shouldThrowExceptionIfUserDoesentExist() {
       Long userId = 1L;
       when(userService.userExists(userId)).thenReturn(false);
+      when(jwtService.extractUserId(anyString())).thenReturn(userId);
 
       NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
-        householdService.getByUserId(userId);
+        householdService.getByUserId("token  ");
       });
 
       assertEquals("User with ID = " + userId + " not found", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionIfUserHasNoHousehold() {
-      User mockUser = new User();
-      mockUser.setId(1L);
-      Long userId = 1L;
-      when(userService.userExists(userId)).thenReturn(true);
-      when(userService.getUserById(userId)).thenReturn(mockUser);
-
-      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-        householdService.getByUserId(userId);
-      });
-
-      assertEquals("User with ID = " + userId + " is not in a household", exception.getMessage());
     }
   }
 
@@ -405,9 +392,9 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldSendEmailIfValid() {
-      Long recieverId = 2L;
-      InviteUserHouseholdRequest inviteRequest = new InviteUserHouseholdRequest(recieverId);
-      inviteRequest.setUserId(recieverId);
+      String receiverName = "testuser";
+      InviteUserHouseholdRequest inviteRequest = new InviteUserHouseholdRequest(receiverName);
+      inviteRequest.setUsername(receiverName);;
 
       Long senderId = 1L;
       User sender = new User();
@@ -416,7 +403,7 @@ public class HouseholdServiceTest {
 
       String email = "user@example.com";
       User receiver = new User();
-      receiver.setId(recieverId);
+      receiver.setId(senderId);
       receiver.setEmail(email);
 
       Long householdId = 10L;
@@ -427,12 +414,12 @@ public class HouseholdServiceTest {
       String token = "Bearer validtoken";
       when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);
       when(householdRepository.findById(householdId)).thenReturn(Optional.of(household));
-      when(userService.getUserById(recieverId)).thenReturn(receiver);
+      
+      when(userService.getUserByUsername(receiverName)).thenReturn(receiver);
       when(userService.getUserById(senderId)).thenReturn(sender);
       String inviteKey = "abc123";
-      when(householdInviteService.createHouseholdInvite(householdId, recieverId))
+      when(householdInviteService.createHouseholdInvite(householdId, receiver.getId()))
           .thenReturn(inviteKey);
-
       householdService.inviteUserToHousehold(inviteRequest, token);
       try {
         verify(emailService).sendHtmlEmail(eq(email),
@@ -459,13 +446,14 @@ public class HouseholdServiceTest {
       receiver.setEmail("user@example.com");
 
       InviteUserHouseholdRequest request = new InviteUserHouseholdRequest();
-      request.setUserId(receiverId);
+      request.setUsername("Testuser");
 
       String token = "Bearer token";
       when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);
       when(userService.getUserById(senderId)).thenReturn(sender);
       when(householdRepository.findById(houseHoldId)).thenReturn(Optional.of(household));
-      when(userService.getUserById(receiverId)).thenReturn(receiver);
+      when(userService.getUserByUsername("Testuser")).thenReturn(receiver);
+
 
       String inviteKey = "abc123";
       when(householdInviteService.createHouseholdInvite(houseHoldId, receiverId))

@@ -185,6 +185,29 @@ public class LevelOfPreparednessService {
     return (foodPreparedness + waterPreparedness + kitPreparedness) / 3;
   }
 
+  private long calculateTimePrepared(HouseholdResponse household) {
+    List<UserResponse> users = userService.getUsersByHouseholdId(household.getId());
+    double amountOfUsersInHousehold = users != null ? users.size() : 0;
+
+    double caloriesInHousehold = foodService.getCaloriesByHouseholdId(household.getId());
+    double extraResidentsConsumptionWeek = getDailyCaloryNeedExtraResidents(household.getId());
+    double totalFoodConsumption = (amountOfUsersInHousehold * 2000)
+        + extraResidentsConsumptionWeek;
+
+    double householdWaterAmount = household.getWaterAmountLiters();
+    double extraResidentsWaterWeek = getDailyWaterNeedExtraResidents(household.getId());
+    double totalWaterNeed = (amountOfUsersInHousehold * 20 / 3) + extraResidentsWaterWeek;
+
+    if (totalFoodConsumption == 0 || totalWaterNeed == 0) {
+      return 0;
+    }
+    double daysOfFoodPreparedness = caloriesInHousehold / totalFoodConsumption;
+    double daysOfWaterPreparedness = householdWaterAmount / totalWaterNeed;
+  
+    return Math.round(Math.min(daysOfFoodPreparedness,
+        daysOfWaterPreparedness) * 24);
+  }
+
   /**
    * Retrieves the preparedness levels for a specific household.
    *
@@ -199,6 +222,7 @@ public class LevelOfPreparednessService {
     preparedness.setLevelOfPreparednessFood(calculateLevelOfFoodPreparedness(household.getId()));
     preparedness.setLevelOfPreparednessKit(calculateLevelOfPreparednessKit(household.getId()));
     preparedness.setLevelOfPreparedness(calculateOverallLevelOfPreparedness(household));
+    preparedness.setTimePrepared(calculateTimePrepared(household));
     return preparedness;
   }
 

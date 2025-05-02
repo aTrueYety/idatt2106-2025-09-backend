@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmergencyGroup {
-  private int id;
+  private Long id;
   private String name;
   private String description;
 }

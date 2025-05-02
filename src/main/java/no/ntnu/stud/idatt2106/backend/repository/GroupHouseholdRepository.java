@@ -54,4 +54,7 @@ public interface GroupHouseholdRepository {
    * @return A list of GroupHouseholds associated with the given household ID.
    */
   boolean deleteById(Long id);
+
+  List<GroupHousehold> findByHouseholdId(Long householdId);
+
 }

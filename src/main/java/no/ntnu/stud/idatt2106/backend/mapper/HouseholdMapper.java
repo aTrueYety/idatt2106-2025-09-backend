@@ -21,6 +21,7 @@ public class HouseholdMapper {
     response.setLongitude(household.getLongitude());
     response.setWaterAmountLiters(household.getWaterAmountLiters());
     response.setLastWaterChangeDate(household.getLastWaterChangeDate());
+    response.setNextWaterChangeDate(null);
 
     return response;
   }

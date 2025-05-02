@@ -14,18 +14,17 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Implements the methods defined in ExtraResidentRepository using JDBC.
- * This class is responsible for interacting with the database to perform CRUD
- * operations on extra residents.
  */
 @Repository
 public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
+
   @Autowired
   private JdbcTemplate jdbc;
 
   private final RowMapper<ExtraResident> rowMapper = (rs, rowNum) -> {
     ExtraResident resident = new ExtraResident();
     resident.setId(rs.getObject("id", Long.class));
-    resident.setHouseholdid(rs.getObject("household_id", Long.class));
+    resident.setHouseholdId(rs.getObject("household_id", Long.class));  // endret fra setHouseholdid
     resident.setTypeId(rs.getObject("type_id", Long.class));
     resident.setName(rs.getString("name"));
     return resident;
@@ -50,14 +49,14 @@ public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
 
     jdbc.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-      ps.setLong(1, extraResident.getHouseholdid());
+      ps.setLong(1, extraResident.getHouseholdId()); // endret fra getHouseholdid
       ps.setLong(2, extraResident.getTypeId());
       ps.setString(3, extraResident.getName());
       return ps;
     }, keyHolder);
 
     if (keyHolder.getKey() != null) {
-      extraResident.setId(keyHolder.getKey().intValue());
+      extraResident.setId(keyHolder.getKey().longValue());
     }
   }
 
@@ -65,7 +64,10 @@ public class ExtraResidentRepositoryImpl implements ExtraResidentRepository {
   public void update(ExtraResident extraResident) {
     String sql = "UPDATE extra_resident SET household_id = ?, type_id = ?, name = ? WHERE id = ?";
     jdbc.update(
-        sql, extraResident.getHouseholdid(), extraResident.getTypeId(), extraResident.getName(),
+        sql,
+        extraResident.getHouseholdId(),
+        extraResident.getTypeId(),
+        extraResident.getName(),
         extraResident.getId());
   }
 
