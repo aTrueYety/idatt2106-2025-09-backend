@@ -7,8 +7,9 @@ import no.ntnu.stud.idatt2106.backend.mapper.HouseholdMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
-import no.ntnu.stud.idatt2106.backend.model.request.HouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
@@ -32,6 +33,8 @@ public class HouseholdService {
   private EmailService emailService;
   @Autowired
   private HouseholdInviteService householdInviteService;
+  @Autowired
+  private LevelOfPreparednessService levelOfPreparednessService;
 
   /**
    * Returns all registered households as a list of HouseholdResponse objects.
@@ -52,8 +55,23 @@ public class HouseholdService {
    * @throws NoSuchElementException if there is no registered Household with the
    *                                specified id
    */
+  public HouseholdResponse getByIdWithPreparedness(Long id) {
+    HouseholdResponse response = householdRepository.findById(id).map(HouseholdMapper::toResponse)
+        .orElseThrow(() -> new NoSuchElementException("Household with ID = " + id + " not found"));
+    response.setLevelOfPreparedness(levelOfPreparednessService
+        .getPreparednessForHousehold(getById(id)));
+    return response;
+  }
+
+  /**
+   * Retrieves a Household by its ID.
+   *
+   * @param id the ID of the household to be retrieved
+   * @return the Household object with the specified ID
+   */
   public HouseholdResponse getById(Long id) {
-    return householdRepository.findById(id).map(HouseholdMapper::toResponse)
+    return householdRepository.findById(id)
+        .map(HouseholdMapper::toResponse)
         .orElseThrow(() -> new NoSuchElementException("Household with ID = " + id + " not found"));
   }
 
@@ -77,7 +95,11 @@ public class HouseholdService {
       throw new IllegalArgumentException("User with ID = " + id + " is not in a household");
     }
 
-    return householdRepository.findById(householdId).map(HouseholdMapper::toResponse).get();
+    HouseholdResponse householdResponse = householdRepository.findById(householdId)
+        .map(HouseholdMapper::toResponse).get();
+    householdResponse.setLevelOfPreparedness(levelOfPreparednessService
+        .getPreparednessForHousehold(getById(householdId)));
+    return householdResponse;
   }
 
   /**
@@ -85,14 +107,14 @@ public class HouseholdService {
    *
    * @param householdReqeust DTO with information about the new household
    */
-  public void registerHousehold(HouseholdRequest householdReqeust) {
+  public void registerHousehold(CreateHouseholdRequest householdReqeust) {
     Validate.that(householdReqeust.getLongitude(),
         Validate.isNotNull(), "Longitude cannot be null");
     Validate.that(householdReqeust.getLatitude(),
         Validate.isNotNull(), "Latitude cannot be null");
 
     Household household = new Household();
-    household.setAdress(householdReqeust.getAdress());
+    household.setAddress(householdReqeust.getAddress());
     household.setLatitude(householdReqeust.getLatitude());
     household.setLongitude(householdReqeust.getLongitude());
     household.setWaterAmountLiters(householdReqeust.getWaterAmountLiters());
@@ -157,7 +179,7 @@ public class HouseholdService {
       emailService.sendHtmlEmail(
           user.getEmail(),
           "Du har blitt invitert til å bli med i en husstand",
-          EmailTemplates.getHouseholdInviteTemplate(household.getAdress(), inviteKey));
+          EmailTemplates.getHouseholdInviteTemplate(household.getAddress(), inviteKey));
     } catch (Exception e) {
       throw new RuntimeException("Failed to send email", e);
     }
@@ -206,7 +228,7 @@ public class HouseholdService {
    * @param request the new household values, request null values are not changed
    * @return response object with the updated values
    */
-  public HouseholdResponse updateHousehold(Long id, HouseholdRequest request) {
+  public HouseholdResponse updateHousehold(Long id, UpdateHouseholdRequest request) {
     Optional<Household> existingHousehold = householdRepository.findById(id);
 
     Validate.that(existingHousehold.isPresent(),
@@ -214,8 +236,8 @@ public class HouseholdService {
 
     Household validatedHousehold = existingHousehold.get();
 
-    if (request.getAdress() != null) {
-      validatedHousehold.setAdress(request.getAdress());
+    if (request.getAddress() != null) {
+      validatedHousehold.setAddress(request.getAddress());
     }
 
     if (request.getLatitude() != null) {
@@ -259,5 +281,4 @@ public class HouseholdService {
         .orElseThrow(() -> new NoSuchElementException("No household with id = " + householdId))
         .getWaterAmountLiters();
   }
-
 }

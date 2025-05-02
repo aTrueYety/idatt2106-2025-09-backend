@@ -7,6 +7,10 @@ import java.util.function.Predicate;
  * Utility class for validating objects.
  */
 public class Validate {
+  private Validate() {
+    // Prevent instantiation
+  }
+
   /**
    * Validates that a given value is null.
    *

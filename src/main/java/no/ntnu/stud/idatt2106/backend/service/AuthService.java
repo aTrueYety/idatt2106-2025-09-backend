@@ -86,7 +86,16 @@ public class AuthService {
    * Verifies the login credentials of a user.
    */
   public LoginResponse login(LoginRequest loginRequest) {
+    if (loginRequest.getUsername() == null) {
+      throw new IllegalArgumentException("Username cannot be null or empty");      
+    }
+    if (loginRequest.getPassword() == null) {
+      throw new IllegalArgumentException("Password cannot be null or empty");
+      
+    }
+    
     String token = authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
+
     return new LoginResponse("Login successful!", token);
   }
 
@@ -128,9 +137,9 @@ public class AuthService {
           Validate.isNull(),
           "New username is not available");
     }
-    Validate.that(!encoder.matches(credentialsUpdate.getCurrentPassword(),
+    Validate.that(encoder.matches(credentialsUpdate.getCurrentPassword(),
         user.getPassword()),
-        Validate.isFalse(),
+        Validate.isTrue(),
         "Current password is incorrect");
     Validate.that(credentialsUpdate.getNewPassword(),
         Validate.isNotBlankOrNull(),
@@ -189,6 +198,9 @@ public class AuthService {
    * @param token the JWT token to validate
    */
   public void validateToken(String token) {
+    if (token == null) {
+      throw new IllegalArgumentException("Token cannot be null or empty");
+    }
     jwtService.extractUserName(token.substring(7));
   }
 
@@ -205,8 +217,9 @@ public class AuthService {
         Validate.isTrue(), "Email is not valid");
 
     User user = userService.getUserByEmail(request.getEmail());
+    Validate.that(user, Validate.isNotNull(), "User not found");
 
-    String key = "";
+    String key = passwordResetKeyService.createPasswordResetKey(user.getId());
 
     String htmlContent = EmailTemplates.getPasswordResetTemplate(key);
     try {

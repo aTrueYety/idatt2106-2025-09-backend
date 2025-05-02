@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupHouseholdRequest {
-  private int householdId;
-  private int groupId;
+  private Long householdId;
+  private Long groupId;
 }

@@ -1,7 +1,5 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
