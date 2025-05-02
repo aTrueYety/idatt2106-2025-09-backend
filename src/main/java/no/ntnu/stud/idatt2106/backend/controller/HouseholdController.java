@@ -174,6 +174,10 @@ public class HouseholdController {
       @RequestHeader("Authorization") String token) {
     logger.info("Fetching household of authenticated user");
     HouseholdResponse response = householdService.getByUserId(token);
+    if (response == null) {
+      logger.warn("No household found for user with token: {}", token);
+      return ResponseEntity.notFound().build();
+    }
     logger.info("Found household of user with token: {}", token);
     return ResponseEntity.ok(response);
   }
