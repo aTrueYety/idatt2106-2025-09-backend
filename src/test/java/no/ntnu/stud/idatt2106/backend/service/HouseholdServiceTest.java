@@ -231,8 +231,9 @@ public class HouseholdServiceTest {
       when(userService.getUserById(userId)).thenReturn(mockUser);
       when(householdRepository.findById(mockUser.getHouseholdId()))
           .thenReturn(Optional.of(mockHousehold));
+      when(jwtService.extractUserId(anyString())).thenReturn(userId);
 
-      HouseholdResponse response = householdService.getByUserId(userId);
+      HouseholdResponse response = householdService.getByUserId("token  ");
 
       assertNotNull(response);
       assertEquals("Test Address", response.getAddress());
@@ -242,27 +243,13 @@ public class HouseholdServiceTest {
     void shouldThrowExceptionIfUserDoesentExist() {
       Long userId = 1L;
       when(userService.userExists(userId)).thenReturn(false);
+      when(jwtService.extractUserId(anyString())).thenReturn(userId);
 
       NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
-        householdService.getByUserId(userId);
+        householdService.getByUserId("token  ");
       });
 
       assertEquals("User with ID = " + userId + " not found", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionIfUserHasNoHousehold() {
-      User mockUser = new User();
-      mockUser.setId(1L);
-      Long userId = 1L;
-      when(userService.userExists(userId)).thenReturn(true);
-      when(userService.getUserById(userId)).thenReturn(mockUser);
-
-      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-        householdService.getByUserId(userId);
-      });
-
-      assertEquals("User with ID = " + userId + " is not in a household", exception.getMessage());
     }
   }
 

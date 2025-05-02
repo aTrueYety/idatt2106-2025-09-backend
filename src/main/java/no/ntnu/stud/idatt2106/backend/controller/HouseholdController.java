@@ -9,7 +9,6 @@ import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
-import no.ntnu.stud.idatt2106.backend.service.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +34,6 @@ public class HouseholdController {
 
   @Autowired
   private HouseholdService householdService;
-
-  @Autowired
-  private JwtService jwtService;
 
   /**
    * Returns all of the registered households as HouseholdResponses.
@@ -177,9 +173,12 @@ public class HouseholdController {
   public ResponseEntity<HouseholdResponse> getCurrentUserHousehold(
       @RequestHeader("Authorization") String token) {
     logger.info("Fetching household of authenticated user");
-    Long userId = jwtService.extractUserId(token.substring(7));
-    HouseholdResponse response = householdService.getByUserId(userId);
-    logger.info("Found household of user with ID: {}", userId);
+    HouseholdResponse response = householdService.getByUserId(token);
+    if (response == null) {
+      logger.warn("No household found for user with token: {}", token);
+      return ResponseEntity.notFound().build();
+    }
+    logger.info("Found household of user with token: {}", token);
     return ResponseEntity.ok(response);
   }
 }
