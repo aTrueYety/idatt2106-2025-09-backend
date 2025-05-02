@@ -87,18 +87,48 @@ public class EventServiceTest {
       verify(repository).update(event);
       assertEquals(1, result);
     }
+
+    @Test
+    void shouldThrowIfUserIsNotAdmin() {
+      Event event = new Event();
+      when(jwtService.extractIsAdmin(token.substring(7))).thenReturn(false);
+      
+      Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        eventService.updateEvent(event, token);
+      });
+  
+      assertTrue(exception.getMessage().contains("User is not an admin"));
+      verify(repository, never()).update(any());
+    }
   }
 
-  @Test
-  void shouldThrowIfUserIsNotAdmin() {
-    Event event = new Event();
-    when(jwtService.extractIsAdmin(token.substring(7))).thenReturn(false);
-    
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      eventService.updateEvent(event, token);
-    });
+  @Nested
+  class DeleteEventTests {
 
-    assertTrue(exception.getMessage().contains("User is not an admin"));
-    verify(repository, never()).update(any());
+    @Test
+    void shouldDeleteEventIfUserIsAdmin() {
+      Long eventId = 2L;
+
+      when(jwtService.extractIsAdmin(token.substring(7))).thenReturn(true);
+      when(repository.delete(eventId)).thenReturn(1);
+
+      int result = eventService.deleteEvent(eventId, token);
+
+      verify(repository).delete(eventId);
+      assertEquals(1, result);
+    }
+
+    @Test
+    void shouldThrowIfUserIsNotAdmin() {
+      Long eventId = 5L;
+      when(jwtService.extractIsAdmin(token.substring(7))).thenReturn(false);
+      
+      Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        eventService.deleteEvent(eventId, token);
+      });
+
+      verify(repository, never()).delete(eventId);
+      assertTrue(exception.getMessage().contains("User is not an admin"));
+    }
   }
 }
