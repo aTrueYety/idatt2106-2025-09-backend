@@ -36,6 +36,8 @@ public class EventServiceTest {
   @Mock
   private JwtService jwtService;
 
+  private final String token = "Bearer admintoken";
+
   @Nested
   class SaveEventTests {
 
@@ -43,8 +45,6 @@ public class EventServiceTest {
     void shouldSaveEventIfUserIsAdmin() {
       EventRequest request = new EventRequest();
       Event event = new Event();
-
-      String token = "Bearer admintoken";
 
       try (MockedStatic<EventFactory> eventFactory = Mockito.mockStatic(EventFactory.class)) {
         when(jwtService.extractIsAdmin(token.substring(7))).thenReturn(true);
@@ -61,9 +61,6 @@ public class EventServiceTest {
     @Test
     void shouldThrowIfUserIsNotAdmin() {
       EventRequest request = new EventRequest();
-      Event event = new Event();
-
-      String token = "Bearer admintoken";
 
       when(jwtService.extractIsAdmin(token.substring(7))).thenReturn(false);
 
@@ -74,5 +71,34 @@ public class EventServiceTest {
       assertTrue(exception.getMessage().contains("User is not an admin"));
       verify(repository, never()).save(any());
     }
+  }
+
+  @Nested
+  class UpdateEventTests {
+    
+    @Test
+    void shouldUpdateEventIfUserIsAdmin() {
+      Event event = new Event();
+      when(jwtService.extractIsAdmin(token.substring(7))).thenReturn(true);
+      when(repository.update(event)).thenReturn(1);
+
+      int result = eventService.updateEvent(event, token);
+
+      verify(repository).update(event);
+      assertEquals(1, result);
+    }
+  }
+
+  @Test
+  void shouldThrowIfUserIsNotAdmin() {
+    Event event = new Event();
+    when(jwtService.extractIsAdmin(token.substring(7))).thenReturn(false);
+    
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      eventService.updateEvent(event, token);
+    });
+
+    assertTrue(exception.getMessage().contains("User is not an admin"));
+    verify(repository, never()).update(any());
   }
 }
