@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.mapper;
 
+import java.util.Calendar;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 
@@ -21,6 +22,10 @@ public class HouseholdMapper {
     response.setLongitude(household.getLongitude());
     response.setWaterAmountLiters(household.getWaterAmountLiters());
     response.setLastWaterChangeDate(household.getLastWaterChangeDate());
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(household.getLastWaterChangeDate());
+    calendar.add(Calendar.YEAR, 1);
+    response.setNextWaterChangeDate(calendar.getTime());
 
     return response;
   }
