@@ -2,11 +2,14 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.NoSuchElementException;
+
+import no.ntnu.stud.idatt2106.backend.mapper.UserMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.UserUpdate;
@@ -16,6 +19,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 /**
@@ -28,6 +33,9 @@ public class UserServiceTest {
 
   @Mock
   private UserRepository repository;
+
+  @Mock
+  private JwtService jwtService;
 
   @BeforeEach
   void setup() {
@@ -80,6 +88,41 @@ public class UserServiceTest {
       assertThrows(NoSuchElementException.class, () -> {
         userService.updateUserProfile(userId, update);
       });
+    }
+  }
+
+  @Nested
+  class GetByTokenTests {
+
+    @Test
+    void shouldReturnUserResponseWhenTokenIsValid() {
+      Long userId = 1L;
+      String username = "testuser";
+
+      User user = new User();
+      user.setId(userId);
+      user.setUsername(username);
+
+      UserResponse expectedResponse = new UserResponse();
+      expectedResponse.setId(userId);
+      expectedResponse.setUsername(username);
+
+      String token = "valid.jwt.token";
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+      when(repository.findById(userId)).thenReturn(user);
+
+      try (MockedStatic<UserMapper> mocked = Mockito.mockStatic(UserMapper.class)) {
+        mocked.when(() -> UserMapper.toResponse(user)).thenReturn(expectedResponse);
+
+        UserResponse actualResponse = userService.getByToken(token);
+
+        assertNotNull(actualResponse);
+        assertEquals(expectedResponse.getId(), actualResponse.getId());
+        assertEquals(expectedResponse.getUsername(), actualResponse.getUsername());
+        mocked.verify(() -> UserMapper.toResponse(user));
+      }
+      verify(jwtService).extractUserId(token.substring(7));
+      verify(repository).findById(userId);
     }
   }
 }
