@@ -99,8 +99,7 @@ public class UserService {
    * @return Repsonse object with the updated user
    * @throws NoSuchElementException if no user with the given ID exists
    */
-  public UserResponse updateUser(Long id, UserUpdate update) {
-    Validate.that(update.getUsername(), Validate.isNotBlankOrNull());
+  public UserResponse updateUserProfile(Long id, UserUpdate update) {
     Validate.that(update.getFirstName(), Validate.isNotBlankOrNull());
     Validate.that(update.getLastName(), Validate.isNotBlankOrNull());
     Validate.that(update.getEmail(), Validate.isNotBlankOrNull());
@@ -112,7 +111,6 @@ public class UserService {
       throw new NoSuchElementException("User with ID = " + id + " not found");
     }
 
-    existingUser.setUsername(update.getUsername());
     existingUser.setFirstName(update.getFirstName());
     existingUser.setLastName(update.getLastName());
     existingUser.setEmail(update.getEmail());

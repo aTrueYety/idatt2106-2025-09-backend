@@ -56,9 +56,9 @@ public class UserController {
           """
   )
   @PutMapping("/{id}")
-  public ResponseEntity<UserResponse> updateUserProfile(@PathVariable Long id, UserUpdate update) {
+  public ResponseEntity<UserResponse> updateProfile(@PathVariable Long id, UserUpdate update) {
     logger.info("Updating user with ID = {}", id);
-    UserResponse response = userService.updateUser(id, update);
+    UserResponse response = userService.updateUserProfile(id, update);
     logger.info("Updated user successfully");
     return ResponseEntity.ok(response);
   }
