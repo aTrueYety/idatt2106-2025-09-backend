@@ -19,4 +19,5 @@ public class LevelOfPreparednessResponse {
   private double levelOfPreparednessWater;
   private double levelOfPreparednessFood;
   private double levelOfPreparednessKit;
+  private long timePrepared;
 }
