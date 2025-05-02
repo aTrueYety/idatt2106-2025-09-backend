@@ -125,4 +125,18 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
     String sql = "DELETE FROM household WHERE id = ?";
     jdbcTemplate.update(sql, id);
   }
+
+  /**
+   * Retrieves the household of the user with the specified ID.
+   *
+   * @param userId the ID of the user
+   * @return an Optional containing the household of the user, or an empty Optional if not found
+   */
+  @Override
+  public Optional<Household> findByUserId(Long userId) {
+    String sql = "SELECT h.* FROM household h "
+        + "JOIN user u ON h.id = u.household_id WHERE u.id = ?";
+    Household household = jdbcTemplate.queryForObject(sql, householdRowMapper, userId);
+    return Optional.ofNullable(household);
+  }
 }

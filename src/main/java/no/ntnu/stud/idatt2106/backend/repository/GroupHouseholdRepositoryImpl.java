@@ -60,4 +60,10 @@ public class GroupHouseholdRepositoryImpl implements GroupHouseholdRepository {
     String sql = "DELETE FROM group_household WHERE id = ?";
     return jdbcTemplate.update(sql, id) > 0;
   }
+
+  @Override
+  public List<GroupHousehold> findByHouseholdId(Long householdId) {
+    String sql = "SELECT * FROM group_household WHERE household_id = ?";
+    return jdbcTemplate.query(sql, rowMapper, householdId);
+  }
 }
