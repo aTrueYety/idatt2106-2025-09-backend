@@ -136,8 +136,7 @@ public class UserService {
    * Returns the user associated with the given JWT token.
    *
    * @param token the JWT token containing the user's ID
-   * @return a DTO representing the user associated with the token
-   * @throws  
+   * @return a DTO representing the user associated with the token'
    */
   public UserResponse getByToken(String token) {
     Long id = jwtService.extractUserId(token.substring(7));
