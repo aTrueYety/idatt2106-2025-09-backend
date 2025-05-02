@@ -1,6 +1,16 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
-import no.ntnu.stud.idatt2106.backend.mapper.FoodMapper;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodResponse;
@@ -8,14 +18,9 @@ import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 class FoodServiceTest {
 
@@ -41,6 +46,17 @@ class FoodServiceTest {
     service.create(request);
 
     verify(repository).save(any(Food.class));
+  }
+
+  @Test
+  void shouldThrowIfCreateAmountNotPositive() {
+    FoodRequest request = new FoodRequest();
+    request.setTypeId(1);
+    request.setAmount(-1);
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      service.create(request);
+    });
   }
 
   @Test
@@ -100,11 +116,25 @@ class FoodServiceTest {
   @Test
   void shouldNotUpdateIfNotFound() {
     when(repository.findById(1)).thenReturn(Optional.empty());
+    FoodUpdate update = new FoodUpdate();
+    update.setAmount(1);
 
-    boolean result = service.update(1, new FoodUpdate());
+    boolean result = service.update(1, update);
 
     assertThat(result).isFalse();
     verify(repository, never()).update(any());
+  }
+
+  @Test
+  void shouldThrowIfUpdateAmountNotPositive() {
+    when(repository.findById(1)).thenReturn(Optional.of(new Food()));
+
+    FoodUpdate update = new FoodUpdate();
+    update.setAmount(0);
+
+    assertThrows(IllegalArgumentException.class, () -> {
+      service.update(1, update);
+    });
   }
 
   @Test
