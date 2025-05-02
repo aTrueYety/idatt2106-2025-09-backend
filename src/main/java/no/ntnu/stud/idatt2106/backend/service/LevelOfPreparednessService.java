@@ -156,21 +156,18 @@ public class LevelOfPreparednessService {
   public double calculateLevelOfPreparednessKit(long householdId) {
 
     // Numbers of different kits
-    int numberOfKitItems = kitService.getAll().size();
+    int totalTypes = kitService.getAll().size();
 
     // Get the household kit amount
     int numberOfKitsForHousehold = householdKitService.getByHouseholdId(householdId).size();
 
-    if (numberOfKitItems == 0) {
+    if (totalTypes == 0) {
       return 0.0;
     }
 
-    double kitPreparedness = numberOfKitsForHousehold / numberOfKitItems;
+    double kitPreparedness = (double) numberOfKitsForHousehold / totalTypes;
 
-    if (kitPreparedness > 1.0) {
-      kitPreparedness = 1.0;
-    }
-    return kitPreparedness;
+    return Math.min(kitPreparedness, 1.0);
   }
 
   /**
