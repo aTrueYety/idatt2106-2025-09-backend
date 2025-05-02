@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -65,4 +66,23 @@ public class UserController {
     return ResponseEntity.ok(response);
   }
 
+  /**
+   * Endpoint for retrieving the profile of the logged in user.
+   *
+   * @param token the JWT token of the user logged in
+   * @return A ResponseEntity with a DTO representing the logged in user
+   */
+  @Operation(
+      summary = "Retrieves the current user",
+      description = """
+          Retrieves the profile info of the user currently logged in using their JWT token.
+          """
+  )
+  @GetMapping("/my-user")
+  public ResponseEntity<UserResponse> getCurrentUser(@RequestHeader("Authorization") String token) {
+    logger.info("Fetching profile of current user");
+    UserResponse response = userService.getByToken(token);
+    logger.info("User retrieved successfully");
+    return ResponseEntity.ok(response);
+  }
 }
