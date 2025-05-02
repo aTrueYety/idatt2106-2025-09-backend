@@ -18,7 +18,7 @@ public class PasswordResetKeyRepositoryImpl implements PasswordResetKeyRepositor
 
   private final RowMapper<PasswordResetKey> rowMapper = (rs, rowNum) -> new PasswordResetKey(
       rs.getLong("user_id"),
-      rs.getString("`key`"),
+      rs.getString("key"),
       rs.getTimestamp("created_at")
   );
 
