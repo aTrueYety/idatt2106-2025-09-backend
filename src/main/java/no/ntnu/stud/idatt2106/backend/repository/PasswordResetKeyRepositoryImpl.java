@@ -18,40 +18,40 @@ public class PasswordResetKeyRepositoryImpl implements PasswordResetKeyRepositor
 
   private final RowMapper<PasswordResetKey> rowMapper = (rs, rowNum) -> new PasswordResetKey(
       rs.getLong("user_id"),
-      rs.getString("key"),
+      rs.getString("`key`"),
       rs.getTimestamp("created_at")
   );
 
   @Override
   public PasswordResetKey save(PasswordResetKey key) {
-    String sql = "INSERT INTO password_change_key (user_id, key) VALUES (?, ?)";
-    jdbcTemplate.update(sql, key.getUserId(), key.getKey(), key.getCreatedAt());
+    String sql = "INSERT INTO change_password_key (user_id, `key`) VALUES (?, ?)";
+    jdbcTemplate.update(sql, key.getUserId(), key.getKey());
     return key;
   }
 
   @Override
   public PasswordResetKey findByUserId(Long userId) {
-    String sql = "SELECT * FROM password_change_key WHERE user_id = ?";
+    String sql = "SELECT * FROM change_password_key WHERE user_id = ?";
     List<PasswordResetKey> keys = jdbcTemplate.query(sql, rowMapper, userId);
     return keys.isEmpty() ? null : keys.get(0);
   }
 
   @Override
   public PasswordResetKey findByKey(String key) {
-    String sql = "SELECT * FROM password_change_key WHERE key = ?";
+    String sql = "SELECT * FROM change_password_key WHERE `key` = ?";
     List<PasswordResetKey> keys = jdbcTemplate.query(sql, rowMapper, key);
     return keys.isEmpty() ? null : keys.get(0);
   }
 
   @Override
   public void deleteByKey(String key) {
-    String sql = "DELETE FROM password_change_key WHERE key = ?";
+    String sql = "DELETE FROM change_password_key WHERE `key` = ?";
     jdbcTemplate.update(sql, key);
   }
 
   @Override
   public void update(PasswordResetKey key) {
-    String sql = "UPDATE password_change_key SET key = ?, created_at = ? WHERE user_id = ?";
+    String sql = "UPDATE change_password_key SET `key` = ?, created_at = ? WHERE user_id = ?";
     jdbcTemplate.update(sql, key.getKey(), key.getCreatedAt(), key.getUserId());
   }
 }
