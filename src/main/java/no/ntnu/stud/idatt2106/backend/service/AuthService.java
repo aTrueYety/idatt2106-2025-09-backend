@@ -1,8 +1,11 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import jakarta.mail.MessagingException;
+import no.ntnu.stud.idatt2106.backend.model.base.AdminRegistrationKey;
 import no.ntnu.stud.idatt2106.backend.model.base.PasswordResetKey;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
+import no.ntnu.stud.idatt2106.backend.model.request.AdminInviteRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.AdminUpgradeRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.LoginRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetKeyRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetRequest;
@@ -37,6 +40,8 @@ public class AuthService {
   private EmailService emailService;
   @Autowired
   private PasswordResetService passwordResetKeyService;
+  @Autowired
+  private AdminRegistrationKeyService adminRegistrationKeyService;
 
   private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -247,5 +252,56 @@ public class AuthService {
     user.setPassword(encoder.encode(request.getNewPassword()));
     userService.updateUserCredentials(user);
     passwordResetKeyService.deletePasswordResetKey(request.getKey());
+  }
+
+  /**
+   * Invites a user to become an admin by sending an email with a registration key.
+   *
+   * @param request the request containing the user to invite
+   * @param token   the JWT token of the user sending the invite
+   */
+  public void inviteAdmin(AdminInviteRequest request, String token) {
+    Validate.that(request.getUsername(),
+        Validate.isNotBlankOrNull(), "Username cannot be blank or null");
+    Validate.that(token, Validate.isNotBlankOrNull(), "Token cannot be blank or null");
+
+    User sender = userService.getUserByUsername(
+        jwtService.extractUserName(token.substring(7)));
+    Validate.that(sender, Validate.isNotNull(), "Sender not found");
+    Validate.that(sender.isSuperAdmin(), Validate.isTrue(), "Sender is not a super admin");
+
+    User user = userService.getUserByUsername(request.getUsername());
+    Validate.that(user, Validate.isNotNull(), "User not found");
+    Validate.that(user.isAdmin(), Validate.isFalse(), "User is already an admin");
+    Validate.that(adminRegistrationKeyService.findByUserId(user.getId()),
+        Validate.isNull(), "User already has a registration key");
+
+    String registrationKey = adminRegistrationKeyService
+        .createAdminRegistrationKey(user.getId());
+
+    String htmlContent = EmailTemplates.getAdminUpgradeTemplate(
+        request.getUsername(), registrationKey);
+    try {
+      emailService.sendHtmlEmail(user.getEmail(), "Registrer deg som admin", htmlContent);
+    } catch (MessagingException e) {
+      throw new RuntimeException("Failed to send admin registration email", e);
+    }
+  }
+
+  /**
+   * Accepts an admin registration key and registers the user as an admin.
+   *
+   * @param request the registration key provided in the invitation
+   */
+  public void acceptAdminInvite(AdminUpgradeRequest request) {
+    Validate.that(request.getKey(), Validate.isNotBlankOrNull(), "Key cannot be blank or null");
+
+    AdminRegistrationKey registrationKey = adminRegistrationKeyService.findByKey(request.getKey());
+    Validate.that(registrationKey, Validate.isNotNull(), "Admin invitation not found");
+    User user = userService.getUserById(registrationKey.getUserId());
+    Validate.that(user, Validate.isNotNull(), "User not found");
+    user.setAdmin(true);
+    userService.updateUserCredentials(user);
+    adminRegistrationKeyService.deleteByKey(request.getKey());
   }
 }
