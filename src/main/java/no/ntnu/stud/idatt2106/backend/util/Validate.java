@@ -42,6 +42,13 @@ public class Validate {
     return value -> value != null && !value.isEmpty();
   }
 
+  /**
+   * Validates that a given value is an empty collection or null.
+   *
+   * @param <U> the type of the elements in the collection
+   * @param <T> the type of the collection
+   * @return a predicate that checks if the collection is empty or null
+   */
   public static <U, T extends Collection<U>> Predicate<T> isEmptyCollection() {
     return value -> value == null || value.isEmpty();
   }

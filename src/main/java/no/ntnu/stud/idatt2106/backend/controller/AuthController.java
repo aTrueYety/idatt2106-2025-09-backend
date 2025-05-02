@@ -2,6 +2,8 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import no.ntnu.stud.idatt2106.backend.model.request.AdminInviteRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.AdminUpgradeRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.LoginRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetKeyRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetRequest;
@@ -134,5 +136,39 @@ public class AuthController {
     service.resetPassword(passwordChangeRequest);
     logger.info("Password reset successfully");
     return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  /**
+   * Invites a user to become an admin by sending a registration key to their email address.
+   * It generates a unique key and sends an email with the registration link.
+   *
+   * @param request the request containing the email address of the user to invite
+   * @param token the JWT token of the user sending the invite
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Invite user to become admin", 
+      description = "Sends a registration key to the user's email address")
+  @PostMapping("/invite-admin")
+  public ResponseEntity<Void> inviteAdmin(
+      @RequestBody AdminInviteRequest request,
+      @RequestHeader("Authorization") String token) {
+    service.inviteAdmin(request, token);
+    logger.info("Admin invite sent to email: {}", request.getUsername());
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  /**
+   * Handles the request to accept an admin invitation.
+   *
+   * @param request the registration key provided in the invitation
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Accept admin invitation", 
+      description = "Accepts the admin invitation using the provided registration key")
+  @PostMapping("/accept-admin-invite")
+  public ResponseEntity<Void> acceptAdminInvite(@RequestBody AdminUpgradeRequest request) {
+    service.acceptAdminInvite(request);
+    logger.info("Admin invite accepted with key: {}", request.getKey());
+    return ResponseEntity.ok().build();
   }
 }
