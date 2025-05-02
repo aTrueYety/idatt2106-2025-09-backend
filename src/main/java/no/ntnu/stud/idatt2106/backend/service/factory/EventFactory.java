@@ -17,6 +17,7 @@ public class EventFactory {
   public static Event requestToEvent(EventRequest eventRequest) {
     return new Event(
         null,
+        eventRequest.getName(),
         eventRequest.getInfoPageId(),
         eventRequest.getLatitude(),
         eventRequest.getLongitude(),
@@ -36,6 +37,7 @@ public class EventFactory {
   public static EventRequest eventToRequest(Event event) {
     return new EventRequest(
         event.getInfoPageId(),
+        event.getName(),
         event.getLatitude(),
         event.getLongitude(),
         event.getRadius(),
