@@ -53,4 +53,20 @@ public class EmailTemplates {
       + "<p>Hvis du ikke ba om dette, vennligst ignorer denne e-posten.</p>"
       + "</body></html>";
   }
+
+  /**
+   * Generates an email template for upgrading a user to admin.
+   *
+   * @param username the username of the recipient
+   * @param registrationKey the registration key for admin access
+   * @return the admin upgrade email template as a String
+   */
+  public static String getAdminUpgradeTemplate(String username, String registrationKey) {
+    return "<html><body>"
+      + "<h1>Gratulerer, " + username + "!</h1>"
+      + "<p>Du har blitt oppgradert til admin.</p>"
+      + "<p>Bruk lenken nedenfor for å registrere deg som admin:</p>"
+      + "<p><a href='http://localhost:3000/register-admin/" + registrationKey + "'>Registrer deg som admin</a></p>"
+      + "</body></html>";
+  }
 }
