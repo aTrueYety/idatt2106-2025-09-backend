@@ -7,7 +7,6 @@ import no.ntnu.stud.idatt2106.backend.model.base.User;
  * Repository interface for user persistence operations.
  */
 public interface UserRepository {
-
   User findById(Long id);
 
   void addUser(User user);
@@ -23,4 +22,9 @@ public interface UserRepository {
   List<User> findAll();
 
   void updateSharePositionHousehold(Long userId, boolean value);
+
+  void updateLastKnownPosition(Long userId, float latitude, float longitude);
+  
+  int updateSharePositionHouseholdForHousehold(Long householdId, boolean share);
 }
+

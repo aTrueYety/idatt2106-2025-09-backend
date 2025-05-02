@@ -43,11 +43,11 @@ public class UserRepositoryImpl implements UserRepository {
 
   @Override
   public void addUser(final User user) {
-    String sql =
-        "INSERT INTO `user` (household_id, email, username, password, email_confirmed, "
-            + "is_admin, is_super_admin, first_name, last_name, "
-            + "share_position_household, share_position_group, picture) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO `user` (household_id, email, username, password, email_confirmed, "
+        + "is_admin, is_super_admin, first_name, last_name, "
+        + "share_position_household, share_position_group, picture) "
+        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
     jdbcTemplate.update(sql,
         user.getHouseholdId(), user.getEmail(), user.getUsername(), user.getPassword(),
         user.isEmailConfirmed(), user.isAdmin(), user.isSuperAdmin(),
@@ -57,18 +57,17 @@ public class UserRepositoryImpl implements UserRepository {
   }
 
   @Override
-  public void updateUser(final User user) {
-    String sql =
-        "UPDATE `user` SET household_id = ?, email = ?, username = ?, password = ?, "
-            + "email_confirmed = ?, is_admin = ?, is_super_admin = ?, "
-            + "first_name = ?, last_name = ?, share_position_household = ?, "
-            + "share_position_group = ?, picture = ? WHERE id = ?";
+  public void updateUser(User user) {
+    String sql = "UPDATE `user` SET household_id = ?, email = ?, username = ?, password = ?, "
+        + "email_confirmed = ?, is_admin = ?, is_super_admin = ?, first_name = ?, last_name = ?, "
+        + "share_position_household = ?, share_position_group = ?, picture = ?, "
+        + "last_latitude = ?, last_longitude = ? WHERE id = ?";
     jdbcTemplate.update(sql,
         user.getHouseholdId(), user.getEmail(), user.getUsername(), user.getPassword(),
         user.isEmailConfirmed(), user.isAdmin(), user.isSuperAdmin(),
         user.getFirstName(), user.getLastName(),
-        user.isSharePositionHousehold(), user.isSharePositionGroup(),
-        user.getPicture(), user.getId());
+        user.isSharePositionHousehold(), user.isSharePositionGroup(), user.getPicture(),
+        user.getLastLatitude(), user.getLastLongitude(), user.getId());
   }
 
   @Override
@@ -98,8 +97,22 @@ public class UserRepositoryImpl implements UserRepository {
   }
 
   @Override
-  public void updateSharePositionHousehold(final Long userId, final boolean value) {
+  public void updateLastKnownPosition(Long userId, float latitude, float longitude) {
+    String sql = "UPDATE `user` SET last_latitude = ?, last_longitude = ? WHERE id = ?";
+    jdbcTemplate.update(sql, latitude, longitude, userId);
+  }
+
+  @Override
+  public int updateSharePositionHouseholdForHousehold(Long householdId, boolean share) {
+    String sql = "UPDATE `user` SET share_position_household = ? WHERE household_id = ?";
+    return jdbcTemplate.update(sql, share, householdId);
+  }
+
+  @Override
+  public void updateSharePositionHousehold(Long userId, boolean value) {
     String sql = "UPDATE `user` SET share_position_household = ? WHERE id = ?";
     jdbcTemplate.update(sql, value, userId);
   }
+
+
 }

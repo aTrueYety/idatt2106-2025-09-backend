@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Household 6 Map</title>
@@ -7,16 +8,19 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    html, body {
+    html,
+    body {
       height: 100%;
       margin: 0;
     }
+
     #map {
       height: 100%;
       width: 100%;
     }
   </style>
 </head>
+
 <body>
   <div id="map"></div>
 
@@ -49,7 +53,18 @@
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
-      console.log(" Connected to WebSocket");
+      fetch("http://localhost:8080/api/location/last-known/6")
+        .then(res => res.json())
+        .then(data => {
+          data.forEach(({ userId, latitude, longitude }) => {
+            const pos = [latitude, longitude];
+            const marker = L.marker(pos, { icon: userIcon })
+              .addTo(map)
+              .bindPopup("Bruker " + userId);
+            userMarkers[userId] = marker;
+          });
+        });
+
 
       const householdId = 6;
 
@@ -85,4 +100,5 @@
     });
   </script>
 </body>
+
 </html>

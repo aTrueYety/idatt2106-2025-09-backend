@@ -41,27 +41,33 @@ public class LocationBroadcastService {
    */
   public void broadcastToHousehold(LocationUpdate locationUpdate) {
     User user = userRepository.findById(locationUpdate.getUserId());
-
+  
     if (user == null) {
       logger.warn("User with ID {} not found", locationUpdate.getUserId());
       return;
     }
-
+  
     if (!user.isSharePositionHousehold()) {
       logger.info("User {} has disabled position sharing", user.getId());
       return;
     }
-
+  
     if (user.getHouseholdId() == null) {
       logger.info("User {} has no household ID", user.getId());
       return;
     }
 
+    userRepository.updateLastKnownPosition(
+        user.getId(),
+        locationUpdate.getLatitude().floatValue(),
+        locationUpdate.getLongitude().floatValue()
+    );
+  
     logger.info("Broadcasting position for user {} to household {} at {}, {}",
         user.getId(), user.getHouseholdId(), locationUpdate.getLatitude(),
         locationUpdate.getLongitude());
-
+  
     String topic = "/topic/household." + user.getHouseholdId();
     messagingTemplate.convertAndSend(topic, locationUpdate);
   }
-}
+}  
