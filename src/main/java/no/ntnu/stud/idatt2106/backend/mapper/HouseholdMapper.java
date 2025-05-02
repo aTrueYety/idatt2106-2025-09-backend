@@ -22,10 +22,7 @@ public class HouseholdMapper {
     response.setLongitude(household.getLongitude());
     response.setWaterAmountLiters(household.getWaterAmountLiters());
     response.setLastWaterChangeDate(household.getLastWaterChangeDate());
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(household.getLastWaterChangeDate());
-    calendar.add(Calendar.YEAR, 1);
-    response.setNextWaterChangeDate(calendar.getTime());
+    response.setNextWaterChangeDate(null);
 
     return response;
   }
