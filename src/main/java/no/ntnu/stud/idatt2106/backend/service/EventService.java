@@ -4,7 +4,7 @@ import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EventResponse;
-import no.ntnu.stud.idatt2106.backend.repository.EventRepositoryImpl;
+import no.ntnu.stud.idatt2106.backend.repository.EventRepository;
 import no.ntnu.stud.idatt2106.backend.service.factory.EventFactory;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EventService {
   @Autowired
-  private EventRepositoryImpl eventRepository;
+  private EventRepository eventRepository;
   @Autowired
   private JwtService jwtService;
 
