@@ -1,0 +1,17 @@
+package no.ntnu.stud.idatt2106.backend.model.update;
+
+import lombok.Data;
+
+/**
+ * DTO for updating and existing user.
+ */
+@Data
+public class UserUpdate {
+  private String username;
+  private String firstName;
+  private String lastName;
+  private String email;
+  private boolean sharePositionHousehold;
+  private boolean sharePositionGroup;
+  private byte[] picture;
+}
