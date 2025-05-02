@@ -16,6 +16,8 @@ import no.ntnu.stud.idatt2106.backend.model.response.FoodSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
+import no.ntnu.stud.idatt2106.backend.util.Validate;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -44,6 +46,8 @@ public class FoodService {
    * @param request the food request containing food details
    */
   public void create(FoodRequest request) {
+    Validate.that(request.getAmount(), Validate.isPositive());
+
     Food food = FoodMapper.toModel(request);
     repository.save(food);
   }
@@ -77,6 +81,7 @@ public class FoodService {
    * @return true if updated, false if not found
    */
   public boolean update(int id, FoodUpdate update) {
+    Validate.that(update.getAmount(), Validate.isPositive());
     if (repository.findById(id).isEmpty()) {
       return false;
     }
