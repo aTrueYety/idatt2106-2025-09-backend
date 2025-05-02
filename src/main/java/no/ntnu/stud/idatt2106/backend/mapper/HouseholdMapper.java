@@ -1,6 +1,5 @@
 package no.ntnu.stud.idatt2106.backend.mapper;
 
-import java.util.Calendar;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 
