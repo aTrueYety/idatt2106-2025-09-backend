@@ -217,6 +217,7 @@ public class AuthService {
         Validate.isTrue(), "Email is not valid");
 
     User user = userService.getUserByEmail(request.getEmail());
+    Validate.that(user, Validate.isNotNull(), "User not found");
 
     String key = passwordResetKeyService.createPasswordResetKey(user.getId());
 
