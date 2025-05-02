@@ -1,6 +1,10 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,8 +55,24 @@ public class EventServiceTest {
 
         assertEquals(1, result);
         verify(repository).save(event);
-
       }
+    }
+
+    @Test
+    void shouldThrowIfUserIsNotAdmin() {
+      EventRequest request = new EventRequest();
+      Event event = new Event();
+
+      String token = "Bearer admintoken";
+
+      when(jwtService.extractIsAdmin(token.substring(7))).thenReturn(false);
+
+      Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        eventService.saveEvent(request, token);
+      });
+
+      assertTrue(exception.getMessage().contains("User is not an admin"));
+      verify(repository, never()).save(any());
     }
   }
 }
