@@ -113,6 +113,12 @@ public class UserService {
 
     existingUser.setFirstName(update.getFirstName());
     existingUser.setLastName(update.getLastName());
+
+    //Email set to not verified if changed
+    if (!existingUser.getEmail().equals(update.getEmail())) {
+      existingUser.setEmailConfirmed(false);
+    }
+
     existingUser.setEmail(update.getEmail());
     existingUser.setPicture(update.getPicture());
     existingUser.setSharePositionHousehold(update.isSharePositionHousehold());
