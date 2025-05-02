@@ -3,8 +3,12 @@ package no.ntnu.stud.idatt2106.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import no.ntnu.stud.idatt2106.backend.mapper.EmergencyGroupMapper;
+import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
 import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryResponse;
+import no.ntnu.stud.idatt2106.backend.repository.EmergencyGroupRepository;
 import no.ntnu.stud.idatt2106.backend.service.EmergencyGroupService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmergencyGroupController {
 
   private final EmergencyGroupService service;
+  private final EmergencyGroupRepository repository;
+  private final EmergencyGroupMapper mapper;
 
   @Operation(summary = "Create a new emergency group")
   @PostMapping
@@ -55,11 +61,33 @@ public class EmergencyGroupController {
    */
   @Operation(summary = "Update an emergency group by ID")
   @PutMapping("/{id}")
-  public ResponseEntity<Void> update(@PathVariable int id, 
+  public ResponseEntity<Void> update(@PathVariable int id,
       @RequestBody EmergencyGroupRequest request) {
     return service.update(id, request)
         ? ResponseEntity.ok().build()
         : ResponseEntity.notFound().build();
   }
 
+  /**
+   * Retrieves an emergency group by its ID.
+   *
+   * @param id the ID of the emergency group to retrieve
+   * @return the emergency group with the specified ID
+   */
+  @Operation(summary = "Get an emergency group by ID")
+  @GetMapping("/{id}")
+  public ResponseEntity<EmergencyGroupResponse> getById(@PathVariable int id) {
+    return repository.findById(id)
+        .map(mapper::toResponse)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+  }
+
+  @Operation(summary = "Get emergency group summaries for a household")
+  @GetMapping("/summary/{householdId}")
+  public ResponseEntity<List<EmergencyGroupSummaryResponse>> getGroupSummaries(
+      @PathVariable int householdId) {
+    return ResponseEntity.ok(service.getGroupSummariesByHouseholdId(householdId));
+  }
+  
 }
