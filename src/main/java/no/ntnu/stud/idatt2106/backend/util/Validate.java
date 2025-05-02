@@ -42,6 +42,10 @@ public class Validate {
     return value -> value != null && !value.isEmpty();
   }
 
+  public static <U, T extends Collection<U>> Predicate<T> isEmptyCollection() {
+    return value -> value == null || value.isEmpty();
+  }
+
   public static Predicate<String> isNotEmpty() {
     return value -> value != null && !value.isEmpty();
   }

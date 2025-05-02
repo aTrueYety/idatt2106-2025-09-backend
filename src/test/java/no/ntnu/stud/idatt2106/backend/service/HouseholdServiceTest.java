@@ -392,9 +392,9 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldSendEmailIfValid() {
-      Long recieverId = 2L;
-      InviteUserHouseholdRequest inviteRequest = new InviteUserHouseholdRequest(recieverId);
-      inviteRequest.setUserId(recieverId);
+      String receiverName = "testuser";
+      InviteUserHouseholdRequest inviteRequest = new InviteUserHouseholdRequest(receiverName);
+      inviteRequest.setUsername(receiverName);;
 
       Long senderId = 1L;
       User sender = new User();
@@ -403,7 +403,7 @@ public class HouseholdServiceTest {
 
       String email = "user@example.com";
       User receiver = new User();
-      receiver.setId(recieverId);
+      receiver.setId(senderId);
       receiver.setEmail(email);
 
       Long householdId = 10L;
@@ -414,12 +414,12 @@ public class HouseholdServiceTest {
       String token = "Bearer validtoken";
       when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);
       when(householdRepository.findById(householdId)).thenReturn(Optional.of(household));
-      when(userService.getUserById(recieverId)).thenReturn(receiver);
+      
+      when(userService.getUserByUsername(receiverName)).thenReturn(receiver);
       when(userService.getUserById(senderId)).thenReturn(sender);
       String inviteKey = "abc123";
-      when(householdInviteService.createHouseholdInvite(householdId, recieverId))
+      when(householdInviteService.createHouseholdInvite(householdId, receiver.getId()))
           .thenReturn(inviteKey);
-
       householdService.inviteUserToHousehold(inviteRequest, token);
       try {
         verify(emailService).sendHtmlEmail(eq(email),
@@ -446,13 +446,14 @@ public class HouseholdServiceTest {
       receiver.setEmail("user@example.com");
 
       InviteUserHouseholdRequest request = new InviteUserHouseholdRequest();
-      request.setUserId(receiverId);
+      request.setUsername("Testuser");
 
       String token = "Bearer token";
       when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);
       when(userService.getUserById(senderId)).thenReturn(sender);
       when(householdRepository.findById(houseHoldId)).thenReturn(Optional.of(household));
-      when(userService.getUserById(receiverId)).thenReturn(receiver);
+      when(userService.getUserByUsername("Testuser")).thenReturn(receiver);
+
 
       String inviteKey = "abc123";
       when(householdInviteService.createHouseholdInvite(houseHoldId, receiverId))
