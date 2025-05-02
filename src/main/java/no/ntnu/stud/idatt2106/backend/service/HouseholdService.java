@@ -91,21 +91,23 @@ public class HouseholdService {
   /**
    * Returns a HouseholdResponse of the Household the user is a part of.
    *
-   * @param id the ID of the user to get the household of
+   * @param token the JWT token of the user
    * @return HouseholdResponse with the household the user with the id is a part
    *         of
    */
-  public HouseholdResponse getByUserId(Long id) {
-    User user = userService.getUserById(id);
+  public HouseholdResponse getByUserId(String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+
+    User user = userService.getUserById(userId);
 
     if (user == null) {
-      throw new NoSuchElementException("User with ID = " + id + " not found");
+      throw new NoSuchElementException("User with ID = " + userId + " not found");
     }
 
     Long householdId = user.getHouseholdId();
 
     if (householdId == null) {
-      throw new IllegalArgumentException("User with ID = " + id + " is not in a household");
+      return null;
     }
 
     HouseholdResponse householdResponse = householdRepository.findById(householdId)
@@ -181,9 +183,9 @@ public class HouseholdService {
     Household household = householdRepository.findById(senderHouseholdId).get();
     Validate.that(household,
         Validate.isNotNull(), "Household with id = " + senderHouseholdId + " not found");
-    User user = userService.getUserById(inviteRequest.getUserId());
+    User user = userService.getUserByUsername(inviteRequest.getUsername());
     Validate.that(user,
-        Validate.isNotNull(), "User with id = " + inviteRequest.getUserId() + " not found");
+        Validate.isNotNull(), "User with username = " + inviteRequest.getUsername() + " not found");
 
     String inviteKey = householdInviteService.createHouseholdInvite(
         household.getId(), user.getId());

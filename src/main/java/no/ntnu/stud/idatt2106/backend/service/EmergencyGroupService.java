@@ -68,7 +68,8 @@ public class EmergencyGroupService {
    * @return true if updated successfully, false otherwise
    */
   public boolean update(int id, EmergencyGroupRequest request) {
-    EmergencyGroup group = new EmergencyGroup((long) id, request.getName(), request.getDescription());
+    EmergencyGroup group = new EmergencyGroup((long) id, request.getName(),
+        request.getDescription());
     return repository.update(id, group);
   }
 
@@ -97,14 +98,14 @@ public class EmergencyGroupService {
   /**
    * Retrieves summary data for all emergency groups.
    *
-   * @return a list of EmergencyGroupSummaryResponse with member and household counts
+   * @return a list of EmergencyGroupSummaryResponse with member and household
+   *         counts
    */
   public List<EmergencyGroupSummaryResponse> getAllSummaries() {
     List<EmergencyGroup> groups = repository.findAll();
     List<GroupHousehold> groupHouseholds = groupHouseholdRepository.findAll();
     List<User> allUsers = userService.getAllUsers();
     List<ExtraResident> allExtras = extraResidentService.getAllEntities();
-
 
     return groups.stream().map(group -> {
       Long groupId = group.getId();
@@ -121,12 +122,12 @@ public class EmergencyGroupService {
 
       int totalResidents = (int) allUsers.stream()
           .filter(user -> user.getHouseholdId() != null && householdIds.contains(
-            user.getHouseholdId()))
+              user.getHouseholdId()))
           .count();
 
       int totalExtraResidents = (int) allExtras.stream()
           .filter(extra -> extra.getHouseholdId() != null && householdIds.contains(
-            extra.getHouseholdId()))
+              extra.getHouseholdId()))
           .count();
 
       return new EmergencyGroupSummaryResponse(
@@ -135,8 +136,7 @@ public class EmergencyGroupService {
           group.getDescription(),
           totalHouseholds,
           totalResidents,
-          totalExtraResidents
-      );
+          totalExtraResidents);
     }).toList();
   }
 }

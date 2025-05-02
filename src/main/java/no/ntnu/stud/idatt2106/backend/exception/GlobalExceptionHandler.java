@@ -1,11 +1,13 @@
 package no.ntnu.stud.idatt2106.backend.exception;
 
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -131,6 +133,51 @@ public class GlobalExceptionHandler {
     logger.error("Invalid token signature: {}", ex.getMessage());
     return new ResponseEntity<>(
         "Invalid token signature: " + ex.getMessage(), HttpStatus.UNAUTHORIZED);
+  }
+
+  /**
+   * Handles MissingRequestHeaderException.
+   *
+   * @param ex the MissingRequestHeaderException
+   * @param request the WebRequest
+   * @return the ResponseEntity with a 400 status and error message
+   */
+  @ExceptionHandler(MissingRequestHeaderException.class)
+  public ResponseEntity<String> handleMissingRequestHeaderException(
+      MissingRequestHeaderException ex, WebRequest request) {
+    logger.error("Missing request header: {}", ex.getHeaderName(), ex);
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body("Required request header '" + ex.getHeaderName() + "' is missing.");
+  }
+
+  /**
+   * Handles MalformedJwtException.
+   *
+   * @param ex     the MalformedJwtException
+   * @param request the WebRequest
+   * @return the ResponseEntity with a 401 status and error message
+   */
+  @ExceptionHandler(MalformedJwtException.class)
+  public ResponseEntity<String> handleMalformedJwtException(
+      MalformedJwtException ex, WebRequest request) {
+    logger.error("Malformed JWT: {}", ex.getMessage());
+    return new ResponseEntity<>(
+        "Malformed JWT: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Handles ExpiredJwtException.
+   *
+   * @param ex the ExpiredJwtException
+   * @param request the WebRequest
+   * @return the ResponseEntity with a 401 status and error message
+   */
+  @ExceptionHandler(io.jsonwebtoken.ExpiredJwtException.class)
+  public ResponseEntity<String> handleExpiredJwtException(
+      io.jsonwebtoken.ExpiredJwtException ex, WebRequest request) {
+    logger.error("Expired JWT: {}", ex.getMessage());
+    return new ResponseEntity<>(
+        "Expired JWT: " + ex.getMessage(), HttpStatus.UNAUTHORIZED);
   }
 
   /**

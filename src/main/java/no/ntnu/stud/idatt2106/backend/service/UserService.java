@@ -1,10 +1,13 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import no.ntnu.stud.idatt2106.backend.mapper.UserMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
+import no.ntnu.stud.idatt2106.backend.model.update.UserUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.UserRepository;
+import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +16,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserService {
+
   @Autowired
   private UserRepository userRepo;
+
+  @Autowired
+  private JwtService jwtService;
 
   /**
    * Retrieves a user by their ID.
@@ -90,5 +97,53 @@ public class UserService {
 
   public List<User> getAllUsers() {
     return userRepo.findAll();
+  }
+
+  /**
+   * Updates a users profile.
+   *
+   * @param id the ID of the user to be updated
+   * @param update the new user info
+   * @return Repsonse object with the updated user
+   * @throws NoSuchElementException if no user with the given ID exists
+   */
+  public UserResponse updateUserProfile(Long id, UserUpdate update) {
+    Validate.that(update.getFirstName(), Validate.isNotBlankOrNull());
+    Validate.that(update.getLastName(), Validate.isNotBlankOrNull());
+    Validate.that(update.getEmail(), Validate.isNotBlankOrNull());
+    Validate.that(update.isSharePositionHousehold(), Validate.isNotNull());
+    Validate.that(update.isSharePositionGroup(), Validate.isNotNull());
+
+    User existingUser = userRepo.findById(id);
+    if (existingUser == null) {
+      throw new NoSuchElementException("User with ID = " + id + " not found");
+    }
+
+    existingUser.setFirstName(update.getFirstName());
+    existingUser.setLastName(update.getLastName());
+
+    //Email set to not verified if changed
+    if (!existingUser.getEmail().equals(update.getEmail())) {
+      existingUser.setEmailConfirmed(false);
+    }
+
+    existingUser.setEmail(update.getEmail());
+    existingUser.setPicture(update.getPicture());
+    existingUser.setSharePositionHousehold(update.isSharePositionHousehold());
+    existingUser.setSharePositionGroup(update.isSharePositionGroup());
+
+    userRepo.updateUser(existingUser);
+    return UserMapper.toResponse(existingUser);
+  }
+
+  /**
+   * Returns the user associated with the given JWT token.
+   *
+   * @param token the JWT token containing the user's ID
+   * @return a DTO representing the user associated with the token'
+   */
+  public UserResponse getByToken(String token) {
+    Long id = jwtService.extractUserId(token.substring(7));
+    return UserMapper.toResponse(getUserById(id));
   }
 }

@@ -33,12 +33,24 @@ public class UserRepository {
     return user;
   };
 
+  /**
+   * Finds a user by their unique ID.
+   *
+   * @param id the unique ID of the user
+   * @return the user with the specified ID, or null if no user is found
+   */
   public User findById(Long id) {
     String sql = "SELECT * FROM `user` WHERE id = ?";
     List<User> users = jdbcTemplate.query(sql, userRowMapper, id);
     return users.isEmpty() ? null : users.get(0);
   }
 
+  /**
+   * Adds a new user to the database.
+   *
+   * @param user the user object containing the details to be added
+   * @return the number of rows affected by the insert operation
+   */
   public int addUser(User user) {
     String sql = "INSERT INTO `user` (household_id, email, username, password, email_confirmed, "
         + "is_admin, is_super_admin, first_name, last_name, share_position_household, "
@@ -49,23 +61,46 @@ public class UserRepository {
         user.isSharePositionGroup(), user.getPicture());
   }
 
+  /**
+   * Finds a user by their username.
+   *
+   * @param username the username of the user
+   * @return the user with the specified username, or null if no user is found
+   */
   public User findUserByUsername(String username) {
     String sql = "SELECT * FROM `user` WHERE username = ?";
     List<User> users = jdbcTemplate.query(sql, userRowMapper, username);
     return users.isEmpty() ? null : users.get(0);
   }
 
+  /**
+   * Finds a user by their email address.
+   *
+   * @param email the email address of the user
+   * @return the user with the specified email, or null if no user is found
+   */
   public User findUserByEmail(String email) {
     String sql = "SELECT * FROM `user` WHERE email = ?";
     List<User> users = jdbcTemplate.query(sql, userRowMapper, email);
     return users.isEmpty() ? null : users.get(0);
   }
 
+  /**
+   * Finds all users belonging to a specific household.
+   *
+   * @param householdId the ID of the household
+   * @return a list of users belonging to the specified household
+   */
   public List<User> findUsersByHouseholdId(Long householdId) {
     String sql = "SELECT * FROM `user` WHERE household_id = ?";
     return jdbcTemplate.query(sql, userRowMapper, householdId);
   }
 
+  /**
+   * Updates the share position for a user in their household.
+   *
+   * @return the number of rows affected by the update operation
+   */
   public int updateUser(User user) {
     String sql = "UPDATE `user` SET household_id = ?, email = ?, username = ?, password = ?, "
         + "email_confirmed = ?, is_admin = ?, is_super_admin = ?, first_name = ?, last_name = ?, "
