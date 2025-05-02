@@ -15,7 +15,7 @@ public class UserRepository {
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
-  RowMapper<User> userRowMapper = (rs, rowNum) -> {
+  private final RowMapper<User> userRowMapper = (rs, rowNum) -> {
     User user = new User();
     user.setId(rs.getObject("id", Long.class));
     user.setHouseholdId(rs.getObject("household_id", Long.class));
@@ -33,24 +33,12 @@ public class UserRepository {
     return user;
   };
 
-  /**
-   * Retrieves a user by their ID.
-   *
-   * @param id the ID of the user to be retrieved
-   * @return the user with the specified ID, or null if not found
-   */
   public User findById(Long id) {
     String sql = "SELECT * FROM `user` WHERE id = ?";
     List<User> users = jdbcTemplate.query(sql, userRowMapper, id);
     return users.isEmpty() ? null : users.get(0);
   }
 
-  /**
-   * Adds a new user to the database.
-   *
-   * @param user the user to be added
-   * @return the number of rows affected
-   */
   public int addUser(User user) {
     String sql = "INSERT INTO `user` (household_id, email, username, password, email_confirmed, "
         + "is_admin, is_super_admin, first_name, last_name, share_position_household, "
@@ -61,48 +49,23 @@ public class UserRepository {
         user.isSharePositionGroup(), user.getPicture());
   }
 
-  /**
-   * Finds a user by their username.
-   *
-   * @param username the username of the user to be found
-   * @return the user with the specified username, or null if not found
-   */
   public User findUserByUsername(String username) {
     String sql = "SELECT * FROM `user` WHERE username = ?";
     List<User> users = jdbcTemplate.query(sql, userRowMapper, username);
     return users.isEmpty() ? null : users.get(0);
   }
 
-  /**
-   * Finds a user by their email.
-   *
-   * @param email the email of the user to be found
-   * @return the user with the specified email, or null if not found
-   */
   public User findUserByEmail(String email) {
     String sql = "SELECT * FROM `user` WHERE email = ?";
     List<User> users = jdbcTemplate.query(sql, userRowMapper, email);
     return users.isEmpty() ? null : users.get(0);
   }
 
-  /**
-   * Finds all users with the given household ID.
-   *
-   * @param householdId the ID of the household to filter users by
-   * @return a list of users belonging to the given household ID, or an empty list
-   *         if none are found
-   */
   public List<User> findUsersByHouseholdId(Long householdId) {
     String sql = "SELECT * FROM `user` WHERE household_id = ?";
     return jdbcTemplate.query(sql, userRowMapper, householdId);
   }
 
-  /**
-   * Finds a user by their ID.
-   *
-   * @param user the user to be found
-   * @return the user with the specified ID, or null if not found
-   */
   public int updateUser(User user) {
     String sql = "UPDATE `user` SET household_id = ?, email = ?, username = ?, password = ?, "
         + "email_confirmed = ?, is_admin = ?, is_super_admin = ?, first_name = ?, last_name = ?, "
@@ -111,5 +74,15 @@ public class UserRepository {
         user.getPassword(), user.isEmailConfirmed(), user.isAdmin(), user.isSuperAdmin(),
         user.getFirstName(), user.getLastName(), user.isSharePositionHousehold(),
         user.isSharePositionGroup(), user.getPicture(), user.getId());
+  }
+
+  /**
+   * Retrieves all users in the database.
+   *
+   * @return list of all users
+   */
+  public List<User> findAll() {
+    String sql = "SELECT * FROM `user`";
+    return jdbcTemplate.query(sql, userRowMapper);
   }
 }

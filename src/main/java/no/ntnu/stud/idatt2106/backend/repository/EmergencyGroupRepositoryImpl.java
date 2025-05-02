@@ -20,10 +20,11 @@ public class EmergencyGroupRepositoryImpl implements EmergencyGroupRepository {
   private final JdbcTemplate jdbcTemplate;
 
   private final RowMapper<EmergencyGroup> rowMapper = (rs, rowNum) -> new EmergencyGroup(
-      rs.getInt("id"),
-      rs.getString("name"),
-      rs.getString("description")
-  );
+    rs.getObject("id", Long.class),
+    rs.getString("name"),
+    rs.getString("description")
+);
+
 
   @Override
   public void save(EmergencyGroup group) {
@@ -86,7 +87,7 @@ public class EmergencyGroupRepositoryImpl implements EmergencyGroupRepository {
     return jdbcTemplate.query(
         sql,
         (rs, rowNum) -> new EmergencyGroupSummaryResponse(
-            rs.getInt("group_id"),
+            rs.getLong("group_id"),
             rs.getString("group_name"),
             rs.getString("group_description"),
             rs.getInt("total_households"),

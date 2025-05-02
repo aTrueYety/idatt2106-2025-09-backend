@@ -87,4 +87,8 @@ public class UserService {
   public boolean userExists(Long id) {
     return userRepo.findById(id) != null;
   }
+
+  public List<User> getAllUsers() {
+    return userRepo.findAll();
+  }
 }

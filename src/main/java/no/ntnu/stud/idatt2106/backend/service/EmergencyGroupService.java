@@ -1,14 +1,20 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import no.ntnu.stud.idatt2106.backend.mapper.EmergencyGroupMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
+import no.ntnu.stud.idatt2106.backend.model.base.ExtraResident;
+import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
+import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.repository.EmergencyGroupRepository;
+import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepository;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,6 +26,9 @@ public class EmergencyGroupService {
 
   private final EmergencyGroupRepository repository;
   private final EmergencyGroupMapper mapper;
+  private final GroupHouseholdRepository groupHouseholdRepository;
+  private final UserService userService;
+  private final ExtraResidentService extraResidentService;
 
   /**
    * Creates a new emergency group from the provided request.
@@ -59,7 +68,7 @@ public class EmergencyGroupService {
    * @return true if updated successfully, false otherwise
    */
   public boolean update(int id, EmergencyGroupRequest request) {
-    EmergencyGroup group = new EmergencyGroup(id, request.getName(), request.getDescription());
+    EmergencyGroup group = new EmergencyGroup((long) id, request.getName(), request.getDescription());
     return repository.update(id, group);
   }
 
@@ -83,5 +92,51 @@ public class EmergencyGroupService {
    */
   public List<EmergencyGroupSummaryResponse> getGroupSummariesByHouseholdId(int householdId) {
     return repository.findGroupSummariesByHouseholdId(householdId);
+  }
+
+  /**
+   * Retrieves summary data for all emergency groups.
+   *
+   * @return a list of EmergencyGroupSummaryResponse with member and household counts
+   */
+  public List<EmergencyGroupSummaryResponse> getAllSummaries() {
+    List<EmergencyGroup> groups = repository.findAll();
+    List<GroupHousehold> groupHouseholds = groupHouseholdRepository.findAll();
+    List<User> allUsers = userService.getAllUsers();
+    List<ExtraResident> allExtras = extraResidentService.getAllEntities();
+
+
+    return groups.stream().map(group -> {
+      Long groupId = group.getId();
+
+      List<GroupHousehold> householdsInGroup = groupHouseholds.stream()
+          .filter(gh -> Objects.equals(gh.getGroupId(), groupId))
+          .toList();
+
+      Set<Long> householdIds = householdsInGroup.stream()
+          .map(GroupHousehold::getHouseholdId)
+          .collect(Collectors.toSet());
+
+      int totalHouseholds = householdIds.size();
+
+      int totalResidents = (int) allUsers.stream()
+          .filter(user -> user.getHouseholdId() != null && householdIds.contains(
+            user.getHouseholdId()))
+          .count();
+
+      int totalExtraResidents = (int) allExtras.stream()
+          .filter(extra -> extra.getHouseholdId() != null && householdIds.contains(
+            extra.getHouseholdId()))
+          .count();
+
+      return new EmergencyGroupSummaryResponse(
+          groupId,
+          group.getName(),
+          group.getDescription(),
+          totalHouseholds,
+          totalResidents,
+          totalExtraResidents
+      );
+    }).toList();
   }
 }

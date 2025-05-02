@@ -5,14 +5,12 @@ import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
 import org.springframework.stereotype.Component;
 
-/**
- * Mapper for converting between EmergencyGroup entities and DTOs.
- */
+
 @Component
 public class EmergencyGroupMapper {
 
   public EmergencyGroup toModel(EmergencyGroupRequest request) {
-    return new EmergencyGroup(0, request.getName(), request.getDescription());
+    return new EmergencyGroup(null, request.getName(), request.getDescription());
   }
 
   public EmergencyGroupResponse toResponse(EmergencyGroup group) {

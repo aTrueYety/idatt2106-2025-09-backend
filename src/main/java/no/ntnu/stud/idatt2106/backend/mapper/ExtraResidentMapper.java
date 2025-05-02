@@ -18,8 +18,8 @@ public class ExtraResidentMapper {
    */
   public static ExtraResident toModel(ExtraResidentRequest request) {
     ExtraResident resident = new ExtraResident();
-    resident.setHouseholdid(request.getHouseholdId());
-    resident.setTypeId(request.getTypeId());
+    resident.setHouseholdId(Long.valueOf(request.getHouseholdId()));
+    resident.setTypeId(Long.valueOf(request.getTypeId()));
     resident.setName(request.getName());
     return resident;
   }
@@ -32,7 +32,7 @@ public class ExtraResidentMapper {
    */
   public static ExtraResident toModel(ExtraResidentUpdate update) {
     ExtraResident resident = new ExtraResident();
-    resident.setHouseholdid(update.getHouseholdId());
+    resident.setHouseholdId(update.getHouseholdId());
     resident.setTypeId(update.getTypeId());
     resident.setName(update.getName());
     return resident;
@@ -47,7 +47,7 @@ public class ExtraResidentMapper {
   public static ExtraResidentResponse toResponse(ExtraResident resident) {
     ExtraResidentResponse response = new ExtraResidentResponse();
     response.setId(resident.getId());
-    response.setHouseholdId(resident.getHouseholdid());
+    response.setHouseholdId(resident.getHouseholdId());
     response.setTypeId(resident.getTypeId());
     response.setName(resident.getName());
     return response;

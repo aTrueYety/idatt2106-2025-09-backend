@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExtraResident {
-  private long id;
-  private long householdid;
-  private long typeId;
+  private Long id;
+  private Long householdId;
+  private Long typeId;
   private String name;
 }

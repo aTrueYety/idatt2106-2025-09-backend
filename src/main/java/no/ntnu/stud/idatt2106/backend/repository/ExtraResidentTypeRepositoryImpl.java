@@ -24,7 +24,7 @@ public class ExtraResidentTypeRepositoryImpl implements ExtraResidentTypeReposit
 
   private final RowMapper<ExtraResidentType> rowMapper = (rs, rowNum) -> {
     ExtraResidentType type = new ExtraResidentType();
-    type.setId(rs.getInt("id"));
+    type.setId(rs.getLong("id"));
     type.setName(rs.getString("name"));
     type.setConsumptionWater(rs.getFloat("consumption_water"));
     type.setConsumptionFood(rs.getFloat("consumption_food"));
@@ -58,7 +58,7 @@ public class ExtraResidentTypeRepositoryImpl implements ExtraResidentTypeReposit
     }, keyHolder);
 
     if (keyHolder.getKey() != null) {
-      type.setId(keyHolder.getKey().intValue());
+      type.setId(keyHolder.getKey().longValue());
     }
   }
 
