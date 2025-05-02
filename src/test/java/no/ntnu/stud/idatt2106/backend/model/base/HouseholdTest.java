@@ -3,7 +3,6 @@ package no.ntnu.stud.idatt2106.backend.model.base;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
-import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -18,7 +17,7 @@ public class HouseholdTest {
   @Test
   void testAllArgsConstructorAndGetters() {
     Date now = new Date();
-    Household household = new Household(1L, "123 Main St", 40.7128, -74.0060, 500.0, now);
+    Household household = new Household(1L, "123 Main St", "name",  40.7128, -74.0060, 500.0, now);
 
     assertEquals(1L, household.getId());
     assertEquals("123 Main St", household.getAddress());

@@ -16,13 +16,13 @@ public class HouseholdMapper {
   public static HouseholdResponse toResponse(Household household) {
     HouseholdResponse response = new HouseholdResponse();
     response.setId(household.getId());
+    response.setName(household.getName());
     response.setAddress(household.getAddress());
     response.setLatitude(household.getLatitude());
     response.setLongitude(household.getLongitude());
     response.setWaterAmountLiters(household.getWaterAmountLiters());
     response.setLastWaterChangeDate(household.getLastWaterChangeDate());
     response.setNextWaterChangeDate(null);
-
     return response;
   }
 }

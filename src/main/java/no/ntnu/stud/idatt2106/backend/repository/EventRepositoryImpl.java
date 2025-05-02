@@ -19,6 +19,7 @@ public class EventRepositoryImpl implements EventRepository {
   private final RowMapper<Event> eventRowMapper = (rs, rowNum) -> {
     return new Event(
       rs.getObject("id", Long.class),
+      rs.getString("name"),
       rs.getObject("info_page_id", Long.class),
       rs.getDouble("latitude"),
       rs.getDouble("longitude"),
@@ -32,6 +33,7 @@ public class EventRepositoryImpl implements EventRepository {
   private final RowMapper<EventResponse> eventResponseRowMapper = (rs, rowNum) -> {
     return new EventResponse(
       rs.getObject("id", Long.class),
+      rs.getString("name"),
       rs.getObject("info_page_id", Long.class),
       rs.getDouble("latitude"),
       rs.getDouble("longitude"),
@@ -53,9 +55,10 @@ public class EventRepositoryImpl implements EventRepository {
    */
   public int save(Event event) {
     String sql = "INSERT INTO event "
-        + "(info_page_id, latitude, longitude, radius, start_time, end_time, severity_id, " 
-        + "recomendation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        + "(name, info_page_id, latitude, longitude, radius, start_time, end_time, severity_id, " 
+        + "recomendation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     return jdbcTemplate.update(sql,
+        event.getName(),
         event.getInfoPageId(),
         event.getLatitude(),
         event.getLongitude(),
@@ -155,9 +158,11 @@ public class EventRepositoryImpl implements EventRepository {
    * @return the number of rows affected
    */
   public int update(Event event) {
-    String sql = "UPDATE event SET info_page_id = ?, latitude = ?, longitude = ?, radius = ?, "
-        + "start_time = ?, end_time = ?, severity_id = ?, recomendation = ? WHERE id = ?";
+    String sql = "UPDATE event SET name = ?, info_page_id = ?, latitude = ?, longitude = ?, " 
+        + "radius = ?, start_time = ?, end_time = ?, severity_id = ?, recomendation = ? " 
+        + "WHERE id = ?";
     return jdbcTemplate.update(sql,
+        event.getName(),
         event.getInfoPageId(),
         event.getLatitude(),
         event.getLongitude(),

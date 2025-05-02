@@ -25,6 +25,7 @@ CREATE TABLE extra_resident_type (
 CREATE TABLE household (
   id INT AUTO_INCREMENT PRIMARY KEY,
   adress VARCHAR(255) NOT NULL,
+  name VARCHAR(255),
   latitude FLOAT NOT NULL,
   longitude FLOAT NOT NULL,
   amount_water FLOAT NOT NULL,
@@ -99,6 +100,7 @@ CREATE TABLE info_page (
 CREATE TABLE event (
     id INT AUTO_INCREMENT PRIMARY KEY,
     info_page_id INT NULL,
+    name Varchar(255),
     latitude FLOAT NOT NULL,
     longitude FLOAT NOT NULL,
     radius FLOAT NOT NULL,
