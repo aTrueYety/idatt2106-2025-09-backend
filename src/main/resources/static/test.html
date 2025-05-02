@@ -2,25 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>WebSocket Household Map</title>
+  <title>Household 6 Map</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
   <style>
     html, body {
       height: 100%;
       margin: 0;
     }
-
     #map {
       height: 100%;
       width: 100%;
-    }
-
-    .leaflet-popup-content-wrapper {
-      font-size: 14px;
     }
   </style>
 </head>
@@ -40,10 +33,7 @@
       maxZoom: 19
     }).addTo(map);
 
-    window.addEventListener("load", () => {
-      map.invalidateSize();
-    });
-
+    // Leaflet standardikon
     const userIcon = L.icon({
       iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
       iconSize: [25, 41],
@@ -53,39 +43,45 @@
       shadowSize: [41, 41]
     });
 
-    const userMarkers = {};
+    const userMarkers = {}; // userId -> marker
 
     const socket = new SockJS("http://localhost:8080/ws/location");
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
-      console.log("Connected to WebSocket");
+      console.log(" Connected to WebSocket");
 
-      stompClient.subscribe("/topic/household.1", (message) => {
+      const householdId = 6;
+
+      stompClient.subscribe(`/topic/household.${householdId}`, (message) => {
         const data = JSON.parse(message.body);
         const { userId, latitude, longitude } = data;
-        const position = [latitude, longitude];
-        console.log("Received:", data);
+        const pos = [latitude, longitude];
+
+        console.log(` Bruker ${userId} @ ${latitude}, ${longitude}`);
 
         if (userMarkers[userId]) {
-          userMarkers[userId].setLatLng(position);
+          userMarkers[userId].setLatLng(pos);
         } else {
-          const marker = L.marker(position, { icon: userIcon })
+          const marker = L.marker(pos, { icon: userIcon })
             .addTo(map)
             .bindPopup("Bruker " + userId)
             .openPopup();
+
           userMarkers[userId] = marker;
         }
-
-        map.panTo(position);
       });
 
-      // Testmelding
+      // Test: Send én posisjon for bruker 1
       stompClient.send("/app/location", {}, JSON.stringify({
         userId: 1,
-        latitude: 63.42,
-        longitude: 10.42
+        latitude: 63.420,
+        longitude: 10.420
       }));
+    });
+
+    window.addEventListener("load", () => {
+      map.invalidateSize();
     });
   </script>
 </body>
