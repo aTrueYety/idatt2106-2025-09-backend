@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -36,6 +37,18 @@ public class HouseholdService {
   @Autowired
   private LevelOfPreparednessService levelOfPreparednessService;
 
+  private HouseholdResponse toResponse(Household household) {
+    HouseholdResponse response = HouseholdMapper.toResponse(household);
+    if (household.getLastWaterChangeDate() == null) {
+      return response;
+    }
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(household.getLastWaterChangeDate());
+    calendar.add(Calendar.YEAR, 1);
+    response.setNextWaterChangeDate(calendar.getTime());
+    return response;
+  }
+
   /**
    * Returns all registered households as a list of HouseholdResponse objects.
    *
@@ -43,7 +56,7 @@ public class HouseholdService {
    */
   public List<HouseholdResponse> getAll() {
     return householdRepository.findAll().stream()
-        .map(HouseholdMapper::toResponse)
+        .map(this::toResponse)
         .toList();
   }
 
@@ -56,7 +69,7 @@ public class HouseholdService {
    *                                specified id
    */
   public HouseholdResponse getByIdWithPreparedness(Long id) {
-    HouseholdResponse response = householdRepository.findById(id).map(HouseholdMapper::toResponse)
+    HouseholdResponse response = householdRepository.findById(id).map(this::toResponse)
         .orElseThrow(() -> new NoSuchElementException("Household with ID = " + id + " not found"));
     response.setLevelOfPreparedness(levelOfPreparednessService
         .getPreparednessForHousehold(getById(id)));
@@ -71,7 +84,7 @@ public class HouseholdService {
    */
   public HouseholdResponse getById(Long id) {
     return householdRepository.findById(id)
-        .map(HouseholdMapper::toResponse)
+        .map(this::toResponse)
         .orElseThrow(() -> new NoSuchElementException("Household with ID = " + id + " not found"));
   }
 
@@ -96,7 +109,7 @@ public class HouseholdService {
     }
 
     HouseholdResponse householdResponse = householdRepository.findById(householdId)
-        .map(HouseholdMapper::toResponse).get();
+        .map(this::toResponse).get();
     householdResponse.setLevelOfPreparedness(levelOfPreparednessService
         .getPreparednessForHousehold(getById(householdId)));
     return householdResponse;
@@ -257,7 +270,7 @@ public class HouseholdService {
     }
 
     householdRepository.update(validatedHousehold);
-    return HouseholdMapper.toResponse(validatedHousehold);
+    return toResponse(validatedHousehold);
   }
 
   /**
