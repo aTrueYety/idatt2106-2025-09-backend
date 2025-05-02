@@ -66,4 +66,10 @@ public class GroupHouseholdRepositoryImpl implements GroupHouseholdRepository {
     String sql = "SELECT * FROM group_household WHERE household_id = ?";
     return jdbcTemplate.query(sql, rowMapper, householdId);
   }
+
+  @Override
+  public int countByGroupId(Long groupId) {
+    String sql = "SELECT COUNT(*) FROM group_household WHERE group_id = ?";
+    return jdbcTemplate.queryForObject(sql, Integer.class, groupId);
+  }
 }

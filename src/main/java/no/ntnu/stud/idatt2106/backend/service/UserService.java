@@ -146,4 +146,37 @@ public class UserService {
     Long id = jwtService.extractUserId(token.substring(7));
     return UserMapper.toResponse(getUserById(id));
   }
+
+
+  /**
+   * Enables the sharing of the user's position for their household.
+   *
+   * @param userId The ID of the user for whom to enable position sharing.
+   * @return true if the user's position sharing was successfully enabled, false otherwise.
+   */
+  public boolean enableSharePositionForHousehold(Long userId) {
+    User user = userRepo.findById(userId);
+    if (user == null) {
+      return false;
+    }
+    userRepo.updateSharePositionHousehold(userId, true);
+    return true;
+  }
+
+  /**
+   * Updates the sharing of the user's position for their household.
+   *
+   * @param userId  The ID of the user for whom to update position sharing.
+   * @param enabled True to enable position sharing, false to disable it.
+   * @return true if the user's position sharing was successfully updated, false otherwise.
+   */
+  public boolean updateSharePositionHousehold(Long userId, boolean enabled) {
+    User user = userRepo.findById(userId);
+    if (user == null) {
+      return false;
+    }
+    userRepo.updateSharePositionHousehold(userId, enabled);
+    return true;
+  }
+  
 }

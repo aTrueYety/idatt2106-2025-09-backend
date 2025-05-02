@@ -109,6 +109,6 @@ public class SharedFoodController {
   public ResponseEntity<List<FoodDetailedResponse>> getSharedFoodSummary(
       @PathVariable int groupHouseholdId) {
     return ResponseEntity.ok(service.getSharedFoodSummaryByGroup(groupHouseholdId));
-  }
+  } 
 
 }

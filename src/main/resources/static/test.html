@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Household 6 Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <!-- Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const map = L.map('map').setView([63.42, 10.42], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Leaflet standardikon
+    const userIcon = L.icon({
+      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      shadowSize: [41, 41]
+    });
+
+    const userMarkers = {}; // userId -> marker
+
+    const socket = new SockJS("http://localhost:8080/ws/location");
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, () => {
+      fetch("http://localhost:8080/api/location/last-known/6")
+        .then(res => res.json())
+        .then(data => {
+          data.forEach(({ userId, latitude, longitude }) => {
+            const pos = [latitude, longitude];
+            const marker = L.marker(pos, { icon: userIcon })
+              .addTo(map)
+              .bindPopup("Bruker " + userId);
+            userMarkers[userId] = marker;
+          });
+        });
+
+
+      const householdId = 6;
+
+      stompClient.subscribe(`/topic/household.${householdId}`, (message) => {
+        const data = JSON.parse(message.body);
+        const { userId, latitude, longitude } = data;
+        const pos = [latitude, longitude];
+
+        console.log(` Bruker ${userId} @ ${latitude}, ${longitude}`);
+
+        if (userMarkers[userId]) {
+          userMarkers[userId].setLatLng(pos);
+        } else {
+          const marker = L.marker(pos, { icon: userIcon })
+            .addTo(map)
+            .bindPopup("Bruker " + userId)
+            .openPopup();
+
+          userMarkers[userId] = marker;
+        }
+      });
+
+      // Test: Send én posisjon for bruker 1
+      stompClient.send("/app/location", {}, JSON.stringify({
+        userId: 1,
+        latitude: 63.420,
+        longitude: 10.420
+      }));
+    });
+
+    window.addEventListener("load", () => {
+      map.invalidateSize();
+    });
+  </script>
+</body>
+
+</html>

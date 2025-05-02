@@ -38,6 +38,13 @@
 			<optional>true</optional>
 		</dependency>
 
+    <!-- webSocket -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
+
+
 		<!-- DotEnv -->
 		<dependency>
     		<groupId>io.github.cdimascio</groupId>

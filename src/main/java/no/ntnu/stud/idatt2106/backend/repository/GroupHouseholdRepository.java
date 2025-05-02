@@ -56,5 +56,7 @@ public interface GroupHouseholdRepository {
   boolean deleteById(Long id);
 
   List<GroupHousehold> findByHouseholdId(Long householdId);
+  
+  int countByGroupId(Long groupId);
 
 }
