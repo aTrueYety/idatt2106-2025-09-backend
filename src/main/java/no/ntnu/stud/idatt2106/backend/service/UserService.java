@@ -16,9 +16,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserService {
-  
+
   @Autowired
   private UserRepository userRepo;
+
+  @Autowired
+  private JwtService jwtService;
 
   /**
    * Retrieves a user by their ID.
@@ -127,5 +130,17 @@ public class UserService {
 
     userRepo.updateUser(existingUser);
     return UserMapper.toResponse(existingUser);
+  }
+
+  /**
+   * Returns the user associated with the given JWT token.
+   *
+   * @param token the JWT token containing the user's ID
+   * @return a DTO representing the user associated with the token
+   * @throws  
+   */
+  public UserResponse getByToken(String token) {
+    Long id = jwtService.extractUserId(token.substring(7));
+    return UserMapper.toResponse(getUserById(id));
   }
 }
