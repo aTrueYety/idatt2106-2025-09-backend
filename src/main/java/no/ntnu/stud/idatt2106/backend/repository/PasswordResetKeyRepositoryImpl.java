@@ -25,7 +25,7 @@ public class PasswordResetKeyRepositoryImpl implements PasswordResetKeyRepositor
   @Override
   public PasswordResetKey save(PasswordResetKey key) {
     String sql = "INSERT INTO password_change_key (user_id, key) VALUES (?, ?)";
-    jdbcTemplate.update(sql, key.getUserId(), key.getKey(), key.getCreatedAt());
+    jdbcTemplate.update(sql, key.getUserId(), key.getKey());
     return key;
   }
 
