@@ -139,4 +139,48 @@ public class EmergencyGroupService {
           totalExtraResidents);
     }).toList();
   }
+
+  /**
+   * Retrieves summary data for a specific emergency group by its ID.
+   *
+   * @param groupId the ID of the emergency group
+   * @return an EmergencyGroupSummaryResponse object with member and household
+   *         counts
+   */
+  public EmergencyGroupSummaryResponse getSummaryByGroupId(Long groupId) {
+    EmergencyGroup group = repository.findById(groupId.intValue())
+        .orElseThrow(() -> new IllegalArgumentException("Group not found with id: " + groupId));
+
+    List<GroupHousehold> householdsInGroup = groupHouseholdRepository.findAll().stream()
+        .filter(gh -> Objects.equals(gh.getGroupId(), groupId))
+        .toList();
+
+    Set<Long> householdIds = householdsInGroup.stream()
+        .map(GroupHousehold::getHouseholdId)
+        .collect(Collectors.toSet());
+
+    List<User> allUsers = userService.getAllUsers();
+    List<ExtraResident> allExtras = extraResidentService.getAllEntities();
+
+    int totalHouseholds = householdIds.size();
+
+    int totalResidents = (int) allUsers.stream()
+        .filter(user -> user.getHouseholdId() != null && householdIds.contains(
+          user.getHouseholdId()))
+        .count();
+
+    int totalExtraResidents = (int) allExtras.stream()
+        .filter(extra -> extra.getHouseholdId() != null && householdIds.contains(
+          extra.getHouseholdId()))
+        .count();
+
+    return new EmergencyGroupSummaryResponse(
+        group.getId(),
+        group.getName(),
+        group.getDescription(),
+        totalHouseholds,
+        totalResidents,
+        totalExtraResidents);
+  }
+
 }

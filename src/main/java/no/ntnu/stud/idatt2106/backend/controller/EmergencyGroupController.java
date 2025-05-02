@@ -90,11 +90,17 @@ public class EmergencyGroupController {
     return ResponseEntity.ok(service.getGroupSummariesByHouseholdId(householdId));
   }
 
-
   @Operation(summary = "Get summary for all emergency groups")
   @GetMapping("/summary")
   public ResponseEntity<List<EmergencyGroupSummaryResponse>> getAllGroupSummaries() {
     return ResponseEntity.ok(service.getAllSummaries());
+  }
+
+  @Operation(summary = "Get summary for a specific emergency group")
+  @GetMapping("/summary/group/{groupId}")
+  public ResponseEntity<EmergencyGroupSummaryResponse> getGroupSummaryById(
+      @PathVariable Long groupId) {
+    return ResponseEntity.ok(service.getSummaryByGroupId(groupId));
   }
 
 }
