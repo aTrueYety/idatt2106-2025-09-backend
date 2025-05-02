@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,7 +57,8 @@ public class UserController {
           """
   )
   @PutMapping("/{id}")
-  public ResponseEntity<UserResponse> updateProfile(@PathVariable Long id, UserUpdate update) {
+  public ResponseEntity<UserResponse> updateProfile(@PathVariable Long id,
+      @RequestBody UserUpdate update) {
     logger.info("Updating user with ID = {}", id);
     UserResponse response = userService.updateUserProfile(id, update);
     logger.info("Updated user successfully");
