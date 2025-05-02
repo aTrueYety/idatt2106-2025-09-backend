@@ -95,6 +95,10 @@ public class UserService {
     return userRepo.findById(id) != null;
   }
 
+  public List<User> getAllUsers() {
+    return userRepo.findAll();
+  }
+
   /**
    * Updates a users profile.
    *

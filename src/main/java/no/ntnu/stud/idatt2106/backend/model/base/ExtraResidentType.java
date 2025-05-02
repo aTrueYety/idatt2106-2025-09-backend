@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExtraResidentType {
-  private long id;
+  private Long id;
   private String name;
   private float consumptionWater;
   private float consumptionFood;

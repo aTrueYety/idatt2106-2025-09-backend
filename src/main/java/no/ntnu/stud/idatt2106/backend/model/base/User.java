@@ -1,5 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.model.base;
 
+import java.util.List;
+
 /**
  * Represents a user in the system.
  */
@@ -127,4 +129,7 @@ public class User {
   public void setPicture(byte[] picture) {
     this.picture = picture;
   }
+
+  
+  
 }
