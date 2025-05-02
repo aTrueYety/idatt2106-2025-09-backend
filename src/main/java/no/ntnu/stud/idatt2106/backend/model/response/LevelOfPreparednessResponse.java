@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.model.response;
 
+import java.time.Duration;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,5 @@ public class LevelOfPreparednessResponse {
   private double levelOfPreparednessWater;
   private double levelOfPreparednessFood;
   private double levelOfPreparednessKit;
+  private long timePrepared;
 }
