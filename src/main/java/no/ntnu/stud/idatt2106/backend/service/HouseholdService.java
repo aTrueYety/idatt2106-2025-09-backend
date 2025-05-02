@@ -168,9 +168,9 @@ public class HouseholdService {
     Household household = householdRepository.findById(senderHouseholdId).get();
     Validate.that(household,
         Validate.isNotNull(), "Household with id = " + senderHouseholdId + " not found");
-    User user = userService.getUserById(inviteRequest.getUserId());
+    User user = userService.getUserByUsername(inviteRequest.getUsername());
     Validate.that(user,
-        Validate.isNotNull(), "User with id = " + inviteRequest.getUserId() + " not found");
+        Validate.isNotNull(), "User with username = " + inviteRequest.getUsername() + " not found");
 
     String inviteKey = householdInviteService.createHouseholdInvite(
         household.getId(), user.getId());
