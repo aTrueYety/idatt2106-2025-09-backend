@@ -210,4 +210,22 @@ public class EventServiceTest {
       verify(repository).findWithSeverityById(id);
     }
   }
+
+  @Nested
+  class FindAllEventsWithSeverityTests {
+
+    @Test
+    void shouldReturnAllEventsWithSeverity() {
+      EventResponse event1 = new EventResponse();
+      EventResponse event2 = new EventResponse();
+      List<EventResponse> expected = List.of(event1, event2);
+
+      when(repository.findAllWithSeverity()).thenReturn(expected);
+
+      List<EventResponse> result = eventService.findAllEventsWithSeverity();
+
+      assertEquals(expected, result);
+      verify(repository).findAllWithSeverity();
+    }
+  }
 }
