@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.EventResponse;
 import no.ntnu.stud.idatt2106.backend.repository.EventRepository;
 import no.ntnu.stud.idatt2106.backend.service.factory.EventFactory;
 import org.junit.jupiter.api.Nested;
@@ -189,6 +190,24 @@ public class EventServiceTest {
 
       assertEquals(expected, result);
       verify(repository).findAllInBounds(minLat, maxLat, minLong, maxLong);
+    }
+  }
+
+  @Nested
+  class FindEventWithSeverityByIdTests {
+
+    @Test
+    void shouldReturnEventWithSeverityWithId() {
+      Long id = 2L;
+      EventResponse event = new EventResponse();
+      event.setId(id);
+
+      when(repository.findWithSeverityById(id)).thenReturn(event);
+
+      EventResponse result = eventService.findEventWithSeverityById(id);
+
+      assertEquals(event, result);
+      verify(repository).findWithSeverityById(id);
     }
   }
 }
