@@ -31,19 +31,17 @@ public class UserController {
   private UserService userService;
 
   /**
-   * Retrives a user by their ID.
+   * Retrives a users info by their ID.
    *
    * @param id the ID of the user to retrieve
    * @return the user with the specified ID
    */
   @GetMapping("/{id}")
-  public ResponseEntity<User> getUserById(@PathVariable Long id) {
-    User user = userService.getUserById(id);
-    if (user != null) {
-      return ResponseEntity.ok(user);
-    } else {
-      return ResponseEntity.notFound().build();
-    }
+  public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+    logger.info("Retrieving user profile of user with ID = " + id);
+    UserResponse response = userService.getUserProfileById(id);
+    logger.info("User info retrieved successfully");
+    return ResponseEntity.ok(response);
   }
 
   /**
