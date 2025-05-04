@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-
 import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
 import no.ntnu.stud.idatt2106.backend.repository.EventRepository;
@@ -167,6 +166,29 @@ public class EventServiceTest {
 
       verify(repository).findAll();
       assertEquals(expected, result);
+    }
+  }
+
+  @Nested
+  class FindAllEventsInBoundsTests {
+    
+    @Test
+    void shouldReturnTestsWithinBounds() {
+      double minLat = 10.0;
+      double maxLat = 20.0;
+      double minLong = 30.0;
+      double maxLong = 40.0;
+
+      Event event1 = new Event();
+      Event event2 = new Event();
+      List<Event> expected = List.of(event1, event2);
+
+      when(repository.findAllInBounds(minLat, maxLat, minLong, maxLong)).thenReturn(expected);
+
+      List<Event> result = eventService.findAllEventsInBounds(minLat, maxLat, minLong, maxLong);
+
+      assertEquals(expected, result);
+      verify(repository).findAllInBounds(minLat, maxLat, minLong, maxLong);
     }
   }
 }
