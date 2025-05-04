@@ -34,6 +34,23 @@ public class UserService {
   }
 
   /**
+   * Retrieves public user info of a user by their ID.
+   *
+   * @param id the ID of the user to be retrieved
+   * @return the user info of the user with the specified ID
+   * @throws NoSuchElementException if no user with the specified ID is found
+   */
+  public UserResponse getUserProfileById(Long id) {
+    UserResponse response = UserMapper.toResponse(userRepo.findById(id));
+
+    if (response == null) {
+      throw new NoSuchElementException("User with ID = " + id + " not found");
+    }
+
+    return response;
+  }
+
+  /**
    * Adds a new user to the system.
    *
    * @param user The user to be added.
