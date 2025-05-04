@@ -8,6 +8,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+
 import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
 import no.ntnu.stud.idatt2106.backend.repository.EventRepository;
@@ -129,6 +131,42 @@ public class EventServiceTest {
 
       verify(repository, never()).delete(eventId);
       assertTrue(exception.getMessage().contains("User is not an admin"));
+    }
+  }
+
+  @Nested
+  class FindEventByIdTests {
+
+    @Test
+    void shouldReturnEventWithId() {
+      Long eventId = 2L;
+      Event event = new Event();
+
+      when(repository.findEventById(eventId)).thenReturn(event);
+
+      Event result = eventService.findEventById(eventId);
+
+      verify(repository).findEventById(eventId);
+      assertEquals(event, result);
+    }
+  }
+
+  @Nested
+  class FindAllEventsTests {
+
+    @Test
+    void shouldReturnAllEvents() {
+      Event event1 = new Event();
+      Event event2 = new Event();
+      Event event3 = new Event();
+      List<Event> expected = List.of(event1, event2, event3);
+
+      when(repository.findAll()).thenReturn(expected);
+
+      List<Event> result = eventService.findAllEvents();
+
+      verify(repository).findAll();
+      assertEquals(expected, result);
     }
   }
 }
