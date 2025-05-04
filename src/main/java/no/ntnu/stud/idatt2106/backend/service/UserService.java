@@ -41,13 +41,13 @@ public class UserService {
    * @throws NoSuchElementException if no user with the specified ID is found
    */
   public UserResponse getUserProfileById(Long id) {
-    UserResponse response = UserMapper.toResponse(userRepo.findById(id));
-
-    if (response == null) {
+    User user = userRepo.findById(id);
+    
+    if (user == null) {
       throw new NoSuchElementException("User with ID = " + id + " not found");
     }
 
-    return response;
+    return UserMapper.toResponse(user);
   }
 
   /**
