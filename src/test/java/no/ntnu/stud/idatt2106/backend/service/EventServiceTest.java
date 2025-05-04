@@ -228,4 +228,27 @@ public class EventServiceTest {
       verify(repository).findAllWithSeverity();
     }
   }
+
+  @Nested
+  class FindAllEventsWithSeverityInBoundsTests {
+
+    @Test
+    void shouldReturnAllEventsInBoundWithSeverity() {
+      double minLat = 10.0;
+      double maxLat = 20.0;
+      double minLong = 30.0;
+      double maxLong = 40.0;
+      EventResponse event1 = new EventResponse();
+      EventResponse event2 = new EventResponse();
+      List<EventResponse> expected = List.of(event1, event2);
+      when(repository.findAllWithSeverityInBounds(minLat, maxLat, minLong, maxLong))
+          .thenReturn(expected);
+
+      List<EventResponse> result = eventService
+          .findAllEventsWithSeverityInBounds(minLat, maxLat, minLong, maxLong);
+      
+      assertEquals(expected, result);
+      verify(repository).findAllWithSeverityInBounds(minLat, maxLat, minLong, maxLong);
+    }
+  }
 }
