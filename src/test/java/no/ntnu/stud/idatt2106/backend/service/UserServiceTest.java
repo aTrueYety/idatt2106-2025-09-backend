@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.NoSuchElementException;
-
 import no.ntnu.stud.idatt2106.backend.mapper.UserMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
@@ -123,6 +122,42 @@ public class UserServiceTest {
       }
       verify(jwtService).extractUserId(token.substring(7));
       verify(repository).findById(userId);
+    }
+  }
+
+  @Nested
+  class GetUserProfileByIdTests {
+
+    @Test
+    void shouldReturnUserProfileIfUserExists() {
+      User user = new User();
+      UserResponse expected = new UserResponse();
+      Long userId = 1L;
+      String username = "Test";
+      expected.setId(userId);
+      expected.setUsername(username);
+
+      when(repository.findById(userId)).thenReturn(user);
+      try (MockedStatic<UserMapper> mocked = Mockito.mockStatic(UserMapper.class)) {
+        mocked.when(() -> UserMapper.toResponse(user)).thenReturn(expected);
+        
+        UserResponse response = userService.getUserProfileById(userId);
+
+        assertEquals(expected, response);
+        mocked.verify(() -> UserMapper.toResponse(user));
+      }
+
+      verify(repository).findById(userId);
+    }
+
+    @Test
+    void shouldThrowIfUserNotFound() {
+      Long id = 2L;
+      when(repository.findById(id)).thenReturn(null);
+
+      assertThrows(NoSuchElementException.class, () -> {
+        userService.getUserProfileById(id);
+      });
     }
   }
 }

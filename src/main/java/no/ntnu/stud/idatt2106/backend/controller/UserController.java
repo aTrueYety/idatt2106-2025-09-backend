@@ -1,7 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.UpdatePositionSharingRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.UserUpdate;
@@ -31,19 +30,25 @@ public class UserController {
   private UserService userService;
 
   /**
-   * Retrives a user by their ID.
+   * Retrives a users info by their ID.
    *
    * @param id the ID of the user to retrieve
    * @return the user with the specified ID
    */
+  @Operation(
+      summary = "Retrieves a user's public info",
+      description = """
+          Retrieves the publicly available info about the user. Info such as
+          username, first- and last name, email, etc. Doesen't include info 
+          such as password.
+          """
+  )
   @GetMapping("/{id}")
-  public ResponseEntity<User> getUserById(@PathVariable Long id) {
-    User user = userService.getUserById(id);
-    if (user != null) {
-      return ResponseEntity.ok(user);
-    } else {
-      return ResponseEntity.notFound().build();
-    }
+  public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+    logger.info("Retrieving user profile of user with ID = " + id);
+    UserResponse response = userService.getUserProfileById(id);
+    logger.info("User info retrieved successfully");
+    return ResponseEntity.ok(response);
   }
 
   /**
