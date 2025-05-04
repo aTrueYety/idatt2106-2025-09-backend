@@ -24,20 +24,13 @@ public class UserService {
   private JwtService jwtService;
 
   /**
-   * Retrieves a users public info by their ID.
+   * Retrieves a user by their ID.
    *
    * @param id The ID of the user to be retrieved.
-   * @return The user with the specified ID.
-   * @throws NoSuchElementException if no user with the specified ID is found
+   * @return The user with the specified ID, or null if not found.
    */
-  public UserResponse getUserById(Long id) {
-    UserResponse response = UserMapper.toResponse(userRepo.findById(id));
-    
-    if (response == null) {
-      throw new NoSuchElementException("User with ID = " + id + " not found");
-    }
-
-    return response;
+  public User getUserById(Long id) {
+    return userRepo.findById(id);
   }
 
   /**
@@ -151,7 +144,7 @@ public class UserService {
    */
   public UserResponse getByToken(String token) {
     Long id = jwtService.extractUserId(token.substring(7));
-    return getUserById(id);
+    return UserMapper.toResponse(getUserById(id));
   }
 
 
