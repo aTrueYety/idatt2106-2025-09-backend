@@ -9,6 +9,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.HouseHoldInviteAcceptRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
@@ -189,14 +190,13 @@ public class HouseholdService {
     Validate.that(user.getHouseholdId() != senderHouseholdId, 
         Validate.isTrue(), "User is already in the same household as you");
 
-    String inviteKey = householdInviteService.createHouseholdInvite(
-        household.getId(), user.getId());
+    householdInviteService.createHouseholdInvite(household.getId(), user.getId());
 
     try {
       emailService.sendHtmlEmail(
           user.getEmail(),
           "Du har blitt invitert til å bli med i en husstand",
-          EmailTemplates.getHouseholdInviteTemplate(household.getAddress(), inviteKey));
+          EmailTemplates.getHouseholdInviteTemplate(household.getName()));
     } catch (Exception e) {
       throw new RuntimeException("Failed to send email", e);
     }
@@ -204,19 +204,24 @@ public class HouseholdService {
 
   /**
    * Accepts a household invite by updating the user's household ID and
-   * deleting the invite key.
+   * deleting the invite.
    *
-   * @param inviteKey the key of the household invite to be accepted
+   * @param request the request containing the household ID.
+   * @param token   the JWT token for authorization
    */
-  public void acceptHouseholdInvite(String inviteKey) {
-    Validate.that(inviteKey,
-        Validate.isNotBlankOrNull(), "Invite key cannot be null");
+  public void acceptHouseholdInvite(HouseHoldInviteAcceptRequest request, String token) {
+    Validate.that(request.getHouseholdId(),
+        Validate.isNotNull(), "Household ID cannot be null");
 
-    HouseholdInvite invite = householdInviteService.findByKey(inviteKey);
+    User user = userService.getUserById(
+        jwtService.extractUserId(token.substring(7)));
+    Validate.that(user, Validate.isNotNull(), "User not found");
+
+    HouseholdInvite invite = householdInviteService
+        .findByUserIdAndHouseholdId(user.getId(), request.getHouseholdId());
     Validate.that(invite,
-        Validate.isNotNull(), "No invite with key = " + inviteKey + " found");
+        Validate.isNotNull(), "No invite found");
 
-    User user = userService.getUserById(invite.getUserId());
     Long oldHouseholdId = user.getHouseholdId();
     user.setHouseholdId(invite.getHouseholdId());
     userService.updateUserCredentials(user);
@@ -225,7 +230,8 @@ public class HouseholdService {
       householdRepository.deleteById(oldHouseholdId);
     }
 
-    householdInviteService.deleteInvite(inviteKey);
+    householdInviteService.deleteHouseholdInvite(
+        invite.getUserId(), invite.getHouseholdId());
   }
 
   /**
