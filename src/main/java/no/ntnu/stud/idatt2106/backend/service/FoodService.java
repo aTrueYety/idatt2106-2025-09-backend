@@ -110,7 +110,7 @@ public class FoodService {
    * @param householdId the ID of the household
    * @return a list of food items for the given household
    */
-  public List<FoodResponse> getByHouseholdId(int householdId) {
+  public List<FoodResponse> getByHouseholdId(Long householdId) {
     return repository.findByHouseholdId(householdId).stream()
         .map(FoodMapper::toResponse)
         .toList();
@@ -137,7 +137,7 @@ public class FoodService {
    * @param householdId the ID of the household
    * @return a list of FoodSummaryResponse grouped by type
    */
-  public List<FoodSummaryResponse> getFoodSummaryByHousehold(int householdId) {
+  public List<FoodSummaryResponse> getFoodSummaryByHousehold(Long householdId) {
     List<Food> foodList = repository.findByHouseholdId(householdId);
 
     return foodList.stream()
@@ -162,7 +162,7 @@ public class FoodService {
    * @param householdId the ID of the household
    * @return a list of FoodDetailedResponse with detailed info
    */
-  public List<FoodDetailedResponse> getFoodDetailedByHousehold(int householdId) {
+  public List<FoodDetailedResponse> getFoodDetailedByHousehold(Long householdId) {
     List<Food> foods = repository.findByHouseholdId(householdId);
 
     Map<Long, List<Food>> grouped = foods.stream()
