@@ -1,7 +1,10 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import no.ntnu.stud.idatt2106.backend.mapper.EmergencyGroupMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
 import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
 import no.ntnu.stud.idatt2106.backend.repository.EmergencyGroupRepository;
 
 /**
@@ -44,6 +48,34 @@ public class EmergencyGroupServiceTest {
         emergencyGroupService.create(request);
 
         verify(repository).save(group);
+      }
+    }
+  }
+
+  @Nested
+  class GetAllTests {
+
+    @Test
+    void shouldMapToResponseAndReturnAll() {
+      EmergencyGroup group1 = new EmergencyGroup();
+      EmergencyGroup group2 = new EmergencyGroup();
+      List<EmergencyGroup> groups = List.of(group1, group2);
+
+      EmergencyGroupResponse response1 = new EmergencyGroupResponse();
+      EmergencyGroupResponse response2 = new EmergencyGroupResponse();
+
+      when(repository.findAll()).thenReturn(groups);
+
+      try (MockedStatic<EmergencyGroupMapper> mapper 
+          = Mockito.mockStatic(EmergencyGroupMapper.class)) {
+
+        mapper.when(() -> EmergencyGroupMapper.toResponse(group1)).thenReturn(response1);
+        mapper.when(() -> EmergencyGroupMapper.toResponse(group2)).thenReturn(response2);
+
+        List<EmergencyGroupResponse> result = emergencyGroupService.getAll();
+
+        assertEquals(List.of(response1, response2), result);
+        verify(repository).findAll();
       }
     }
   }
