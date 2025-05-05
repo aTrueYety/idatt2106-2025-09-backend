@@ -13,5 +13,4 @@ import lombok.NoArgsConstructor;
 public class HouseholdInvite {
   private Long userId;
   private Long householdId;
-  private String inviteKey;
 }

@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdInviteRepositoryImpl;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
@@ -13,53 +14,69 @@ import org.springframework.stereotype.Service;
 public class HouseholdInviteService {
   @Autowired
   private HouseholdInviteRepositoryImpl repository;
-
-  /**
-   * Generates a unique invite key for a household invite.
-   *
-   * @return a unique invite key as a string
-   */
-  private String generateInviteKey() {
-    return java.util.UUID.randomUUID().toString();
-  }
+  @Autowired
+  private JwtService jwtService;
 
   /**
    * Creates a new household invite.
    *
    * @param householdId the ID of the household to invite to
    * @param userId      the ID of the user to invite
-   * @return the generated invite key
    */
-  public String createHouseholdInvite(Long householdId, Long userId) {
+  public void createHouseholdInvite(Long householdId, Long userId) {
     Validate.that(householdId, Validate.isNotNull(), "Household ID cannot be null");
     Validate.that(userId, Validate.isNotNull(), "User ID cannot be null");
     Validate.that(repository.findByUserIdAndHouseholdId(userId, householdId),
-        Validate.isEmptyCollection(), "User already has an invite to this household");
-     
-    String inviteKey = generateInviteKey();
-    HouseholdInvite invite = new HouseholdInvite(userId, householdId, inviteKey);
+        Validate.isNull(), "User already has an invite to this household");
+
+    HouseholdInvite invite = new HouseholdInvite(userId, householdId);
     repository.save(invite);
-    return inviteKey;
   }
 
   /**
-   * Finds a household invite by its key.
+   * Retrieves a household invite by its user ID and household ID.
    *
-   * @param key the invite key to search for
-   * @return the found HouseholdInvite object, or null if not found
+   * @param userId      the ID of the user
+   * @param householdId the ID of the household
+   * @return the household invite, or null if not found
    */
-  public HouseholdInvite findByKey(String key) {
-    Validate.that(key, Validate.isNotNull(), "Invite key cannot be null");
-    return repository.findByKey(key);
+  public HouseholdInvite findByUserIdAndHouseholdId(Long userId, Long householdId) {
+    Validate.that(userId, Validate.isNotNull(), "User ID cannot be null");
+    Validate.that(householdId, Validate.isNotNull(), "Household ID cannot be null");
+    return repository.findByUserIdAndHouseholdId(userId, householdId);
   }
 
   /**
-   * Deletes a household invite by its key.
+   * Deletes a household invite by its user ID and household ID.
    *
-   * @param key the invite key to delete
+   * @param userId      the ID of the user
+   * @param householdId the ID of the household
    */
-  public void deleteInvite(String key) {
-    Validate.that(key, Validate.isNotNull(), "Invite key cannot be null");
-    repository.delete(key);
+  public void deleteHouseholdInvite(Long userId, Long householdId) {
+    Validate.that(userId, Validate.isNotNull(), "User ID cannot be null");
+    Validate.that(householdId, Validate.isNotNull(), "Household ID cannot be null");
+    repository.deleteByUserIdAndHouseholdId(userId, householdId);
+  }
+
+  /**
+   * Retrives all household invites for a specific user.
+   *
+   * @param token the JWT token of the user
+   */
+  public List<HouseholdInvite> findHouseholdInvitesForUser(String token) {
+    Validate.that(token, Validate.isNotNull(), "Token cannot be null");
+    Long userId = jwtService.extractUserId(token.substring(7));
+    return repository.findByUserId(userId);
+  }
+
+  /**
+   * Retrieves all household invites for a specific household.
+   *
+   * @param token the JWT token of the user
+   */
+  public List<HouseholdInvite> findHouseholdInvitesForHousehold(String token) {
+    Validate.that(token, Validate.isNotNull(), "Token cannot be null");
+    Long userId = jwtService.extractUserId(token.substring(7));
+    return repository.findByHouseholdId(userId);
   }
 }

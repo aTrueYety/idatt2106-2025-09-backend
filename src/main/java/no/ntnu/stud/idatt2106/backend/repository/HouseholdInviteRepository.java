@@ -15,14 +15,6 @@ public interface HouseholdInviteRepository {
   void save(HouseholdInvite invite);
 
   /**
-   * Finds a HouseholdInvite entity by its invite key.
-   *
-   * @param key the invite key of the HouseholdInvite entity to find
-   * @return the found HouseholdInvite entity, or null if not found
-   */
-  HouseholdInvite findByKey(String key);
-
-  /**
    * Finds a HouseholdInvite entity by its user ID and household ID.
    *
    * @param userId the user ID of the HouseholdInvite entity to find
@@ -45,12 +37,13 @@ public interface HouseholdInviteRepository {
    * @param householdId the household ID of the HouseholdInvite entity to find
    * @return a list of HouseholdInvite entities matching the specified user ID and household ID
    */
-  List<HouseholdInvite> findByUserIdAndHouseholdId(Long userId, Long householdId);
+  HouseholdInvite findByUserIdAndHouseholdId(Long userId, Long householdId);
 
   /**
-   * Deletes a HouseholdInvite entity by its invite key.
+   * Deletes a HouseholdInvite entity by its user ID and household ID.
    *
-   * @param key the invite key of the HouseholdInvite entity to delete
+   * @param userId      the user ID of the HouseholdInvite entity to delete
+   * @param householdId the household ID of the HouseholdInvite entity to delete
    */
-  void delete(String key);
+  void deleteByUserIdAndHouseholdId(Long userId, Long householdId);
 }

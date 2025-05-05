@@ -20,22 +20,14 @@ public class HouseholdInviteRepositoryImpl implements HouseholdInviteRepository 
     HouseholdInvite invite = new HouseholdInvite();
     invite.setUserId(rs.getObject("user_id", Long.class));
     invite.setHouseholdId(rs.getObject("household_id", Long.class));
-    invite.setInviteKey(rs.getString("invite_key"));
     return invite;
   };
 
   @Override
   public void save(HouseholdInvite invite) {
-    String sql = "INSERT INTO household_invite (user_id, household_id, invite_key) " 
-        + "VALUES (?, ?, ?)";
-    jdbcTemplate.update(sql, invite.getUserId(), invite.getHouseholdId(), invite.getInviteKey());
-  }
-
-  @Override
-  public HouseholdInvite findByKey(String key) {
-    String sql = "SELECT * FROM household_invite WHERE invite_key = ?";
-    List<HouseholdInvite> invites = jdbcTemplate.query(sql, rowMapper, key);
-    return invites.isEmpty() ? null : invites.get(0);
+    String sql = "INSERT INTO household_invite (user_id, household_id) " 
+        + "VALUES (?, ?)";
+    jdbcTemplate.update(sql, invite.getUserId(), invite.getHouseholdId());
   }
 
   @Override
@@ -51,14 +43,15 @@ public class HouseholdInviteRepositoryImpl implements HouseholdInviteRepository 
   }
 
   @Override
-  public List<HouseholdInvite> findByUserIdAndHouseholdId(Long userId, Long householdId) {
+  public HouseholdInvite findByUserIdAndHouseholdId(Long userId, Long householdId) {
     String sql = "SELECT * FROM household_invite WHERE user_id = ? AND household_id = ?";
-    return jdbcTemplate.query(sql, rowMapper, userId, householdId);
+    List<HouseholdInvite> invites = jdbcTemplate.query(sql, rowMapper, userId, householdId);
+    return invites.isEmpty() ? null : invites.get(0);
   }
 
   @Override
-  public void delete(String key) {
-    String sql = "DELETE FROM household_invite WHERE invite_key = ?";
-    jdbcTemplate.update(sql, key);
+  public void deleteByUserIdAndHouseholdId(Long userId, Long householdId) {
+    String sql = "DELETE FROM household_invite WHERE user_id = ? AND household_id = ?";
+    jdbcTemplate.update(sql, userId, householdId);
   }
 }
