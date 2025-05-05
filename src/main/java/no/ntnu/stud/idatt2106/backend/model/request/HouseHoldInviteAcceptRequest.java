@@ -1,16 +1,15 @@
-package no.ntnu.stud.idatt2106.backend.model.base;
+package no.ntnu.stud.idatt2106.backend.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Represents a composite key for the HouseholdInvite entity.
+ * Request object for accepting a household invite.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HouseholdInvite {
-  private Long userId;
+public class HouseHoldInviteAcceptRequest {
   private Long householdId;
 }

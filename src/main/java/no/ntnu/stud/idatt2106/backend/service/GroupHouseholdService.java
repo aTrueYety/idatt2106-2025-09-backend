@@ -94,9 +94,11 @@ public class GroupHouseholdService {
             request.getHouseholdId(), request.getGroupId()),
         Validate.isNull(),
         "Household is already in this group.");
-    Validate.isValid(!groupInviteService.hasGroupInvite(userId, request.getGroupId()),
-        "User already has an invite to this group.");
-    groupInviteService.createGroupInvite(userId, request.getGroupId());
+    Validate.isValid(!groupInviteService.hasGroupInvite(request.getHouseholdId(), 
+        request.getGroupId()),
+        "Household already has an invite to this group.");
+    // Validate that the user is a member of the group
+    groupInviteService.createGroupInvite(request.getHouseholdId(), request.getGroupId());
   }
 
   /**

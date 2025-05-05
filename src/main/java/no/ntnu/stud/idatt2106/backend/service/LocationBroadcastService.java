@@ -9,9 +9,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 /**
- * Service for broadcasting user location updates to their household over WebSocket.
- * This service is responsible for sending a {@link LocationUpdate} to all subscribers
- * of a specific household WebSocket topic, if the user has enabled position sharing
+ * Service for broadcasting user location updates to their household over
+ * WebSocket.
+ * This service is responsible for sending a {@link LocationUpdate} to all
+ * subscribers
+ * of a specific household WebSocket topic, if the user has enabled position
+ * sharing
  * and belongs to a household.
  */
 @Service
@@ -28,7 +31,7 @@ public class LocationBroadcastService {
    * @param userRepository    the repository for retrieving user data
    */
   public LocationBroadcastService(SimpMessagingTemplate messagingTemplate,
-                                  UserRepository userRepository) {
+      UserRepository userRepository) {
     this.messagingTemplate = messagingTemplate;
     this.userRepository = userRepository;
   }
@@ -37,37 +40,32 @@ public class LocationBroadcastService {
    * Broadcasts a location update to the household topic if the user has enabled
    * position sharing and is associated with a household.
    *
-   * @param locationUpdate the location update containing user ID, latitude, and longitude
+   * @param locationUpdate the location update containing user ID, latitude, and
+   *                       longitude
    */
   public void broadcastToHousehold(LocationUpdate locationUpdate) {
     User user = userRepository.findById(locationUpdate.getUserId());
-  
+
     if (user == null) {
       logger.warn("User with ID {} not found", locationUpdate.getUserId());
       return;
     }
-  
+
     if (!user.isSharePositionHousehold()) {
       logger.info("User {} has disabled position sharing", user.getId());
       return;
     }
-  
+
     if (user.getHouseholdId() == null) {
       logger.info("User {} has no household ID", user.getId());
       return;
     }
 
-    userRepository.updateLastKnownPosition(
-        user.getId(),
-        locationUpdate.getLatitude().floatValue(),
-        locationUpdate.getLongitude().floatValue()
-    );
-  
     logger.info("Broadcasting position for user {} to household {} at {}, {}",
         user.getId(), user.getHouseholdId(), locationUpdate.getLatitude(),
         locationUpdate.getLongitude());
-  
-    String topic = "/topic/household." + user.getHouseholdId();
+
+    String topic = "/topic/location/" + user.getHouseholdId();
     messagingTemplate.convertAndSend(topic, locationUpdate);
   }
-}  
+}

@@ -15,11 +15,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class MapObjectService {
+
   @Autowired
   private MapObjectRepositoryImpl mapObjectRepository;
+
   @Autowired
   private JwtService jwtService;
-  
+
+  @Autowired
+  private MapObjectWebSocketService webSocketService;
+
   /**
    * Retrieves all map objects from the repository.
    *
@@ -40,36 +45,46 @@ public class MapObjectService {
   }
 
   /**
-   * Creates a new map object.
+   * Creates a new map object and broadcasts it over WebSocket.
    *
-   * @param mapObject the map object to create
+   * @param request the map object to create
    * @param token the JWT token for authentication
    */
-  public void createMapObject(MapObjectRequest mapObject, String token) {
+  public void createMapObject(MapObjectRequest request, String token) {
     Validate.isValid(jwtService.extractIsAdmin(token.substring(7)), "User is not admin");
-    mapObjectRepository.save(MapObjectFactory.requestToMapObject(mapObject));
+
+    MapObject object = MapObjectFactory.requestToMapObject(request);
+    mapObjectRepository.save(object);
+
+
+    webSocketService.broadcastCreated(request);
   }
 
   /**
-   * Updates an existing map object.
+   * Updates an existing map object and broadcasts the change.
    *
    * @param updatedMapObject the map object to update
    * @param token the JWT token for authentication
    */
   public void updateMapObject(MapObject updatedMapObject, String token) {
     Validate.isValid(jwtService.extractIsAdmin(token.substring(7)), "User is not admin");
+
     mapObjectRepository.update(updatedMapObject);
+    MapObjectResponse response = mapObjectRepository.findByIdWithDetail(updatedMapObject.getId());
+    webSocketService.broadcastUpdated(response);
   }
 
   /**
-   * Deletes a map object by its ID.
+   * Deletes a map object by its ID and broadcasts the deletion.
    *
    * @param id the ID of the map object to delete
    * @param token the JWT token for authentication
    */
   public void deleteMapObject(Long id, String token) {
     Validate.isValid(jwtService.extractIsAdmin(token.substring(7)), "User is not admin");
+
     mapObjectRepository.deleteById(id);
+    webSocketService.broadcastDeleted(id);
   }
 
   /**
@@ -87,7 +102,7 @@ public class MapObjectService {
   }
 
   /**
-   * Retrives the closest map object to a given location of a specific type.
+   * Retrieves the closest map object to a given location of a specific type.
    *
    * @param latitude  The latitude of the location.
    * @param longitude The longitude of the location.
