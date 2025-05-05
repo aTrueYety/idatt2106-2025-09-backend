@@ -1,6 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 
+import no.ntnu.stud.idatt2106.backend.model.request.MapObjectRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.MapObjectResponse;
 import no.ntnu.stud.idatt2106.backend.websocket.WebSocketEvent;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -19,7 +20,7 @@ public class MapObjectWebSocketService {
     this.messagingTemplate = messagingTemplate;
   }
 
-  public void broadcastCreated(MapObjectResponse obj) {
+  public void broadcastCreated(MapObjectRequest obj) {
     messagingTemplate.convertAndSend("/topic/map-object/all", new WebSocketEvent<>("created", obj));
   }
 

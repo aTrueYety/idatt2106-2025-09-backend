@@ -56,8 +56,8 @@ public class MapObjectService {
     MapObject object = MapObjectFactory.requestToMapObject(request);
     mapObjectRepository.save(object);
 
-    MapObjectResponse response = mapObjectRepository.findByIdWithDetail(object.getId());
-    webSocketService.broadcastCreated(response);
+
+    webSocketService.broadcastCreated(request);
   }
 
   /**

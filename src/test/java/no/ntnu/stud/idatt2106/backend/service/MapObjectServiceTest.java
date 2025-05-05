@@ -73,7 +73,7 @@ public class MapObjectServiceTest {
     service.createMapObject(request, token);
 
     verify(repositoryImpl).save(any(MapObject.class));
-    verify(webSocketService).broadcastCreated(response);
+    verify(webSocketService).broadcastCreated(request);
   }
 
   @Test

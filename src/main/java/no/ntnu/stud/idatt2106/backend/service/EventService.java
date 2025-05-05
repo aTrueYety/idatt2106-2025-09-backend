@@ -42,7 +42,7 @@ public class EventService {
     validateEvent(event);
 
     EventResponse response = eventRepository.findWithSeverityById(event.getId());
-    eventWebSocketService.broadcastCreated(response);
+    eventWebSocketService.broadcastCreated(request);
     return eventRepository.save(event);
   }
 

@@ -1,6 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 
+import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EventResponse;
 import no.ntnu.stud.idatt2106.backend.websocket.WebSocketEvent;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -19,7 +20,7 @@ public class EventWebSocketService {
     this.messagingTemplate = messagingTemplate;
   }
 
-  public void broadcastCreated(EventResponse event) {
+  public void broadcastCreated(EventRequest event) {
     messagingTemplate.convertAndSend("/topic/events", new WebSocketEvent<>("created", event));
   }
 
