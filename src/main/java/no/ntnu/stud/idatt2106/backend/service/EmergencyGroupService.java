@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 public class EmergencyGroupService {
 
   private final EmergencyGroupRepository repository;
-  private final EmergencyGroupMapper mapper;
   private final GroupHouseholdRepository groupHouseholdRepository;
   private final UserService userService;
   private final ExtraResidentService extraResidentService;
@@ -36,7 +35,7 @@ public class EmergencyGroupService {
    * @param request the request containing emergency group data
    */
   public void create(EmergencyGroupRequest request) {
-    repository.save(mapper.toModel(request));
+    repository.save(EmergencyGroupMapper.toModel(request));
   }
 
   /**
@@ -46,7 +45,7 @@ public class EmergencyGroupService {
    */
   public List<EmergencyGroupResponse> getAll() {
     return repository.findAll().stream()
-        .map(mapper::toResponse)
+        .map(EmergencyGroupMapper::toResponse)
         .collect(Collectors.toList());
   }
 
@@ -81,7 +80,7 @@ public class EmergencyGroupService {
    */
   public EmergencyGroupResponse getById(Long id) {
     return repository.findById(id)
-        .map(mapper::toResponse)
+        .map(EmergencyGroupMapper::toResponse)
         .orElse(null);
   }
 

@@ -12,11 +12,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmergencyGroupMapper {
 
-  public EmergencyGroup toModel(EmergencyGroupRequest request) {
+  /**
+   * Converts a EmergencyGroupRequest DTO to an EmergencyGroup entity.
+   *
+   * @param request the request DTO containing emergency group data
+   * @return the mapped EmergencyGroup entity
+   */
+  public static EmergencyGroup toModel(EmergencyGroupRequest request) {
     return new EmergencyGroup(null, request.getName(), request.getDescription());
   }
 
-  public EmergencyGroupResponse toResponse(EmergencyGroup group) {
+  /**
+   * Converts a EmergencyGroup entity to a response DTO.
+   *
+   * @param group the EmergencyGroup entity
+   * @return the mapped EmergencyGroup response DTO
+   */
+  public static EmergencyGroupResponse toResponse(EmergencyGroup group) {
     return new EmergencyGroupResponse(group.getId(), group.getName(), group.getDescription());
   }
 }

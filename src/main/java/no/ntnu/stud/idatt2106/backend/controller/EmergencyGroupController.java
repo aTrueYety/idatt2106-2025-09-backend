@@ -29,7 +29,6 @@ public class EmergencyGroupController {
 
   private final EmergencyGroupService service;
   private final EmergencyGroupRepository repository;
-  private final EmergencyGroupMapper mapper;
 
   @Operation(summary = "Create a new emergency group")
   @PostMapping
@@ -77,7 +76,7 @@ public class EmergencyGroupController {
   @GetMapping("/{id}")
   public ResponseEntity<EmergencyGroupResponse> getById(@PathVariable Long id) {
     return repository.findById(id)
-        .map(mapper::toResponse)
+        .map(EmergencyGroupMapper::toResponse)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
