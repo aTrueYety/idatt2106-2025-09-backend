@@ -80,4 +80,33 @@ public class HouseholdKitServiceTest {
       }
     }
   }
+
+  @Nested
+  class GetByKitIdTests {
+
+    @Test
+    void shouldMapToResponseAndReturn() {
+      HouseholdKit householdKit1 = new HouseholdKit();
+      HouseholdKit householdKit2 = new HouseholdKit();
+      List<HouseholdKit> householdKits = List.of(householdKit1, householdKit2);
+      HouseholdKitResponse response1 = new HouseholdKitResponse();
+      HouseholdKitResponse response2 = new HouseholdKitResponse();
+      List<HouseholdKitResponse> responses = List.of(response1, response2);
+      Long kitId = 1L;
+
+      when(repository.findByKitId(kitId)).thenReturn(householdKits);
+
+      try (MockedStatic<HouseholdKitMapper> mapper 
+           = Mockito.mockStatic(HouseholdKitMapper.class)) {
+        mapper.when(() -> HouseholdKitMapper.toResponse(householdKit1)).thenReturn(response1);
+        mapper.when(() -> HouseholdKitMapper.toResponse(householdKit2)).thenReturn(response2);
+
+        List<HouseholdKitResponse> result = householdKitService.getByKitId(kitId);
+
+        verify(repository).findByKitId(kitId);
+        assertEquals(responses, result);
+        assertEquals(2, result.size());
+      }
+    }
+  }
 }
