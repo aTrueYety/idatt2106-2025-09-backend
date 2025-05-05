@@ -38,6 +38,10 @@ public class EventServiceTest {
   @Mock
   private JwtService jwtService;
 
+  @Mock
+  private EventWebSocketService eventWebSocketService;
+
+
   private final String token = "Bearer admintoken";
 
   @Nested

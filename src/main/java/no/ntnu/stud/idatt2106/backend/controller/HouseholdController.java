@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.HouseHoldInviteAcceptRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
@@ -127,14 +128,15 @@ public class HouseholdController {
   /**
    * Handles request to accept a household invite.
    *
-   * @param inviteKey the key of the household invite to be accepted
+   * @param request object with the id of the household to be joined
    * @return a ResponseEntity with the response to the operation or an error
    *         message
    */
   @PostMapping("accept/{inviteKey}")
   public ResponseEntity<?> acceptHouseholdInvite(
-      @PathVariable String inviteKey) {
-    householdService.acceptHouseholdInvite(inviteKey);
+      @RequestBody HouseHoldInviteAcceptRequest request,
+      @RequestHeader("Authorization") String token) {
+    householdService.acceptHouseholdInvite(request, token);
     logger.info("User accepted household invite successfully");
     return ResponseEntity.ok().build();
   }

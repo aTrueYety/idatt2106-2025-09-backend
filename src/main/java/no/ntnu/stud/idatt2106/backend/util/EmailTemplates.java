@@ -23,19 +23,12 @@ public class EmailTemplates {
    * Generates an email template for inviting a user to a household.
    *
    * @param householdName the name of the household
-   * @param inviteKey the link to accept the invitation
    * @return the invitation email template as a String
    */
-  public static String getHouseholdInviteTemplate(String householdName, String inviteKey) {
+  public static String getHouseholdInviteTemplate(String householdName) {
     return "<html><body>"
         + "<h1>Du er invitert!</h1>"
         + "<p>Du har blitt invitert til å bli med i hustanden: " + householdName + "</p>"
-        + "<p>Trykk på linken under for å akseptere invitasjonen:</p>"
-        + "<p><a href='http://localhost:3000/household/join/" 
-        + inviteKey + "'>Bli med i husholdningen</a></p>"
-        + "<p>Alternativt kan du skrive inn denne koden under hustand siden på Krisfeiker:</p>"
-        + "<p>" + inviteKey + "</p>"
-        + "<p>Hvis du ikke kjenner til denne invitasjonen, vennligst ignorer denne e-posten.</p>"
         + "</body></html>";
   }
 

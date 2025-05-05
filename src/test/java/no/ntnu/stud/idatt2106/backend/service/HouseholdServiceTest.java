@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,6 +28,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.HouseHoldInviteAcceptRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.InviteUserHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.UpdateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
@@ -239,7 +241,7 @@ public class HouseholdServiceTest {
       assertNotNull(response);
       assertEquals("Test Address", response.getAddress());
     }
-
+    
     @Test
     void shouldThrowExceptionIfUserDoesentExist() {
       Long userId = 1L;
@@ -314,76 +316,68 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldAcceptAndDeleteOldHouseholdIfEmpty() {
-      String inviteKey = "abd123";
       HouseholdInvite invite = new HouseholdInvite();
       invite.setUserId(1L);
       invite.setHouseholdId(2L);
-      invite.setInviteKey(inviteKey);
 
       Long oldHouseholdId = 10L;
       User user = new User();
       user.setId(1L);
       user.setHouseholdId(oldHouseholdId);
 
-      when(householdInviteService.findByKey(inviteKey)).thenReturn(invite);
+      when(householdInviteService.findByUserIdAndHouseholdId(1L, 2L)).thenReturn(invite);
       when(userService.getUserById(1L)).thenReturn(user);
       when(householdService.getMembers(10L)).thenReturn(Collections.emptyList());
+      when(jwtService.extractUserId(anyString())).thenReturn(1L);
 
-      householdService.acceptHouseholdInvite(inviteKey);
+      householdService.acceptHouseholdInvite(
+        new HouseHoldInviteAcceptRequest(2L), "abc1234");
 
       verify(userService).updateUserCredentials(user);
-      verify(householdInviteService).deleteInvite(inviteKey);
+      verify(householdInviteService).deleteHouseholdInvite(1L, 2L);
       verify(householdRepository).deleteById(oldHouseholdId);
     }
 
     @Test
     void shouldAcceptAndNotDeleteIfOldHouseholdNotEmptry() {
-      String inviteKey = "abc123";
       Long newHouseholdId = 2L;
       Long userId = 100L;
 
       HouseholdInvite invite = new HouseholdInvite();
-      invite.setInviteKey(inviteKey);
       invite.setHouseholdId(newHouseholdId);
       invite.setUserId(userId);
-      when(householdInviteService.findByKey(inviteKey)).thenReturn(invite);
+      when(householdInviteService.findByUserIdAndHouseholdId(userId, 
+          newHouseholdId)).thenReturn(invite);
 
       Long oldHouseholdId = 1L;
       User user = new User();
+      user.setId(userId);
       user.setHouseholdId(oldHouseholdId);
       when(userService.getUserById(userId)).thenReturn(user);
 
       when(householdService.getMembers(oldHouseholdId))
           .thenReturn(List.of(new UserResponse(), new UserResponse()));
+      when(jwtService.extractUserId(anyString())).thenReturn(userId);
+      when(userService.getUserById(userId)).thenReturn(user);
+      when(householdInviteService.findByUserIdAndHouseholdId(anyLong(), anyLong()))
+          .thenReturn(invite);
 
-      householdService.acceptHouseholdInvite(inviteKey);
+      householdService.acceptHouseholdInvite(
+          new HouseHoldInviteAcceptRequest(newHouseholdId), "abc1234");
 
       verify(userService).updateUserCredentials(user);
-      verify(householdInviteService).deleteInvite(inviteKey);
+      verify(householdInviteService).deleteHouseholdInvite(userId, newHouseholdId);
       verify(householdRepository, never()).deleteById(oldHouseholdId);
     }
 
     @Test
-    void shouldThrowIfInviteKeyIsNull() {
-      assertThrows(IllegalArgumentException.class, () -> {
-        householdService.acceptHouseholdInvite(null);
-      });
-    }
-
-    @Test
-    void shouldThrowIfInviteKeyIsBlank() {
-      assertThrows(IllegalArgumentException.class, () -> {
-        householdService.acceptHouseholdInvite("");
-      });
-    }
-
-    @Test
     void shouldThrowIfInviteNotFound() {
-      String inviteKey = "notAKey";
-      when(householdInviteService.findByKey(inviteKey)).thenReturn(null);
+      when(householdInviteService.findByUserIdAndHouseholdId(0L, 0L)).thenReturn(null);
+      when(jwtService.extractUserId(anyString())).thenReturn(0L);
 
       assertThrows(IllegalArgumentException.class, () -> {
-        householdService.acceptHouseholdInvite(inviteKey);
+        householdService.acceptHouseholdInvite(
+            new HouseHoldInviteAcceptRequest(0L), "abc1234");
       });
     }
   }
@@ -411,7 +405,7 @@ public class HouseholdServiceTest {
       Long householdId = 10L;
       Household household = new Household();
       household.setId(householdId);
-      household.setAddress("Test Addresse");
+      household.setName("Test Navn");
 
       String token = "Bearer validtoken";
       when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);
@@ -419,13 +413,10 @@ public class HouseholdServiceTest {
 
       when(userService.getUserByUsername(receiverName)).thenReturn(receiver);
       when(userService.getUserById(senderId)).thenReturn(sender);
-      String inviteKey = "abc123";
-      when(householdInviteService.createHouseholdInvite(householdId, receiver.getId()))
-          .thenReturn(inviteKey);
       householdService.inviteUserToHousehold(inviteRequest, token);
       try {
         verify(emailService).sendHtmlEmail(eq(email),
-            contains("Du har blitt invitert"), contains("Test Addresse"));
+            contains("Du har blitt invitert"), contains("Test Navn"));
       } catch (Exception e) {
         fail("Expected emailService.sendHTMLEmail to be called, but exception was thrown");
       }
@@ -459,7 +450,6 @@ public class HouseholdServiceTest {
       String inviteKey = "abc123";
       when(householdInviteService.createHouseholdInvite(houseHoldId, receiverId))
           .thenReturn(inviteKey);
-
       doThrow(new MessagingException())
           .when(emailService)
           .sendHtmlEmail(anyString(), anyString(), anyString());
