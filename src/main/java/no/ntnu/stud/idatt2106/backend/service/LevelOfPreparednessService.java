@@ -77,10 +77,13 @@ public class LevelOfPreparednessService {
     List<UserResponse> users = userService.getUsersByHouseholdId(household.getId());
     double amountOfUsersInHousehold = users != null ? users.size() : 0;
 
-    double extraResidentsWaterWeek = getDailyWaterNeedExtraResidents(household.getId()) * 3;
+    // Calculate the daily water need for all users in the household
+    // 20 liters per person to sustain minimal needs for 7 days as 
+    // recommended by DSB (Direktoratet for Samfunnssikkerhet og Beredskap)
+    // https://www.dsb.no/sikkerhverdag/egenberedskap/vann-i-beredskap/
+    double extraResidentsWaterWeek = getDailyWaterNeedExtraResidents(household.getId()) * 7;
     double totalWaterNeed = (amountOfUsersInHousehold * 20) + extraResidentsWaterWeek;
 
-    // 1 in value equals 4 liters of water per day per person
 
     if (totalWaterNeed == 0) {
     
@@ -132,9 +135,14 @@ public class LevelOfPreparednessService {
 
     double caloriesInHousehold = foodService.getCaloriesByHouseholdId(householdId);
 
-    double extraResidentsConsumptionWeek = getDailyCaloryNeedExtraResidents(householdId) * 3;
+    // Calculate the daily calorie need for all extra residents in the household for 7 days
+    // As suggested by DSB (Direktoratet for Samfunnssikkerhet og Beredskap)
+    // https://www.dsb.no/sikkerhverdag/egenberedskap/mat-du-bor-ha-i-hus-i-tilfelle-krise/
+    double extraResidentsConsumptionWeek = getDailyCaloryNeedExtraResidents(householdId) * 7;
 
-    double totalFoodConsumption = (amountOfUsersInHousehold * 2000 * 3)
+    // Calculate the daily calorie need for all users in the household
+    // 2000 calories per person to sustain minimal needs for 7 days as recommended by DSB
+    double totalFoodConsumption = (amountOfUsersInHousehold * 2000 * 7)
         + extraResidentsConsumptionWeek;
 
     if (caloriesInHousehold == 0) {
@@ -164,7 +172,9 @@ public class LevelOfPreparednessService {
     if (totalTypes == 0) {
       return 0.0;
     }
-
+    // Calculate the preparedness level based on the number of kits
+    // divided by the total number of kit types
+    // The total amount of kit types can be determined by an admin user
     double kitPreparedness = (double) numberOfKitsForHousehold / totalTypes;
 
     return Math.min(kitPreparedness, 1.0);
@@ -195,14 +205,14 @@ public class LevelOfPreparednessService {
         + extraResidentsConsumptionWeek;
 
     double householdWaterAmount = household.getWaterAmountLiters();
-    double extraResidentsWaterWeek = getDailyWaterNeedExtraResidents(household.getId());
-    double totalWaterNeed = (amountOfUsersInHousehold * 20 / 3) + extraResidentsWaterWeek;
+    double extraResidentsWaterDay = getDailyWaterNeedExtraResidents(household.getId());
+    double totalWaterNeedDay = (amountOfUsersInHousehold * 20 / 7) + extraResidentsWaterDay;
 
-    if (totalFoodConsumption == 0 || totalWaterNeed == 0) {
+    if (totalFoodConsumption == 0 || totalWaterNeedDay == 0) {
       return 0;
     }
     double daysOfFoodPreparedness = caloriesInHousehold / totalFoodConsumption;
-    double daysOfWaterPreparedness = householdWaterAmount / totalWaterNeed;
+    double daysOfWaterPreparedness = householdWaterAmount / totalWaterNeedDay;
   
     return Math.round(Math.min(daysOfFoodPreparedness,
         daysOfWaterPreparedness) * 24);
