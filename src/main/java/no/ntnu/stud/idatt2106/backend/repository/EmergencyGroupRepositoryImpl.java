@@ -30,7 +30,7 @@ public class EmergencyGroupRepositoryImpl implements EmergencyGroupRepository {
   }
 
   @Override
-  public Optional<EmergencyGroup> findById(int id) {
+  public Optional<EmergencyGroup> findById(Long id) {
     String sql = "SELECT * FROM emergency_group WHERE id = ?";
     List<EmergencyGroup> result = jdbcTemplate.query(sql, rowMapper, id);
     return result.stream().findFirst();
@@ -42,20 +42,20 @@ public class EmergencyGroupRepositoryImpl implements EmergencyGroupRepository {
   }
 
   @Override
-  public boolean deleteById(int id) {
+  public boolean deleteById(Long id) {
     String sql = "DELETE FROM emergency_group WHERE id = ?";
     return jdbcTemplate.update(sql, id) > 0;
   }
 
   @Override
-  public boolean update(int id, EmergencyGroup group) {
+  public boolean update(Long id, EmergencyGroup group) {
     String sql = "UPDATE emergency_group SET name = ?, description = ? WHERE id = ?";
     int updated = jdbcTemplate.update(sql, group.getName(), group.getDescription(), id);
     return updated > 0;
   }
 
   @Override
-  public List<EmergencyGroupSummaryResponse> findGroupSummariesByHouseholdId(int householdId) {
+  public List<EmergencyGroupSummaryResponse> findGroupSummariesByHouseholdId(Long householdId) {
     String sql = "SELECT eg.id AS group_id, "
         +
         "       eg.name AS group_name, "
