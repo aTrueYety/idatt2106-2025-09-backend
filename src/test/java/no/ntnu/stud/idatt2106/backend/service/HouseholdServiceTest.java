@@ -65,6 +65,7 @@ public class HouseholdServiceTest {
   @Mock
   private JwtService jwtService;
 
+  @Mock
   private Household existingHousehold;
 
   @BeforeEach
