@@ -49,7 +49,8 @@ public class SeverityRepository {
    */
   public Severity findSeverityById(long id) {
     String sql = "SELECT * FROM severity WHERE id = ?";
-    return jdbcTemplate.queryForObject(sql, severityRowMapper, id);
+    List<Severity> severities = jdbcTemplate.query(sql, severityRowMapper, id);
+    return severities.isEmpty() ? null : severities.get(0);
   }
 
   /**

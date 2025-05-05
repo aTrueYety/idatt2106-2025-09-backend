@@ -31,7 +31,8 @@ public class GroupInviteRepositoryImpl implements GroupInviteRepository {
   @Override
   public GroupInvite findByHouseholdIdAndGroupId(Long householdId, Long groupId) {
     String sql = "SELECT * FROM group_invite WHERE household_id = ? AND group_id = ?";
-    return jdbcTemplate.queryForObject(sql, rowMapper, householdId, groupId);
+    List<GroupInvite> invites = jdbcTemplate.query(sql, rowMapper, householdId, groupId);
+    return invites.isEmpty() ? null : invites.get(0);
   }
 
   @Override

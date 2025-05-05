@@ -79,8 +79,8 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   @Override
   public Optional<Household> findById(Long id) {
     String sql = "SELECT * FROM household WHERE id = ?";
-    Household household = jdbcTemplate.queryForObject(sql, householdRowMapper, id);
-    return Optional.ofNullable(household);
+    List<Household> households = jdbcTemplate.query(sql, householdRowMapper, id);
+    return Optional.ofNullable(households.isEmpty() ? null : households.get(0));
   }
 
   /**
@@ -139,7 +139,7 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   public Optional<Household> findByUserId(Long userId) {
     String sql = "SELECT h.* FROM household h "
         + "JOIN user u ON h.id = u.household_id WHERE u.id = ?";
-    Household household = jdbcTemplate.queryForObject(sql, householdRowMapper, userId);
-    return Optional.ofNullable(household);
+    List<Household> households = jdbcTemplate.query(sql, householdRowMapper, userId);
+    return Optional.ofNullable(households.isEmpty() ? null : households.get(0));
   }
 }
