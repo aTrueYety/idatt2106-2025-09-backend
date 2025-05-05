@@ -1,6 +1,9 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -107,6 +110,58 @@ public class HouseholdKitServiceTest {
         assertEquals(responses, result);
         assertEquals(2, result.size());
       }
+    }
+  }
+
+  @Nested
+  class DeleteTests {
+
+    @Test
+    void shouldDeleteAndReturnTrueIfExists() {
+      Long householdId = 1L;
+      Long kitId = 2L;
+      HouseholdKitRequest request = new HouseholdKitRequest();
+      request.setHouseholdId(householdId);
+      request.setKitId(kitId);
+
+      HouseholdKit householdkit1 = new HouseholdKit();
+      householdkit1.setHouseholdId(1L);
+      householdkit1.setKitId(3L);
+      HouseholdKit householdkit2 = new HouseholdKit();
+      householdkit2.setHouseholdId(1L);
+      householdkit2.setKitId(2L);
+      List<HouseholdKit> householdKits = List.of(householdkit1, householdkit2);
+
+      when(repository.findByHouseholdId(householdId)).thenReturn(householdKits);
+
+      boolean result = householdKitService.delete(request);
+
+      verify(repository).delete(householdkit2);
+      assertTrue(result);
+    }
+
+    @Test
+    void shouldNotDeleteAndReturnFalseIfDoesNotExist() {
+      Long householdId = 1L;
+      Long kitId = 1L;
+      HouseholdKitRequest request = new HouseholdKitRequest();
+      request.setHouseholdId(householdId);
+      request.setKitId(kitId);
+
+      HouseholdKit householdkit1 = new HouseholdKit();
+      householdkit1.setHouseholdId(1L);
+      householdkit1.setKitId(3L);
+      HouseholdKit householdkit2 = new HouseholdKit();
+      householdkit2.setHouseholdId(1L);
+      householdkit2.setKitId(2L);
+      List<HouseholdKit> householdKits = List.of(householdkit1, householdkit2);
+
+      when(repository.findByHouseholdId(householdId)).thenReturn(householdKits);
+
+      boolean result = householdKitService.delete(request);
+
+      verify(repository, never()).delete(householdkit2);
+      assertFalse(result);
     }
   }
 }
