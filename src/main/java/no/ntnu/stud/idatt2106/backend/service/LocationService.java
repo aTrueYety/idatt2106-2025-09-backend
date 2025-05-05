@@ -15,9 +15,11 @@ import org.springframework.stereotype.Service;
 public class LocationService {
 
   private final UserRepository userRepository;
+  private final LocationBroadcastService locationBroadcastService;
 
-  public LocationService(UserRepository userRepository) {
+  public LocationService(UserRepository userRepository, LocationBroadcastService locationBroadcastService) {
     this.userRepository = userRepository;
+    this.locationBroadcastService = locationBroadcastService;
   }
 
   /**
@@ -45,7 +47,7 @@ public class LocationService {
    * Toggles the position sharing setting for all users in a household.
    *
    * @param householdId the household ID
-   * @param share true to enable sharing, false to disable
+   * @param share       true to enable sharing, false to disable
    * @return number of users updated
    */
   public int toggleShareLocationForHousehold(Long householdId, boolean share) {
@@ -55,11 +57,12 @@ public class LocationService {
   /**
    * Updates the last known position of a user in the database.
    *
-   * @param userId the ID of the user
-   * @param latitude new latitude
+   * @param userId    the ID of the user
+   * @param latitude  new latitude
    * @param longitude new longitude
    */
   public void updateLastKnownPosition(Long userId, float latitude, float longitude) {
     userRepository.updateLastKnownPosition(userId, latitude, longitude);
+    locationBroadcastService.broadcastToHousehold(new LocationUpdate(userId, (double) latitude, (double) longitude));
   }
 }

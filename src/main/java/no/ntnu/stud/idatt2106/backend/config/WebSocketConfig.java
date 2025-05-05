@@ -7,6 +7,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
+
 /**
  * Configuration class for WebSocket using STOMP and SockJS.
  */
@@ -15,9 +17,11 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   private final WebSocketAuthHandshakeInterceptor authInterceptor;
+  private final HouseholdService householdService;
 
-  public WebSocketConfig(WebSocketAuthHandshakeInterceptor authInterceptor) {
+  public WebSocketConfig(WebSocketAuthHandshakeInterceptor authInterceptor, HouseholdService householdService) {
     this.authInterceptor = authInterceptor;
+    this.householdService = householdService;
   }
 
   @Override
@@ -42,6 +46,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void configureClientInboundChannel(ChannelRegistration registration) {
-    registration.interceptors(new WebSocketInboundInterceptor());
+    registration.interceptors(new WebSocketInboundInterceptor(householdService));
   }
 }
