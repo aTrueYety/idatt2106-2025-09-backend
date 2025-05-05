@@ -2,11 +2,13 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -136,6 +138,42 @@ public class EmergencyGroupServiceTest {
       
       assertTrue(result);
       verify(repository).update(groupId, updatedGroup);
+    }
+  }
+
+  @Nested
+  class GetByIdTests {
+
+    @Test
+    void shouldReturnResponseIfGroupExists() {
+      Long groupId = 1L;
+      EmergencyGroup group = new EmergencyGroup();
+
+      EmergencyGroupResponse expected = new EmergencyGroupResponse();
+
+      try (MockedStatic<EmergencyGroupMapper> mapper 
+          = Mockito.mockStatic(EmergencyGroupMapper.class)) {
+
+        when(repository.findById(groupId)).thenReturn(Optional.of(group));
+        mapper.when(() -> EmergencyGroupMapper.toResponse(group)).thenReturn(expected);
+
+        EmergencyGroupResponse response = emergencyGroupService.getById(groupId);
+
+        assertEquals(expected, response);
+        verify(repository).findById(groupId);
+      }
+    }
+
+    @Test
+    void shouldReturnNullIfGroupDoesNotExist() {
+      Long groupId = 1L;
+      
+      when(repository.findById(groupId)).thenReturn(Optional.empty());
+
+      EmergencyGroupResponse response = emergencyGroupService.getById(groupId);
+
+      assertNull(response);
+      verify(repository).findById(groupId);
     }
   }
 }
