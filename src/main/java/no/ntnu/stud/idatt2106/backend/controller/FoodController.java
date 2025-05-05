@@ -53,7 +53,7 @@ public class FoodController {
    * @return the food item if found, otherwise 404
    */
   @GetMapping("/{id}")
-  public ResponseEntity<FoodResponse> getById(@PathVariable int id) {
+  public ResponseEntity<FoodResponse> getById(@PathVariable Long id) {
     return service.getById(id)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
@@ -79,7 +79,7 @@ public class FoodController {
    * @return 200 OK if updated, 404 Not Found if item does not exist
    */
   @PutMapping("/{id}")
-  public ResponseEntity<Void> update(@PathVariable int id, @RequestBody FoodUpdate update) {
+  public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody FoodUpdate update) {
     boolean success = service.update(id, update);
     if (!success) {
       return ResponseEntity.notFound().build();
@@ -94,7 +94,7 @@ public class FoodController {
    * @return 204 No Content if deleted, 404 Not Found if item does not exist
    */
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable int id) {
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
     boolean success = service.delete(id);
     if (!success) {
       return ResponseEntity.notFound().build();

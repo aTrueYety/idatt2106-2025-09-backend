@@ -38,8 +38,8 @@ class FoodServiceTest {
   @Test
   void shouldCreateFood() {
     FoodRequest request = new FoodRequest();
-    request.setTypeId(1);
-    request.setHouseholdId(1);
+    request.setTypeId(1L);
+    request.setHouseholdId(1L);
     request.setExpirationDate(LocalDate.now());
     request.setAmount(2);
 
@@ -51,7 +51,7 @@ class FoodServiceTest {
   @Test
   void shouldThrowIfCreateAmountNotPositive() {
     FoodRequest request = new FoodRequest();
-    request.setTypeId(1);
+    request.setTypeId(1L);
     request.setAmount(-1);
 
     assertThrows(IllegalArgumentException.class, () -> {
@@ -62,8 +62,8 @@ class FoodServiceTest {
   @Test
   void shouldGetAllFoods() {
     Food food = new Food();
-    food.setId(1);
-    food.setHouseholdId(1);
+    food.setId(1L);
+    food.setHouseholdId(1L);
     food.setAmount(5);
 
     when(repository.findAll()).thenReturn(List.of(food));
@@ -77,12 +77,12 @@ class FoodServiceTest {
   @Test
   void shouldGetByIdIfExists() {
     Food food = new Food();
-    food.setId(1);
+    food.setId(1L);
     food.setAmount(3);
 
-    when(repository.findById(1)).thenReturn(Optional.of(food));
+    when(repository.findById(1L)).thenReturn(Optional.of(food));
 
-    Optional<FoodResponse> response = service.getById(1);
+    Optional<FoodResponse> response = service.getById(1L);
 
     assertThat(response).isPresent();
     assertThat(response.get().getAmount()).isEqualTo(3);
@@ -90,24 +90,24 @@ class FoodServiceTest {
 
   @Test
   void shouldReturnEmptyIfNotFound() {
-    when(repository.findById(99)).thenReturn(Optional.empty());
+    when(repository.findById(99L)).thenReturn(Optional.empty());
 
-    Optional<FoodResponse> response = service.getById(99);
+    Optional<FoodResponse> response = service.getById(99L);
 
     assertThat(response).isEmpty();
   }
 
   @Test
   void shouldUpdateIfExists() {
-    when(repository.findById(1)).thenReturn(Optional.of(new Food()));
+    when(repository.findById(1L)).thenReturn(Optional.of(new Food()));
 
     FoodUpdate update = new FoodUpdate();
     update.setAmount(10);
     update.setExpirationDate(LocalDate.now());
-    update.setHouseholdId(1);
-    update.setTypeId(1);
+    update.setHouseholdId(1L);
+    update.setTypeId(1L);
 
-    boolean result = service.update(1, update);
+    boolean result = service.update(1L, update);
 
     assertThat(result).isTrue();
     verify(repository).update(any(Food.class));
@@ -115,11 +115,11 @@ class FoodServiceTest {
 
   @Test
   void shouldNotUpdateIfNotFound() {
-    when(repository.findById(1)).thenReturn(Optional.empty());
+    when(repository.findById(1L)).thenReturn(Optional.empty());
     FoodUpdate update = new FoodUpdate();
     update.setAmount(1);
 
-    boolean result = service.update(1, update);
+    boolean result = service.update(1L, update);
 
     assertThat(result).isFalse();
     verify(repository, never()).update(any());
@@ -127,33 +127,33 @@ class FoodServiceTest {
 
   @Test
   void shouldThrowIfUpdateAmountNotPositive() {
-    when(repository.findById(1)).thenReturn(Optional.of(new Food()));
+    when(repository.findById(1L)).thenReturn(Optional.of(new Food()));
 
     FoodUpdate update = new FoodUpdate();
     update.setAmount(0);
 
     assertThrows(IllegalArgumentException.class, () -> {
-      service.update(1, update);
+      service.update(1L, update);
     });
   }
 
   @Test
   void shouldDeleteIfExists() {
-    when(repository.findById(1)).thenReturn(Optional.of(new Food()));
+    when(repository.findById(1L)).thenReturn(Optional.of(new Food()));
 
-    boolean result = service.delete(1);
+    boolean result = service.delete(1L);
 
     assertThat(result).isTrue();
-    verify(repository).deleteById(1);
+    verify(repository).deleteById(1L);
   }
 
   @Test
   void shouldNotDeleteIfMissing() {
-    when(repository.findById(1)).thenReturn(Optional.empty());
+    when(repository.findById(1L)).thenReturn(Optional.empty());
 
-    boolean result = service.delete(1);
+    boolean result = service.delete(1L);
 
     assertThat(result).isFalse();
-    verify(repository, never()).deleteById(anyInt());
+    verify(repository, never()).deleteById(any());
   }
 }

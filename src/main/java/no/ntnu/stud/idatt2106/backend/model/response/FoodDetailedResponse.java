@@ -9,10 +9,10 @@ import lombok.Data;
  */
 @Data
 public class FoodDetailedResponse {
-  private int typeId;
+  private Long typeId;
   private String typeName;
   private String unit;
-  private float totalAmount;
-  private float totalCalories;
+  private double totalAmount;
+  private double totalCalories;
   private List<FoodBatchResponse> batches;
 }

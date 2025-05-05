@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -26,12 +25,13 @@ public class FoodRepositoryTest {
 
   @Test
   void shouldSaveAndRetrieveFood() {
-    jdbc.update("INSERT INTO food_type (name, unit, calories_per_unit, picture) VALUES (?, ?, ?, ?)",
-        "Rice", "kg", 350.0f, null);
+    jdbc.update("""
+        INSERT INTO food_type (name, unit, calories_per_unit, picture) VALUES (?, ?, ?, ?)
+        """, "Rice", "kg", 350.0f, null);
 
     Food food = new Food();
-    food.setTypeId(1);
-    food.setHouseholdId(42);
+    food.setTypeId(1L);
+    food.setHouseholdId(42L);
     food.setExpirationDate(LocalDate.of(2025, 5, 20));
     food.setAmount(3);
 

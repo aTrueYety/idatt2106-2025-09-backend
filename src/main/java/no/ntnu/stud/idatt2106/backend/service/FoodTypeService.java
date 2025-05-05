@@ -55,7 +55,7 @@ public class FoodTypeService {
    * @param id the ID of the food type
    * @return Optional containing FoodTypeResponse if found, empty otherwise
    */
-  public Optional<FoodTypeResponse> getById(int id) {
+  public Optional<FoodTypeResponse> getById(Long id) {
     return repository.findById(id)
         .map(FoodTypeMapper::toResponse);
   }
@@ -67,7 +67,7 @@ public class FoodTypeService {
    * @param request the update request
    * @return true if updated, false if not found
    */
-  public boolean update(int id, FoodTypeRequest request) {
+  public boolean update(Long id, FoodTypeRequest request) {
     return repository.findById(id)
         .map(existing -> {
           FoodType updated = FoodTypeMapper.toModel(request);
@@ -84,7 +84,7 @@ public class FoodTypeService {
    * @param id the ID of the food type to delete
    * @return true if deleted, false if not found
    */
-  public boolean delete(int id) {
+  public boolean delete(Long id) {
     return repository.findById(id)
         .map(existing -> {
           repository.deleteById(id);
@@ -112,7 +112,7 @@ public class FoodTypeService {
    * @return calories per unit
    * @throws NoSuchElementException if the food type is not found
    */
-  public float getCaloriesById(int id) {
+  public float getCaloriesById(Long id) {
     return repository.findById(id)
         .map(FoodType::getCaloriesPerUnit)
         .orElseThrow(() -> new NoSuchElementException("Food type not found with id = " + id));

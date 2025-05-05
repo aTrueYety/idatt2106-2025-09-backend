@@ -20,8 +20,8 @@ public class SharedFoodRepositoryImpl implements SharedFoodRepository {
 
   private final RowMapper<SharedFood> rowMapper = (rs, rowNum) -> new SharedFood(
       new SharedFoodKey(
-          rs.getInt("food_id"),
-          rs.getInt("group_household_id")),
+          rs.getObject("food_id", Long.class),
+          rs.getObject("group_household_id", Long.class)),
       rs.getFloat("amount"));
 
   @Override
@@ -65,7 +65,7 @@ public class SharedFoodRepositoryImpl implements SharedFoodRepository {
   }
 
   @Override
-  public List<SharedFood> findByGroupHouseholdId(int groupHouseholdId) {
+  public List<SharedFood> findByGroupHouseholdId(Long groupHouseholdId) {
     String sql = "SELECT * FROM shared_food WHERE group_household_id = ?";
     return jdbcTemplate.query(sql, rowMapper, groupHouseholdId);
   }

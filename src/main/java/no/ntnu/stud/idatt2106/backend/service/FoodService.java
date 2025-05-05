@@ -57,7 +57,7 @@ public class FoodService {
    * @param id the ID of the food item
    * @return an Optional containing FoodResponse if found, otherwise empty
    */
-  public Optional<FoodResponse> getById(int id) {
+  public Optional<FoodResponse> getById(Long id) {
     return repository.findById(id).map(FoodMapper::toResponse);
   }
 
@@ -79,7 +79,7 @@ public class FoodService {
    * @param update the update request
    * @return true if updated, false if not found
    */
-  public boolean update(int id, FoodUpdate update) {
+  public boolean update(Long id, FoodUpdate update) {
     Validate.that(update.getAmount(), Validate.isPositive());
     if (repository.findById(id).isEmpty()) {
       return false;
@@ -96,7 +96,7 @@ public class FoodService {
    * @param id the ID of the food item to delete
    * @return true if deleted, false if not found
    */
-  public boolean delete(int id) {
+  public boolean delete(Long id) {
     if (repository.findById(id).isEmpty()) {
       return false;
     }
@@ -122,7 +122,7 @@ public class FoodService {
    * @param householdId the ID of the household
    * @return the total calories in the household
    */
-  public double getCaloriesByHouseholdId(long householdId) {
+  public double getCaloriesByHouseholdId(Long householdId) {
     FoodTypeService foodTypeService = new FoodTypeService(foodTypeRepository);
 
     return repository.findByHouseholdId(householdId).stream()
@@ -165,12 +165,12 @@ public class FoodService {
   public List<FoodDetailedResponse> getFoodDetailedByHousehold(int householdId) {
     List<Food> foods = repository.findByHouseholdId(householdId);
 
-    Map<Integer, List<Food>> grouped = foods.stream()
+    Map<Long, List<Food>> grouped = foods.stream()
         .collect(Collectors.groupingBy(Food::getTypeId));
 
     return grouped.entrySet().stream()
         .map(entry -> {
-          int typeId = entry.getKey();
+          Long typeId = entry.getKey();
           Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
           if (typeOpt.isEmpty()) {
             return null;

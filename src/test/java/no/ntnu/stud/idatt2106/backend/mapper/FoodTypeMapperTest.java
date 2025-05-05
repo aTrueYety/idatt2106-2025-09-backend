@@ -28,7 +28,7 @@ public class FoodTypeMapperTest {
   @Test
   void shouldMapModelToResponse() {
     FoodType model = new FoodType();
-    model.setId(42);
+    model.setId(42L);
     model.setName("Milk");
     model.setUnit("liter");
     model.setCaloriesPerUnit(64.0f);

@@ -39,7 +39,7 @@ public class FoodTypeController {
    * Get a single food type by its ID.
    */
   @GetMapping("/{id}")
-  public ResponseEntity<FoodTypeResponse> getById(@PathVariable int id) {
+  public ResponseEntity<FoodTypeResponse> getById(@PathVariable Long id) {
     return service.getById(id)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
@@ -58,7 +58,7 @@ public class FoodTypeController {
    * Update an existing food type.
    */
   @PutMapping("/{id}")
-  public ResponseEntity<Void> update(@PathVariable int id, @RequestBody FoodTypeRequest request) {
+  public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody FoodTypeRequest request) {
     boolean updated = service.update(id, request);
     if (!updated) {
       return ResponseEntity.notFound().build();
@@ -70,7 +70,7 @@ public class FoodTypeController {
    * Delete a food type by ID.
    */
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable int id) {
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
     boolean deleted = service.delete(id);
     if (!deleted) {
       return ResponseEntity.notFound().build();

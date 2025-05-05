@@ -1,6 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.model.request;
 
 import java.time.LocalDate;
+import lombok.Data;
 
 /**
  * Request DTO for creating a new food item.
@@ -8,43 +9,12 @@ import java.time.LocalDate;
  * <p>Contains the type ID, household ID, expiration date, and amount of the food.
  * </p>
  */
+@Data
 public class FoodRequest {
-  private int typeId;
-  private int householdId;
+  private Long typeId;
+  private Long householdId;
   private LocalDate expirationDate;
-  private float amount;
-
-  public int getTypeId() {
-    return typeId;
-  }
-
-  public void setTypeId(int typeId) {
-    this.typeId = typeId;
-  }
-
-  public int getHouseholdId() {
-    return householdId;
-  }
-
-  public void setHouseholdId(int householdId) {
-    this.householdId = householdId;
-  }
-
-  public LocalDate getExpirationDate() {
-    return expirationDate;
-  }
-
-  public void setExpirationDate(LocalDate expirationDate) {
-    this.expirationDate = expirationDate;
-  }
-
-  public float getAmount() {
-    return amount;
-  }
-
-  public void setAmount(float amount) {
-    this.amount = amount;
-  }
+  private double amount;
 }
 
 
