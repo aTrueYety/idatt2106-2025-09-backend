@@ -13,10 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserResponse {
   private Long id;
+  private Long householdId;
+  private String email;
   private String username;
-  private String email; 
   private String firstName;
   private String lastName;
-  private Long householdId;
+  private boolean sharePositionHousehold;
+  private boolean sharePositionGroup;
+  private float lastLatitude;
+  private float lastLongitude;
   private byte[] picture;
 }
