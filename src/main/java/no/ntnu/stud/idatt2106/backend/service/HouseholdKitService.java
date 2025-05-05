@@ -9,6 +9,7 @@ import no.ntnu.stud.idatt2106.backend.model.request.HouseholdKitRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.MoveHouseholdKitRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdKitResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdKitRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,16 +18,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class HouseholdKitService {
 
-  private final HouseholdKitRepository repository;
-
-  /**
-   * Constructs a HouseholdKitService with the given repository.
-   *
-   * @param repository the household kit repository
-   */
-  public HouseholdKitService(HouseholdKitRepository repository) {
-    this.repository = repository;
-  }
+  @Autowired
+  private HouseholdKitRepository repository;
 
   /**
    * Creates a new household-kit relation.
