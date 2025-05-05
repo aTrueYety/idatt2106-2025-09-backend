@@ -17,12 +17,16 @@ public class UserMapper {
   public static UserResponse toResponse(User user) {
     UserResponse response = new UserResponse();
     response.setId(user.getId());
+    response.setHouseholdId(user.getHouseholdId());
+    response.setEmail(user.getEmail());
     response.setUsername(user.getUsername());
     response.setFirstName(user.getFirstName());
     response.setLastName(user.getLastName());
-    response.setEmail(user.getEmail());
+    response.setSharePositionHousehold(user.isSharePositionHousehold());
+    response.setSharePositionGroup(user.isSharePositionGroup());
+    response.setLastLatitude(user.getLastLatitude());
+    response.setLastLongitude(user.getLastLongitude());
     response.setPicture(user.getPicture());
-    response.setHouseholdId(user.getHouseholdId());
 
     return response;
   }
