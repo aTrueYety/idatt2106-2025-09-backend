@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -456,9 +455,9 @@ public class HouseholdServiceTest {
       when(householdRepository.findById(houseHoldId)).thenReturn(Optional.of(household));
       when(userService.getUserByUsername("Testuser")).thenReturn(receiver);
 
-      String inviteKey = "abc123";
-      when(householdInviteService.createHouseholdInvite(houseHoldId, receiverId))
-          .thenReturn(inviteKey);
+      //String inviteKey = "abc123";
+      //when(householdInviteService.createHouseholdInvite(houseHoldId, receiverId))
+      //    .thenReturn(inviteKey);
 
       doThrow(new MessagingException())
           .when(emailService)
