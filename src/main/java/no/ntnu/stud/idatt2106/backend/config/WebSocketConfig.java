@@ -1,13 +1,12 @@
 package no.ntnu.stud.idatt2106.backend.config;
 
+import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-
-import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
 
 /**
  * Configuration class for WebSocket using STOMP and SockJS.
@@ -19,7 +18,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   private final WebSocketAuthHandshakeInterceptor authInterceptor;
   private final HouseholdService householdService;
 
-  public WebSocketConfig(WebSocketAuthHandshakeInterceptor authInterceptor, HouseholdService householdService) {
+  public WebSocketConfig(
+      WebSocketAuthHandshakeInterceptor authInterceptor,
+      HouseholdService householdService) {
     this.authInterceptor = authInterceptor;
     this.householdService = householdService;
   }

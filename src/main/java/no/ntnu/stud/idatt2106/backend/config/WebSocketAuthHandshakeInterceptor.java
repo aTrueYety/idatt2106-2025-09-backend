@@ -49,11 +49,9 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
     // Extract the user ID from the token and add it to the attributes map
     try {
       Long userId = jwtService.extractUserId(token);
-      System.out.println("UserId: " + userId);
       attributes.put("user", userId);
 
     } catch (Exception e) {
-      System.out.println("Token: " + token);
       e.printStackTrace();
     }
 

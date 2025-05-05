@@ -17,7 +17,8 @@ public class LocationService {
   private final UserRepository userRepository;
   private final LocationBroadcastService locationBroadcastService;
 
-  public LocationService(UserRepository userRepository, LocationBroadcastService locationBroadcastService) {
+  public LocationService(UserRepository userRepository,
+      LocationBroadcastService locationBroadcastService) {
     this.userRepository = userRepository;
     this.locationBroadcastService = locationBroadcastService;
   }
@@ -63,6 +64,7 @@ public class LocationService {
    */
   public void updateLastKnownPosition(Long userId, float latitude, float longitude) {
     userRepository.updateLastKnownPosition(userId, latitude, longitude);
-    locationBroadcastService.broadcastToHousehold(new LocationUpdate(userId, (double) latitude, (double) longitude));
+    locationBroadcastService.broadcastToHousehold(
+        new LocationUpdate(userId, (double) latitude, (double) longitude));
   }
 }
