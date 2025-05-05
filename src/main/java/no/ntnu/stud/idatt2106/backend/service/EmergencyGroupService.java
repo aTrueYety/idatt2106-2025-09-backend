@@ -55,7 +55,7 @@ public class EmergencyGroupService {
    * @param id the ID of the emergency group
    * @return true if deleted successfully, false otherwise
    */
-  public boolean delete(int id) {
+  public boolean delete(Long id) {
     return repository.deleteById(id);
   }
 
@@ -66,7 +66,7 @@ public class EmergencyGroupService {
    * @param request the updated values
    * @return true if updated successfully, false otherwise
    */
-  public boolean update(int id, EmergencyGroupRequest request) {
+  public boolean update(Long id, EmergencyGroupRequest request) {
     EmergencyGroup group = new EmergencyGroup((long) id, request.getName(),
         request.getDescription());
     return repository.update(id, group);
@@ -78,7 +78,7 @@ public class EmergencyGroupService {
    * @param id the ID of the emergency group
    * @return the EmergencyGroupResponse object if found, or null if not found
    */
-  public EmergencyGroupResponse getById(int id) {
+  public EmergencyGroupResponse getById(Long id) {
     return repository.findById(id)
         .map(EmergencyGroupMapper::toResponse)
         .orElse(null);
@@ -90,7 +90,7 @@ public class EmergencyGroupService {
    * @param householdId the ID of the household
    * @return a list of EmergencyGroupSummaryResponse objects
    */
-  public List<EmergencyGroupSummaryResponse> getGroupSummariesByHouseholdId(int householdId) {
+  public List<EmergencyGroupSummaryResponse> getGroupSummariesByHouseholdId(Long householdId) {
     return repository.findGroupSummariesByHouseholdId(householdId);
   }
 
@@ -147,7 +147,7 @@ public class EmergencyGroupService {
    *         counts
    */
   public EmergencyGroupSummaryResponse getSummaryByGroupId(Long groupId) {
-    EmergencyGroup group = repository.findById(groupId.intValue())
+    EmergencyGroup group = repository.findById(groupId)
         .orElseThrow(() -> new IllegalArgumentException("Group not found with id: " + groupId));
 
     List<GroupHousehold> householdsInGroup = groupHouseholdRepository.findAll().stream()
