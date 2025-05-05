@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -66,6 +67,7 @@ public class HouseholdServiceTest {
   @Mock
   private JwtService jwtService;
 
+  @Mock
   private Household existingHousehold;
 
   @BeforeEach
@@ -195,7 +197,6 @@ public class HouseholdServiceTest {
     LevelOfPreparednessResponse preparedness = new LevelOfPreparednessResponse();
     preparedness.setLevelOfPreparedness(0.8);
 
-
     when(householdRepository.findById(id)).thenReturn(Optional.of(household));
     HouseholdResponse householdResponse = new HouseholdResponse();
     householdResponse.setId(household.getId());
@@ -240,7 +241,7 @@ public class HouseholdServiceTest {
       assertNotNull(response);
       assertEquals("Test Address", response.getAddress());
     }
-
+    
     @Test
     void shouldThrowExceptionIfUserDoesentExist() {
       Long userId = 1L;
@@ -388,7 +389,8 @@ public class HouseholdServiceTest {
     void shouldSendEmailIfValid() {
       String receiverName = "testuser";
       InviteUserHouseholdRequest inviteRequest = new InviteUserHouseholdRequest(receiverName);
-      inviteRequest.setUsername(receiverName);;
+      inviteRequest.setUsername(receiverName);
+      ;
 
       Long senderId = 1L;
       User sender = new User();
@@ -408,7 +410,7 @@ public class HouseholdServiceTest {
       String token = "Bearer validtoken";
       when(jwtService.extractUserId(token.substring(7))).thenReturn(senderId);
       when(householdRepository.findById(householdId)).thenReturn(Optional.of(household));
-      
+
       when(userService.getUserByUsername(receiverName)).thenReturn(receiver);
       when(userService.getUserById(senderId)).thenReturn(sender);
       householdService.inviteUserToHousehold(inviteRequest, token);
@@ -445,6 +447,7 @@ public class HouseholdServiceTest {
       when(householdRepository.findById(houseHoldId)).thenReturn(Optional.of(household));
       when(userService.getUserByUsername("Testuser")).thenReturn(receiver);
 
+
       doThrow(new MessagingException())
           .when(emailService)
           .sendHtmlEmail(anyString(), anyString(), anyString());
@@ -455,5 +458,56 @@ public class HouseholdServiceTest {
 
       assertTrue(exception.getMessage().contains("Failed to send email"));
     }
+  }
+
+  @Test
+  void loneUserLeavesAndHouseholdGetsDeleted() {
+    Long householdId = 1L;
+    User user = new User();
+    user.setHouseholdId(householdId);
+    user.setId(1L);
+
+    when(jwtService.extractUserId(anyString())).thenReturn(user.getId());
+    when(userService.getUserById(user.getId())).thenReturn(user);
+    when(householdService.getMembers(householdId)).thenReturn(Collections.emptyList());
+    householdService.leaveHousehold("Bearer token");
+
+    assertNull(user.getHouseholdId());
+    verify(userService).updateUserCredentials(user);
+    verify(householdRepository).deleteById(householdId);
+  }
+
+  @Test
+  void userLeavesHouseholdAndHouseholdStillExists() {
+    Long householdId = 1L;
+    User user = new User();
+    User user2 = new User();
+    user2.setId(2L);
+    user2.setHouseholdId(householdId);    
+    user.setHouseholdId(householdId);
+    user.setId(1L);
+
+    when(jwtService.extractUserId(anyString())).thenReturn(user.getId());
+    when(userService.getUserById(user.getId())).thenReturn(user, user2);
+    when(householdService.getMembers(householdId)).thenReturn(List.of(new UserResponse()));
+
+    householdService.leaveHousehold("Bearer token");
+    verify(userService).updateUserCredentials(user);
+    verify(householdRepository, never()).deleteById(householdId);
+  }
+
+  @Test
+  void shouldThrowExceptionWhenUserNotInHousehold() {
+    
+    User user = new User();
+    user.setId(1L);
+    Long householdId = 1L;
+    when(jwtService.extractUserId(anyString())).thenReturn(user.getId());
+    when(userService.getUserById(user.getId())).thenReturn(user);
+    when(householdRepository.findById(householdId)).thenReturn(Optional.of(existingHousehold));
+
+    assertThrows(NoSuchElementException.class, () -> {
+      householdService.leaveHousehold("Bearer token");
+    });
   }
 }
