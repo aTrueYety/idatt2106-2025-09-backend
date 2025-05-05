@@ -1,9 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
-import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
-import no.ntnu.stud.idatt2106.backend.model.base.User;
-import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdInviteRepositoryImpl;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +13,6 @@ import org.springframework.stereotype.Service;
 public class HouseholdInviteService {
   @Autowired
   private HouseholdInviteRepositoryImpl repository;
-  @Autowired
-  private UserService userService;
-  @Autowired
-  private HouseholdService householdService;
 
   /**
    * Generates a unique invite key for a household invite.
@@ -42,13 +35,6 @@ public class HouseholdInviteService {
     Validate.that(userId, Validate.isNotNull(), "User ID cannot be null");
     Validate.that(repository.findByUserIdAndHouseholdId(userId, householdId),
         Validate.isEmptyCollection(), "User already has an invite to this household");
-
-    User user = userService.getUserById(userId);
-    Validate.that(user, Validate.isNotNull(), "User does not exist");
-    Validate.that(user.getHouseholdId() == householdId,
-        Validate.isTrue(), "User already belongs to this household");
-    Validate.that(householdService.getById(householdId), Validate.isNotNull(),
-        "Household does not exist");
      
     String inviteKey = generateInviteKey();
     HouseholdInvite invite = new HouseholdInvite(userId, householdId, inviteKey);
