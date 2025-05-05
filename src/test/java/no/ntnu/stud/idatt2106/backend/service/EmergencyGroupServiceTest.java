@@ -1,6 +1,8 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -77,6 +79,32 @@ public class EmergencyGroupServiceTest {
         assertEquals(List.of(response1, response2), result);
         verify(repository).findAll();
       }
+    }
+  }
+
+  @Nested
+  class DeleteTests {
+
+    @Test
+    void shouldDeleteAndReturnTrueIfGroupWithIdExists() {
+      int id = 2;
+      when(repository.deleteById(id)).thenReturn(true);
+      
+      boolean response = emergencyGroupService.delete(id);
+
+      assertTrue(response);
+      verify(repository).deleteById(id);
+    }
+
+    @Test
+    void shouldReturnFalseIfGroupWithIdDoesNotExist() {
+      int id = 1;
+      when(repository.deleteById(id)).thenReturn(false);
+
+      boolean response = emergencyGroupService.delete(id);
+
+      assertFalse(response);
+      verify(repository).deleteById(id);
     }
   }
 }
