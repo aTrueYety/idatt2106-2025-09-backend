@@ -45,7 +45,7 @@ public class EmergencyGroupController {
 
   @Operation(summary = "Delete an emergency group by ID")
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable int id) {
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
     return service.delete(id) ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();
   }
@@ -59,7 +59,7 @@ public class EmergencyGroupController {
    */
   @Operation(summary = "Update an emergency group by ID")
   @PutMapping("/{id}")
-  public ResponseEntity<Void> update(@PathVariable int id,
+  public ResponseEntity<Void> update(@PathVariable Long id,
       @RequestBody EmergencyGroupRequest request) {
     return service.update(id, request)
         ? ResponseEntity.ok().build()
@@ -74,7 +74,7 @@ public class EmergencyGroupController {
    */
   @Operation(summary = "Get an emergency group by ID")
   @GetMapping("/{id}")
-  public ResponseEntity<EmergencyGroupResponse> getById(@PathVariable int id) {
+  public ResponseEntity<EmergencyGroupResponse> getById(@PathVariable Long id) {
     return repository.findById(id)
         .map(EmergencyGroupMapper::toResponse)
         .map(ResponseEntity::ok)
@@ -84,7 +84,7 @@ public class EmergencyGroupController {
   @Operation(summary = "Get emergency group summaries for a household")
   @GetMapping("/summary/{householdId}")
   public ResponseEntity<List<EmergencyGroupSummaryResponse>> getGroupSummaries(
-      @PathVariable int householdId) {
+      @PathVariable Long householdId) {
     return ResponseEntity.ok(service.getGroupSummariesByHouseholdId(householdId));
   }
 

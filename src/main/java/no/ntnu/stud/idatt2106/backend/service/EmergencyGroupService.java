@@ -67,7 +67,7 @@ public class EmergencyGroupService {
    * @return true if updated successfully, false otherwise
    */
   public boolean update(Long id, EmergencyGroupRequest request) {
-    EmergencyGroup group = new EmergencyGroup((long) id, request.getName(),
+    EmergencyGroup group = new EmergencyGroup(id, request.getName(),
         request.getDescription());
     return repository.update(id, group);
   }

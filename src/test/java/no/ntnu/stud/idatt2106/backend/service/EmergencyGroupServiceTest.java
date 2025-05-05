@@ -87,7 +87,7 @@ public class EmergencyGroupServiceTest {
 
     @Test
     void shouldDeleteAndReturnTrueIfGroupWithIdExists() {
-      int id = 2;
+      Long id = 2L;
       when(repository.deleteById(id)).thenReturn(true);
       
       boolean response = emergencyGroupService.delete(id);
@@ -98,13 +98,44 @@ public class EmergencyGroupServiceTest {
 
     @Test
     void shouldReturnFalseIfGroupWithIdDoesNotExist() {
-      int id = 1;
+      Long id = 1L;
       when(repository.deleteById(id)).thenReturn(false);
 
       boolean response = emergencyGroupService.delete(id);
 
       assertFalse(response);
       verify(repository).deleteById(id);
+    }
+  }
+
+  @Nested
+  class UpdateTests {
+
+    @Test
+    void shouldUpdateEmergencyGroupWithId() {
+      Long groupId = 2L;
+      EmergencyGroup existingGroup = new EmergencyGroup();
+      existingGroup.setId(groupId);
+      existingGroup.setName("Name");
+      existingGroup.setDescription("Description");
+
+      String updatedName = "New name";
+      String updatedDescription = "New description";
+      EmergencyGroupRequest request = new EmergencyGroupRequest();
+      request.setName(updatedName);
+      request.setDescription(updatedDescription);
+
+      EmergencyGroup updatedGroup = new EmergencyGroup();
+      updatedGroup.setId(groupId);
+      updatedGroup.setName(updatedName);
+      updatedGroup.setDescription(updatedDescription);
+
+      when(repository.update(groupId, updatedGroup)).thenReturn(true);
+    
+      boolean result = emergencyGroupService.update(groupId, request);
+      
+      assertTrue(result);
+      verify(repository).update(groupId, updatedGroup);
     }
   }
 }
