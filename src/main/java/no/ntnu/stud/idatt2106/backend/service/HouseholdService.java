@@ -186,6 +186,8 @@ public class HouseholdService {
     User user = userService.getUserByUsername(inviteRequest.getUsername());
     Validate.that(user,
         Validate.isNotNull(), "User with username = " + inviteRequest.getUsername() + " not found");
+    Validate.that(user.getHouseholdId() != senderHouseholdId, 
+        Validate.isTrue(), "User is already in the same household as you");
 
     String inviteKey = householdInviteService.createHouseholdInvite(
         household.getId(), user.getId());

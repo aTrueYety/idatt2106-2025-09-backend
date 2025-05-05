@@ -88,7 +88,7 @@ public class GroupHouseholdService {
    * @param token   the JWT token
    */
   public void invite(GroupHouseholdRequest request, String token) {
-    Long userId = jwtService.extractUserId(token);
+    Long userId = jwtService.extractUserId(token.substring(7));
     Validate.that(
         repository.findByHouseholdIdAndGroupId(
             request.getHouseholdId(), request.getGroupId()),
@@ -106,7 +106,7 @@ public class GroupHouseholdService {
    * @param token   the JWT token
    */
   public void acceptInvite(Long groupId, String token) {
-    Long userId = jwtService.extractUserId(token);
+    Long userId = jwtService.extractUserId(token.substring(7));
     User user = userService.getUserById(userId);
     Validate.that(user.getHouseholdId(), Validate.isNotNull(), "User does not have a household.");
     Validate.that(repository.findByHouseholdIdAndGroupId(user.getHouseholdId(), groupId),

@@ -33,11 +33,9 @@ public class HouseholdInviteService {
   public String createHouseholdInvite(Long householdId, Long userId) {
     Validate.that(householdId, Validate.isNotNull(), "Household ID cannot be null");
     Validate.that(userId, Validate.isNotNull(), "User ID cannot be null");
-    Validate.that(householdId, Validate.isPositive(), "Household ID must be positive");
-    System.out.println(repository.findByUserIdAndHouseholdId(userId, householdId));
     Validate.that(repository.findByUserIdAndHouseholdId(userId, householdId),
         Validate.isEmptyCollection(), "User already has an invite to this household");
-
+     
     String inviteKey = generateInviteKey();
     HouseholdInvite invite = new HouseholdInvite(userId, householdId, inviteKey);
     repository.save(invite);
