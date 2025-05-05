@@ -23,6 +23,7 @@ import no.ntnu.stud.idatt2106.backend.mapper.EmergencyGroupMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
 import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.repository.EmergencyGroupRepository;
 
 /**
@@ -167,13 +168,33 @@ public class EmergencyGroupServiceTest {
     @Test
     void shouldReturnNullIfGroupDoesNotExist() {
       Long groupId = 1L;
-      
+
       when(repository.findById(groupId)).thenReturn(Optional.empty());
 
       EmergencyGroupResponse response = emergencyGroupService.getById(groupId);
 
       assertNull(response);
       verify(repository).findById(groupId);
+    }
+  }
+
+  @Nested
+  class GetGroupSummariesByHouseholdIdTests {
+
+    @Test
+    void shouldReturnEmergencyGroupSummaryResponses() {
+      EmergencyGroupSummaryResponse response1 = new EmergencyGroupSummaryResponse();
+      EmergencyGroupSummaryResponse response2 = new EmergencyGroupSummaryResponse();
+      List<EmergencyGroupSummaryResponse> responses = List.of(response1, response2);
+
+      Long householdId = 2L;
+      when(repository.findGroupSummariesByHouseholdId(householdId)).thenReturn(responses);
+
+      List<EmergencyGroupSummaryResponse> result = 
+          emergencyGroupService.getGroupSummariesByHouseholdId(householdId);
+
+      assertEquals(result, responses);
+      verify(repository).findGroupSummariesByHouseholdId(householdId);
     }
   }
 }
