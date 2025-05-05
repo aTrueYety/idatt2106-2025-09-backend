@@ -101,9 +101,9 @@ public class EventRepositoryImpl implements EventRepository {
    * @return a list of events within the specified bounds
    */
   public List<Event> findAllInBounds(double minLat, double maxLat, double minLong, double maxLong) {
-    String sql = "SELECT * FROM event WHERE (latitude + (radius / 111320.0) >= ? AND latitude "
-        + "- (radius / 111320.0) <= ?) AND (longitude + (radius / (111320.0 * " 
-        + "COS(RADIANS(latitude)))) >= ? AND longitude - (radius / (111320.0 * " 
+    String sql = "SELECT * FROM event WHERE (latitude + ((radius) / 111.32) >= ? AND latitude "
+        + "- ((radius) / 111.32) <= ?) AND (longitude + ((radius) / (111.32 * " 
+        + "COS(RADIANS(latitude)))) >= ? AND longitude - ((radius) / (111.32 * " 
         + "COS(RADIANS(latitude)))) <= ?)";
     return jdbcTemplate.query(sql, eventRowMapper, minLat, maxLat, minLong, maxLong);
   }
@@ -145,9 +145,9 @@ public class EventRepositoryImpl implements EventRepository {
       double minLat, double maxLat, double minLong, double maxLong) {
     String sql = "SELECT event.*, severity.colour, severity.name, severity.description "
         + "FROM event JOIN severity ON event.severity_id = severity.id "
-        + "WHERE (latitude + (radius / 111320.0) >= ? AND latitude - (radius / 111320.0) <= ?) "
-        + "AND (longitude + (radius / (111320.0 * COS(RADIANS(latitude)))) >= ? AND longitude - "
-        + "(radius / (111320.0 * COS(RADIANS(latitude)))) <= ?)";
+        + "WHERE (latitude + (radius / 111.32) >= ? AND latitude - (radius / 111.32) <= ?) "
+        + "AND (longitude + (radius / (111.32 * COS(RADIANS(latitude)))) >= ? AND longitude - "
+        + "(radius / (111.32 * COS(RADIANS(latitude)))) <= ?)";
     return jdbcTemplate.query(sql, eventResponseRowMapper, minLat, maxLat, minLong, maxLong);
   }
 

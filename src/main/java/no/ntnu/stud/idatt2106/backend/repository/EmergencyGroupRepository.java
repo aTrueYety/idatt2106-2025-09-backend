@@ -58,8 +58,4 @@ public interface EmergencyGroupRepository {
    * @return a list of EmergencyGroupSummaryResponses
    */
   List<EmergencyGroupSummaryResponse> findGroupSummariesByHouseholdId(Long householdId);
-
-
-
-
 }
