@@ -14,24 +14,21 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   private final WebSocketAuthHandshakeInterceptor authInterceptor;
-  private final WebSocketHandshakeHandler handshakeHandler;
 
-  public WebSocketConfig(WebSocketAuthHandshakeInterceptor authInterceptor,
-                         WebSocketHandshakeHandler handshakeHandler) {
+  public WebSocketConfig(WebSocketAuthHandshakeInterceptor authInterceptor) {
     this.authInterceptor = authInterceptor;
-    this.handshakeHandler = handshakeHandler;
   }
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.addEndpoint("/ws")
         .setAllowedOriginPatterns("*")
-        .setHandshakeHandler(handshakeHandler)
+        .setHandshakeHandler(new WebSocketHandshakeHandler())
         .addInterceptors(authInterceptor);
 
     registry.addEndpoint("/ws")
         .setAllowedOriginPatterns("*")
-        .setHandshakeHandler(handshakeHandler)
+        .setHandshakeHandler(new WebSocketHandshakeHandler())
         .addInterceptors(authInterceptor)
         .withSockJS();
   }

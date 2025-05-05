@@ -1,7 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.config;
 
-import no.ntnu.stud.idatt2106.backend.service.JwtService;
 import java.util.Map;
+import no.ntnu.stud.idatt2106.backend.service.JwtService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
