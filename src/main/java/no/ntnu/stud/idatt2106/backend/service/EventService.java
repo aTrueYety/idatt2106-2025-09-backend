@@ -20,6 +20,10 @@ public class EventService {
   @Autowired
   private JwtService jwtService;
 
+  @Autowired
+  private EventWebSocketService eventWebSocketService;
+
+
   private static void validateEvent(Event event) {
     // severity exists
   }
@@ -36,6 +40,9 @@ public class EventService {
         Validate.isTrue(), "User is not an admin");
     Event event = EventFactory.requestToEvent(request);
     validateEvent(event);
+
+    EventResponse response = eventRepository.findWithSeverityById(event.getId());
+    eventWebSocketService.broadcastCreated(response);
     return eventRepository.save(event);
   }
 
@@ -115,6 +122,10 @@ public class EventService {
     Validate.that(jwtService.extractIsAdmin(token.substring(7)), 
         Validate.isTrue(), "User is not an admin");
     validateEvent(event);
+
+    EventResponse response = eventRepository.findWithSeverityById(event.getId());
+    eventWebSocketService.broadcastUpdated(response);
+
     return eventRepository.update(event);
   }
 
@@ -128,6 +139,9 @@ public class EventService {
   public int deleteEvent(long id, String token) {
     Validate.that(jwtService.extractIsAdmin(token.substring(7)), 
         Validate.isTrue(), "User is not an admin");
+
+    eventWebSocketService.broadcastDeleted(id);
+
     return eventRepository.delete(id);
   }
 }
