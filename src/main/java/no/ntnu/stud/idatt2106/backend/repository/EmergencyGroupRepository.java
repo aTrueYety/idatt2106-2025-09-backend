@@ -3,7 +3,6 @@ package no.ntnu.stud.idatt2106.backend.repository;
 import java.util.List;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
-import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryResponse;
 
 
@@ -13,17 +12,13 @@ import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryRespon
 public interface EmergencyGroupRepository {
   void save(EmergencyGroup group);
 
-  Optional<EmergencyGroup> findById(int id);
+  Optional<EmergencyGroup> findById(Long id);
 
   List<EmergencyGroup> findAll();
 
-  boolean update(int id, EmergencyGroup group);
+  boolean update(Long id, EmergencyGroup group);
 
-  boolean deleteById(int id);
+  boolean deleteById(Long id);
 
-  List<EmergencyGroupSummaryResponse> findGroupSummariesByHouseholdId(int householdId);
-
-
-
-
+  List<EmergencyGroupSummaryResponse> findGroupSummariesByHouseholdId(Long householdId);
 }
