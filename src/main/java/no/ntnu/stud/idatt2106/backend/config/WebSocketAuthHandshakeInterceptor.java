@@ -43,7 +43,7 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
 
     // If the token is not found in the query parameters, return false
     if (!StringUtils.hasText(token)) {
-      return false;
+      return true;
     }
 
     // Extract the user ID from the token and add it to the attributes map
@@ -51,13 +51,13 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
       Long userId = jwtService.extractUserId(token);
       System.out.println("UserId: " + userId);
       attributes.put("user", userId);
-      return true;
 
     } catch (Exception e) {
       System.out.println("Token: " + token);
       e.printStackTrace();
-      return false;
     }
+
+    return true;
   }
 
   @Override
