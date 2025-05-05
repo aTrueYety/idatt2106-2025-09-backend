@@ -3,16 +3,16 @@ package no.ntnu.stud.idatt2106.backend.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-
 import no.ntnu.stud.idatt2106.backend.mapper.HouseholdKitMapper;
-import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdKit;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdKitRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.MoveHouseholdKitRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdKitResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdKitRepository;
 import org.junit.jupiter.api.Nested;
@@ -161,6 +161,65 @@ public class HouseholdKitServiceTest {
       boolean result = householdKitService.delete(request);
 
       verify(repository, never()).delete(householdkit2);
+      assertFalse(result);
+    }
+  }
+
+  @Nested
+  class MoveKitToAnotherHouseholdTests {
+
+    @Test
+    void shouldMoveKitAndReturnTrueIfSuccess() {
+      Long householdId = 1L;
+      Long newHouseholdId = 3L;
+      Long kitId = 2L;
+      MoveHouseholdKitRequest request = new MoveHouseholdKitRequest();
+      request.setOldHouseholdId(householdId);
+      request.setKitId(kitId);
+      request.setNewHouseholdId(newHouseholdId);
+
+
+      HouseholdKit householdkit1 = new HouseholdKit();
+      householdkit1.setHouseholdId(1L);
+      householdkit1.setKitId(3L);
+      HouseholdKit householdkit2 = new HouseholdKit();
+      householdkit2.setHouseholdId(1L);
+      householdkit2.setKitId(2L);
+      List<HouseholdKit> householdKits = List.of(householdkit1, householdkit2);
+
+      when(repository.findByHouseholdId(householdId)).thenReturn(householdKits);
+
+      boolean result = householdKitService.moveKitToAnotherHousehold(request);
+
+      verify(repository).updateHouseholdForKit(request.getOldHouseholdId(),
+          request.getKitId(), request.getNewHouseholdId());
+      assertTrue(result);
+    }
+
+    @Test
+    void shouldNotMoveKitAndReturnFalseIfRelationDoesNotExist() {
+      Long householdId = 1L;
+      Long newHouseholdId = 3L;
+      Long kitId = 5L;
+      MoveHouseholdKitRequest request = new MoveHouseholdKitRequest();
+      request.setOldHouseholdId(householdId);
+      request.setKitId(kitId);
+      request.setNewHouseholdId(newHouseholdId);
+
+
+      HouseholdKit householdkit1 = new HouseholdKit();
+      householdkit1.setHouseholdId(1L);
+      householdkit1.setKitId(3L);
+      HouseholdKit householdkit2 = new HouseholdKit();
+      householdkit2.setHouseholdId(1L);
+      householdkit2.setKitId(2L);
+      List<HouseholdKit> householdKits = List.of(householdkit1, householdkit2);
+
+      when(repository.findByHouseholdId(householdId)).thenReturn(householdKits);
+
+      boolean result = householdKitService.moveKitToAnotherHousehold(request);
+
+      verify(repository, never()).updateHouseholdForKit(any(), any(), any());
       assertFalse(result);
     }
   }
