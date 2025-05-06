@@ -1,5 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.config;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,9 +10,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
-
-import jakarta.mail.MessagingException;
-import jakarta.mail.Session;
 
 /**
  * Dummy mail sender for testing purposes.
