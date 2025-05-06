@@ -128,9 +128,7 @@ public class UserService {
     Validate.that(update.getFirstName(), Validate.isNotBlankOrNull());
     Validate.that(update.getLastName(), Validate.isNotBlankOrNull());
     Validate.that(update.getEmail(), Validate.isNotBlankOrNull());
-    Validate.that(update.isSharePositionHousehold(), Validate.isNotNull());
-    Validate.that(update.isSharePositionGroup(), Validate.isNotNull());
-
+    
     User existingUser = userRepo.findById(id);
     if (existingUser == null) {
       throw new NoSuchElementException("User with ID = " + id + " not found");
@@ -145,9 +143,6 @@ public class UserService {
     }
 
     existingUser.setEmail(update.getEmail());
-    existingUser.setPicture(update.getPicture());
-    existingUser.setSharePositionHousehold(update.isSharePositionHousehold());
-    existingUser.setSharePositionGroup(update.isSharePositionGroup());
 
     userRepo.updateUser(existingUser);
     return UserMapper.toResponse(existingUser);

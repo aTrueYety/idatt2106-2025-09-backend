@@ -50,9 +50,6 @@ public class UserServiceTest {
       update.setFirstName("New");
       update.setLastName("User");
       update.setEmail("new@example.com");
-      update.setPicture(null);
-      update.setSharePositionHousehold(true);
-      update.setSharePositionGroup(false);
 
       Long userId = 1L;
       User existingUser = new User();
@@ -60,8 +57,11 @@ public class UserServiceTest {
       existingUser.setFirstName("Old");
       existingUser.setLastName("Name");
       existingUser.setEmail("old@example.com");
-      existingUser.setEmailConfirmed(true);
+      existingUser.setEmailConfirmed(false);
+      existingUser.setSharePositionHousehold(true);
+      existingUser.setSharePositionGroup(false);
 
+      when(repository.findById(userId)).thenReturn(existingUser);
       when(repository.findById(userId)).thenReturn(existingUser);
 
       UserResponse result = userService.updateUserProfile(userId, update);
@@ -81,8 +81,6 @@ public class UserServiceTest {
       update.setFirstName("First");
       update.setLastName("Last");
       update.setEmail("email@example.com");
-      update.setSharePositionHousehold(true);
-      update.setSharePositionGroup(false);
 
       assertThrows(NoSuchElementException.class, () -> {
         userService.updateUserProfile(userId, update);
