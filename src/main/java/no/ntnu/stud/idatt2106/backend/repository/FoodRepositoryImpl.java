@@ -25,16 +25,16 @@ public class FoodRepositoryImpl implements FoodRepository {
 
   private final RowMapper<Food> rowMapper = (rs, rowNum) -> {
     Food food = new Food();
-    food.setId(rs.getInt("id"));
-    food.setTypeId(rs.getInt("type_id"));
-    food.setHouseholdId(rs.getInt("household_id"));
+    food.setId(rs.getObject("id", Long.class));
+    food.setTypeId(rs.getObject("type_id", Long.class));
+    food.setHouseholdId(rs.getObject("household_id", Long.class));
     food.setExpirationDate(rs.getDate("expiration_date").toLocalDate());
     food.setAmount(rs.getFloat("amount"));
     return food;
   };
 
   @Override
-  public Optional<Food> findById(int id) {
+  public Optional<Food> findById(Long id) {
     String sql = "SELECT * FROM food WHERE id = ?";
     List<Food> results = jdbcTemplate.query(sql, rowMapper, id);
     return results.stream().findFirst();
@@ -53,7 +53,7 @@ public class FoodRepositoryImpl implements FoodRepository {
    * @return the generated ID of the inserted food item
    */
   @Override
-  public int save(Food food) {
+  public Long save(Food food) {
     String sql = "INSERT INTO food (type_id, household_id, expiration_date, amount) "
         + "VALUES (?, ?, ?, ?)";
     KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -61,15 +61,15 @@ public class FoodRepositoryImpl implements FoodRepository {
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
           sql, Statement.RETURN_GENERATED_KEYS);
-      ps.setInt(1, food.getTypeId());
-      ps.setInt(2, food.getHouseholdId());
+      ps.setLong(1, food.getTypeId());
+      ps.setLong(2, food.getHouseholdId());
       ps.setDate(3, Date.valueOf(food.getExpirationDate()));
-      ps.setFloat(4, food.getAmount());
+      ps.setDouble(4, food.getAmount());
       return ps;
     }, keyHolder);
 
     if (keyHolder.getKey() != null) {
-      int generatedId = keyHolder.getKey().intValue();
+      Long generatedId = keyHolder.getKey().longValue();
       food.setId(generatedId);
       return generatedId;
     } else {
@@ -100,7 +100,7 @@ public class FoodRepositoryImpl implements FoodRepository {
    * @param id the ID of the food item to delete
    */
   @Override
-  public void deleteById(int id) {
+  public void deleteById(Long id) {
     String sql = "DELETE FROM food WHERE id = ?";
     jdbcTemplate.update(sql, id);
   }

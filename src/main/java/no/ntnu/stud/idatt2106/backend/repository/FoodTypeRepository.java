@@ -14,7 +14,7 @@ public interface FoodTypeRepository {
    * @param id the ID of the food type
    * @return an Optional containing the FoodType if found, empty otherwise
    */
-  Optional<FoodType> findById(int id);
+  Optional<FoodType> findById(Long id);
 
   /**
    * Find all food types.
@@ -42,7 +42,7 @@ public interface FoodTypeRepository {
    *
    * @param id the ID of the food type to delete
    */
-  void deleteById(int id);
+  void deleteById(Long id);
 
   /**
    * Finds all food types where the name contains the given query, ignoring case.

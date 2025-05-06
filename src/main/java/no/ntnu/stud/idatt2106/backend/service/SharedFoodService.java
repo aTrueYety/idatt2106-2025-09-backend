@@ -68,7 +68,7 @@ public class SharedFoodService {
    * @param groupHouseholdId the group household ID
    * @return true if deleted, false if not found
    */
-  public boolean delete(int foodId, int groupHouseholdId) {
+  public boolean delete(Long foodId, Long groupHouseholdId) {
     return repository.deleteById(new SharedFoodKey(foodId, groupHouseholdId));
   }
 
@@ -104,7 +104,7 @@ public class SharedFoodService {
     cloned.setAmount(request.getAmount());
     cloned.setHouseholdId(original.getHouseholdId());
 
-    int newFoodId = foodRepository.save(cloned);
+    Long newFoodId = foodRepository.save(cloned);
 
     SharedFoodKey key = new SharedFoodKey(newFoodId, request.getGroupHouseholdId());
     SharedFood shared = new SharedFood(key, request.getAmount());
@@ -120,23 +120,23 @@ public class SharedFoodService {
    * @param groupHouseholdId the ID of the group household
    * @return list of detailed food summaries for the group
    */
-  public List<FoodDetailedResponse> getSharedFoodSummaryByGroup(int groupHouseholdId) {
+  public List<FoodDetailedResponse> getSharedFoodSummaryByGroup(Long groupHouseholdId) {
     List<SharedFood> sharedFoods = repository.findByGroupHouseholdId(groupHouseholdId);
 
-    Map<Integer, Food> foodMap = sharedFoods.stream()
+    Map<Long, Food> foodMap = sharedFoods.stream()
         .map(sf -> foodRepository.findById(sf.getId().getFoodId()))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .collect(Collectors.toMap(Food::getId, food -> food));
 
-    Map<Integer, List<SharedFood>> groupedByType = sharedFoods.stream()
+    Map<Long, List<SharedFood>> groupedByType = sharedFoods.stream()
         .filter(sf -> foodMap.containsKey(sf.getId().getFoodId()))
         .collect(Collectors.groupingBy(
             sf -> foodMap.get(sf.getId().getFoodId()).getTypeId()));
 
     return groupedByType.entrySet().stream()
         .map(entry -> {
-          int typeId = entry.getKey();
+          Long typeId = entry.getKey();
           Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
           if (typeOpt.isEmpty()) {
             return null;

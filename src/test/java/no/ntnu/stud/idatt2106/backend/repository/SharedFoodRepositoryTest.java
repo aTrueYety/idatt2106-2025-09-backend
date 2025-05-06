@@ -33,7 +33,7 @@ class SharedFoodRepositoryTest {
 
   @BeforeEach
   void setUp() {
-    key = new SharedFoodKey(1, 2);
+    key = new SharedFoodKey(1L, 2L);
     sample = new SharedFood(key, 3.5f);
   }
 
@@ -65,7 +65,7 @@ class SharedFoodRepositoryTest {
   @Test
   void findById_whenNotFound_shouldReturnEmptyOptional() {
     when(jdbcTemplate.query(
-        anyString(), any(RowMapper.class), anyInt(), anyInt())).thenReturn(Collections.emptyList());
+        anyString(), any(RowMapper.class), any(), any())).thenReturn(Collections.emptyList());
 
     Optional<SharedFood> result = repository.findById(key);
     assertFalse(result.isPresent());
@@ -74,8 +74,8 @@ class SharedFoodRepositoryTest {
   @Test
   void findAll_shouldReturnListOfSharedFood() {
     List<SharedFood> list = Arrays.asList(
-        new SharedFood(new SharedFoodKey(1, 1), 1.0f),
-        new SharedFood(new SharedFoodKey(2, 2), 2.0f));
+        new SharedFood(new SharedFoodKey(1L, 1L), 1.0f),
+        new SharedFood(new SharedFoodKey(2L, 2L), 2.0f));
     when(jdbcTemplate.query(eq("SELECT * FROM shared_food"), any(RowMapper.class))).thenReturn(list);
 
     List<SharedFood> result = repository.findAll();
@@ -95,7 +95,7 @@ class SharedFoodRepositoryTest {
 
   @Test
   void update_whenNoRowsUpdated_shouldReturnFalse() {
-    when(jdbcTemplate.update(anyString(), anyFloat(), anyInt(), anyInt())).thenReturn(0);
+    when(jdbcTemplate.update(anyString(), anyFloat(), anyLong(), anyLong())).thenReturn(0);
 
     assertFalse(repository.update(sample));
   }
@@ -112,14 +112,14 @@ class SharedFoodRepositoryTest {
 
   @Test
   void deleteById_whenNoRowDeleted_shouldReturnFalse() {
-    when(jdbcTemplate.update(anyString(), anyInt(), anyInt())).thenReturn(0);
+    when(jdbcTemplate.update(anyString(), anyLong(), anyLong())).thenReturn(0);
 
     assertFalse(repository.deleteById(key));
   }
 
   @Test
   void findByGroupHouseholdId_shouldReturnListOfSharedFood() {
-    int groupId = 2;
+    Long groupId = 2L;
     List<SharedFood> list = Arrays.asList(sample);
     when(jdbcTemplate.query(
         eq("SELECT * FROM shared_food WHERE group_household_id = ?"),

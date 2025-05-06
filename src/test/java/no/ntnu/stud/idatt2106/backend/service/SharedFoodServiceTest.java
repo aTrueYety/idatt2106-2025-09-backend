@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,8 +48,8 @@ class SharedFoodServiceTest {
   @Test
   void testCreate_shouldSaveSharedFood() {
     SharedFoodRequest request = new SharedFoodRequest();
-    request.setFoodId(1);
-    request.setGroupHouseholdId(2);
+    request.setFoodId(1L);
+    request.setGroupHouseholdId(2L);
     request.setAmount(5.0f);
 
     ArgumentCaptor<SharedFood> captor = ArgumentCaptor.forClass(SharedFood.class);
@@ -67,8 +66,8 @@ class SharedFoodServiceTest {
 
   @Test
   void testGetAll_shouldReturnMappedList() {
-    SharedFood shared1 = new SharedFood(new SharedFoodKey(1, 2), 5.0f);
-    SharedFood shared2 = new SharedFood(new SharedFoodKey(2, 3), 10.0f);
+    SharedFood shared1 = new SharedFood(new SharedFoodKey(1L, 2L), 5.0f);
+    SharedFood shared2 = new SharedFood(new SharedFoodKey(2L, 3L), 10.0f);
     when(repository.findAll()).thenReturn(List.of(shared1, shared2));
 
     List<SharedFoodResponse> result = service.getAll();
@@ -91,7 +90,7 @@ class SharedFoodServiceTest {
   void testDelete_shouldReturnTrueIfDeleted() {
     when(repository.deleteById(any())).thenReturn(true);
 
-    boolean result = service.delete(1, 2);
+    boolean result = service.delete(1L, 2L);
 
     assertTrue(result);
   }
@@ -99,19 +98,19 @@ class SharedFoodServiceTest {
   @Test
   void testMoveFoodToSharedGroup_shouldSucceed() {
     SharedFoodRequest request = new SharedFoodRequest();
-    request.setFoodId(1);
-    request.setGroupHouseholdId(2);
+    request.setFoodId(1L);
+    request.setGroupHouseholdId(2L);
     request.setAmount(5.0f);
 
     Food food = new Food();
-    food.setId(1);
+    food.setId(1L);
     food.setAmount(10.0f);
-    food.setTypeId(1);
+    food.setTypeId(1L);
     food.setExpirationDate(LocalDate.now());
-    food.setHouseholdId(3);
+    food.setHouseholdId(3L);
 
-    when(foodRepository.findById(1)).thenReturn(Optional.of(food));
-    when(foodRepository.save(any())).thenReturn(42);
+    when(foodRepository.findById(1L)).thenReturn(Optional.of(food));
+    when(foodRepository.save(any())).thenReturn(42L);
 
     boolean result = service.moveFoodToSharedGroup(request);
 
@@ -122,25 +121,25 @@ class SharedFoodServiceTest {
 
   @Test
   void testGetSharedFoodSummaryByGroup_shouldAggregateCorrectly() {
-    SharedFood sf = new SharedFood(new SharedFoodKey(1, 1), 5.0f);
-    when(repository.findByGroupHouseholdId(1)).thenReturn(List.of(sf));
+    SharedFood sf = new SharedFood(new SharedFoodKey(1L, 1L), 5.0f);
+    when(repository.findByGroupHouseholdId(1L)).thenReturn(List.of(sf));
 
     Food food = new Food();
-    food.setId(1);
-    food.setTypeId(10);
+    food.setId(1L);
+    food.setTypeId(10L);
     food.setAmount(5.0f);
     food.setExpirationDate(LocalDate.now());
-    food.setHouseholdId(2);
-    when(foodRepository.findById(1)).thenReturn(Optional.of(food));
+    food.setHouseholdId(2L);
+    when(foodRepository.findById(1L)).thenReturn(Optional.of(food));
 
     FoodType type = new FoodType();
-    type.setId(10);
+    type.setId(10L);
     type.setName("Rice");
     type.setUnit("kg");
     type.setCaloriesPerUnit(3.5f);
-    when(foodTypeRepository.findById(10)).thenReturn(Optional.of(type));
+    when(foodTypeRepository.findById(10L)).thenReturn(Optional.of(type));
 
-    List<FoodDetailedResponse> result = service.getSharedFoodSummaryByGroup(1);
+    List<FoodDetailedResponse> result = service.getSharedFoodSummaryByGroup(1L);
 
     assertEquals(1, result.size());
     assertEquals("Rice", result.get(0).getTypeName());
@@ -149,10 +148,10 @@ class SharedFoodServiceTest {
   @Test
   void testMoveFoodToSharedGroup_shouldReturnFalseWhenFoodNotFound() {
     SharedFoodRequest request = new SharedFoodRequest();
-    request.setFoodId(1);
+    request.setFoodId(1L);
     request.setAmount(5.0f);
 
-    when(foodRepository.findById(1)).thenReturn(Optional.empty());
+    when(foodRepository.findById(1L)).thenReturn(Optional.empty());
 
     boolean result = service.moveFoodToSharedGroup(request);
 
@@ -161,9 +160,9 @@ class SharedFoodServiceTest {
 
   @Test
   void testGetSharedFoodSummaryByGroup_shouldSkipEntryWhenFoodTypeNotFound() {
-    int groupHouseholdId = 1;
-    int foodId = 10;
-    int missingTypeId = 99;
+    Long groupHouseholdId = 1L;
+    Long foodId = 10L;
+    Long missingTypeId = 99L;
 
     // SharedFood links foodId to groupHouseholdId
     SharedFood shared = new SharedFood(new SharedFoodKey(foodId, groupHouseholdId), 2.0f);
@@ -175,7 +174,7 @@ class SharedFoodServiceTest {
     food.setTypeId(missingTypeId);
     food.setExpirationDate(LocalDate.now());
     food.setAmount(2.0f);
-    food.setHouseholdId(1);
+    food.setHouseholdId(1L);
 
     when(foodRepository.findById(foodId)).thenReturn(Optional.of(food));
 

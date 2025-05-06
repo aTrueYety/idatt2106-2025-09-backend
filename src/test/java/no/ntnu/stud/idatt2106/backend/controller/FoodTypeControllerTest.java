@@ -37,7 +37,7 @@ public class FoodTypeControllerTest {
   @Test
   void shouldGetAllFoodTypes() throws Exception {
     FoodTypeResponse milk = new FoodTypeResponse();
-    milk.setId(1);
+    milk.setId(1L);
     milk.setName("Milk");
     milk.setUnit("liter");
     milk.setCaloriesPerUnit(64.0f);
@@ -53,12 +53,12 @@ public class FoodTypeControllerTest {
   @Test
   void shouldReturnFoodTypeById() throws Exception {
     FoodTypeResponse milk = new FoodTypeResponse();
-    milk.setId(1);
+    milk.setId(1L);
     milk.setName("Milk");
     milk.setUnit("liter");
     milk.setCaloriesPerUnit(64.0f);
 
-    when(service.getById(1)).thenReturn(Optional.of(milk));
+    when(service.getById(1L)).thenReturn(Optional.of(milk));
 
     mockMvc.perform(get("/api/food-types/1"))
         .andExpect(status().isOk())
@@ -67,7 +67,7 @@ public class FoodTypeControllerTest {
 
   @Test
   void shouldReturnNotFoundForMissingId() throws Exception {
-    when(service.getById(999)).thenReturn(Optional.empty());
+    when(service.getById(999L)).thenReturn(Optional.empty());
 
     mockMvc.perform(get("/api/food-types/999"))
         .andExpect(status().isNotFound());
@@ -95,7 +95,7 @@ public class FoodTypeControllerTest {
     updated.setUnit("liter");
     updated.setCaloriesPerUnit(40.0f);
 
-    when(service.update(eq(1), any(FoodTypeRequest.class))).thenReturn(true);
+    when(service.update(eq(1L), any(FoodTypeRequest.class))).thenReturn(true);
 
     mockMvc.perform(put("/api/food-types/1")
         .contentType(MediaType.APPLICATION_JSON)
@@ -110,7 +110,7 @@ public class FoodTypeControllerTest {
     updated.setUnit("liter");
     updated.setCaloriesPerUnit(40.0f);
 
-    when(service.update(eq(1), any())).thenReturn(false);
+    when(service.update(eq(1L), any())).thenReturn(false);
 
     mockMvc.perform(put("/api/food-types/1")
         .contentType(MediaType.APPLICATION_JSON)
@@ -120,7 +120,7 @@ public class FoodTypeControllerTest {
 
   @Test
   void shouldDeleteFoodType() throws Exception {
-    when(service.delete(1)).thenReturn(true);
+    when(service.delete(1L)).thenReturn(true);
 
     mockMvc.perform(delete("/api/food-types/1"))
         .andExpect(status().isNoContent());
@@ -128,7 +128,7 @@ public class FoodTypeControllerTest {
 
   @Test
   void shouldReturnNotFoundOnDeleteIfMissing() throws Exception {
-    when(service.delete(999)).thenReturn(false);
+    when(service.delete(999L)).thenReturn(false);
 
     mockMvc.perform(delete("/api/food-types/999"))
         .andExpect(status().isNotFound());

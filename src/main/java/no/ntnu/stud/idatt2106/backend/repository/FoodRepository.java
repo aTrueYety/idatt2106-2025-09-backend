@@ -15,7 +15,7 @@ public interface FoodRepository {
    * @param id the ID of the food item
    * @return an Optional containing the found food item, or empty if not found
    */
-  Optional<Food> findById(int id);
+  Optional<Food> findById(Long id);
 
   /**
    * Find all food items.
@@ -29,7 +29,7 @@ public interface FoodRepository {
    *
    * @param food the food item to save
    */
-  int save(Food food);
+  Long save(Food food);
 
   /**
    * Update an existing food item.
@@ -43,7 +43,7 @@ public interface FoodRepository {
    *
    * @param id the ID of the food item to delete
    */
-  void deleteById(int id);
+  void deleteById(Long id);
 
   /**
    * Find all food items belonging to a specific household.

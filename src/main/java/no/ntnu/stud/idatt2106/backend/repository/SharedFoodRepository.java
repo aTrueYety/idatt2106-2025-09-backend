@@ -19,6 +19,6 @@ public interface SharedFoodRepository {
 
   boolean deleteById(SharedFoodKey id);
   
-  List<SharedFood> findByGroupHouseholdId(int groupHouseholdId);
+  List<SharedFood> findByGroupHouseholdId(Long groupHouseholdId);
 
 }

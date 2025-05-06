@@ -23,8 +23,8 @@ public class SharedFoodMapper {
    * @return the corresponding SharedFoodResponse DTO
    */
   public static SharedFoodResponse toResponse(SharedFood food) {
-    int foodId = food.getId().getFoodId();
-    int groupHouseholdId = food.getId().getGroupHouseholdId();
+    Long foodId = food.getId().getFoodId();
+    Long groupHouseholdId = food.getId().getGroupHouseholdId();
     float amount = food.getAmount();
 
     return new SharedFoodResponse(foodId, groupHouseholdId, amount);

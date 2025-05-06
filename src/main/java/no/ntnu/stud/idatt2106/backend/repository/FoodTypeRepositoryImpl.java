@@ -25,7 +25,7 @@ public class FoodTypeRepositoryImpl implements FoodTypeRepository {
     @Override
     public FoodType mapRow(ResultSet rs, int rowNum) throws SQLException {
       FoodType foodType = new FoodType();
-      foodType.setId(rs.getInt("id"));
+      foodType.setId(rs.getObject("id", Long.class));
       foodType.setName(rs.getString("name"));
       foodType.setUnit(rs.getString("unit"));
       foodType.setCaloriesPerUnit(rs.getFloat("calories_per_unit"));
@@ -35,7 +35,7 @@ public class FoodTypeRepositoryImpl implements FoodTypeRepository {
   };
 
   @Override
-  public Optional<FoodType> findById(int id) {
+  public Optional<FoodType> findById(Long id) {
     String sql = "SELECT * FROM food_type WHERE id = ?";
     List<FoodType> result = jdbcTemplate.query(sql, rowMapper, id);
     return result.stream().findFirst();
@@ -63,7 +63,7 @@ public class FoodTypeRepositoryImpl implements FoodTypeRepository {
     }, keyHolder);
 
     if (keyHolder.getKey() != null) {
-      foodType.setId(keyHolder.getKey().intValue());
+      foodType.setId(keyHolder.getKey().longValue());
     }
   }
 
@@ -76,7 +76,7 @@ public class FoodTypeRepositoryImpl implements FoodTypeRepository {
   }
 
   @Override
-  public void deleteById(int id) {
+  public void deleteById(Long id) {
     String sql = "DELETE FROM food_type WHERE id = ?";
     jdbcTemplate.update(sql, id);
   }
