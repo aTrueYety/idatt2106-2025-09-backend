@@ -18,6 +18,7 @@ import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,19 +27,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class FoodService {
 
-  private final FoodRepository repository;
-  private final FoodTypeRepository foodTypeRepository;
+  @Autowired
+  private FoodRepository repository;
 
-  /**
-   * Constructs a FoodService with given repositories.
-   *
-   * @param repository         the food repository
-   * @param foodTypeRepository the food type repository
-   */
-  public FoodService(FoodRepository repository, FoodTypeRepository foodTypeRepository) {
-    this.repository = repository;
-    this.foodTypeRepository = foodTypeRepository;
-  }
+  @Autowired
+  private FoodTypeRepository foodTypeRepository;
+
+  @Autowired
+  private FoodTypeService foodTypeService;
 
   /**
    * Creates a new food item.
@@ -124,8 +120,6 @@ public class FoodService {
    * @return the total calories in the household
    */
   public double getCaloriesByHouseholdId(Long householdId) {
-    FoodTypeService foodTypeService = new FoodTypeService();
-
     return repository.findByHouseholdId(householdId).stream()
         .mapToDouble(food -> food.getAmount() * foodTypeService.getCaloriesById(food.getTypeId()))
         .sum();
