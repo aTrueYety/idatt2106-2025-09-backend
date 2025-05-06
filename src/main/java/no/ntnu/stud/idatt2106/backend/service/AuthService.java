@@ -312,4 +312,40 @@ public class AuthService {
     userService.updateUserCredentials(userInKey);
     adminRegistrationKeyService.deleteByKey(request.getKey());
   }
+
+  /**
+   * Deletes an admin registration key.
+   *
+   * @param request the request containing the registration key to delete
+   */
+  public void deleteAdminRegistrationKey(AdminUpgradeRequest request) {
+    Validate.that(request.getKey(), Validate.isNotBlankOrNull(), "Key cannot be blank or null");
+
+    AdminRegistrationKey registrationKey = adminRegistrationKeyService.findByKey(request.getKey());
+    Validate.that(registrationKey, Validate.isNotNull(), "Admin invitation not found");
+
+    adminRegistrationKeyService.deleteByKey(request.getKey());
+  }
+
+  /**
+   * Removes admin status from a user.
+   *
+   * @param userId the ID of the user whose admin status is to be removed
+   * @param token  the JWT token of the user sending the request
+   */
+  public void removeAdmin(Long userId, String token) {
+    Validate.that(token, Validate.isNotBlankOrNull(), "Token cannot be blank or null");
+
+    User sender = userService.getUserByUsername(
+        jwtService.extractUserName(token.substring(7)));
+    Validate.that(sender, Validate.isNotNull(), "Sender not found");
+    Validate.that(sender.isSuperAdmin(), Validate.isTrue(), "Sender is not a super admin");
+
+    User user = userService.getUserById(userId);
+    Validate.that(user, Validate.isNotNull(), "User not found");
+    Validate.that(user.isAdmin(), Validate.isTrue(), "User is not an admin");
+
+    user.setAdmin(false);
+    userService.updateUserCredentials(user);
+  }
 }

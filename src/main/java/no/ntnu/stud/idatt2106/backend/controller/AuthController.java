@@ -173,4 +173,39 @@ public class AuthController {
     logger.info("Admin invite accepted with key: {}", request.getKey());
     return ResponseEntity.ok().build();
   }
+
+  /**
+   * Deletes a user's admin registration key.
+   *
+   * @param request the request containing the registration key to delete
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Delete admin registration key", 
+      description = "Deletes the admin registration key for the user")
+  @PostMapping("/delete-admin-registration-key")
+  public ResponseEntity<Void> deleteAdminRegistrationKey(
+      @RequestBody AdminUpgradeRequest request) {
+    service.deleteAdminRegistrationKey(request);
+    logger.info("Admin registration key deleted: {}", request.getKey());
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Handels the request to remove a user's admin status.
+   *
+   * @param userId the ID of the user whose admin status is to be removed
+   * @param token the JWT token of the user sending the request
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Remove admin status", 
+      description = "Removes the admin status of the user with the provided ID")
+  @PostMapping("/remove-admin")
+  public ResponseEntity<Void> removeAdmin(
+      @RequestBody Long userId,
+      @RequestHeader("Authorization") String token) {
+    service.removeAdmin(userId, token);
+    logger.info("Admin status removed for user ID: {}", userId);
+    return ResponseEntity.ok().build();
+  }
+
 }

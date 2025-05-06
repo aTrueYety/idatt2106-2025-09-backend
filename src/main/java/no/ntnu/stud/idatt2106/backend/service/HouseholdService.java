@@ -130,6 +130,7 @@ public class HouseholdService {
         Validate.isNotNull(), "Latitude cannot be null");
 
     Household household = new Household();
+    household.setName(householdReqeust.getName());
     household.setAddress(householdReqeust.getAddress());
     household.setLatitude(householdReqeust.getLatitude());
     household.setLongitude(householdReqeust.getLongitude());
