@@ -24,7 +24,7 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   private RowMapper<Household> householdRowMapper = (rs, rowNum) -> {
     return new Household(
         rs.getObject("id", Long.class),
-        rs.getString("adress"),
+        rs.getString("address"),
         rs.getString("name"),
         rs.getObject("longitude", Double.class),
         rs.getObject("latitude", Double.class),
@@ -42,9 +42,8 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   @Override
   public Household save(Household household) {
     String sql = "INSERT INTO household "
-        + "(adress, name, latitude, longitude, amount_water, last_water_change) "
+        + "(address, name, latitude, longitude, amount_water, last_water_change) "
         + "VALUES (?, ?, ?, ?, ?, ?)";
-    
     
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -103,7 +102,7 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   public void update(Household household) {
     String sql = """
         UPDATE household
-        SET adress = ?, name = ?, latitude = ?, longitude = ?, amount_water = ?, 
+        SET address = ?, name = ?, latitude = ?, longitude = ?, amount_water = ?, 
         last_water_change = ? WHERE id = ?
         """;
 

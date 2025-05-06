@@ -35,7 +35,7 @@ public class UserRepositoryTest {
   @BeforeEach
   void setUp() {
     jdbcTemplate.update("""
-        INSERT INTO household (id, adress, latitude, longitude, amount_water, last_water_change)
+        INSERT INTO household (id, address, latitude, longitude, amount_water, last_water_change)
         VALUES
         (10, 'Address 1', 12.34, 56.78, 100.0, '2025-04-01'),
         (20, 'Address 2', 23.45, 67.89, 150.0, '2025-04-01')
