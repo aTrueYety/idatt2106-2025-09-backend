@@ -85,12 +85,12 @@ public class GroupHouseholdService {
     Long userId = jwtService.extractUserId(token.substring(7));
     User user = userService.getUserById(userId);
     Validate.that(user.getHouseholdId(), Validate.isNotNull(), "User does not have a household.");
-    Validate.that(
-        repository.findByHouseholdIdAndGroupId(user.getHouseholdId(), id),
-        Validate.isNotNull(),
-        "User's household is not a member of this group.");
     GroupHousehold groupHousehold = repository.findById(id)
         .orElseThrow(() -> new NoSuchElementException("GroupHousehold not found with ID: " + id));
+    Validate.that(
+        repository.findByHouseholdIdAndGroupId(user.getHouseholdId(), groupHousehold.getGroupId()),
+        Validate.isNotNull(),
+        "User's household is not a member of this group.");
     Validate.isValid(
         groupHousehold.getHouseholdId().equals(user.getHouseholdId()),
         "User's household does not match the group-household relation.");
