@@ -109,7 +109,7 @@ public class FoodController {
    * @return list of food items
    */
   @GetMapping("/household/{householdId}")
-  public ResponseEntity<List<FoodResponse>> getByHouseholdId(@PathVariable int householdId) {
+  public ResponseEntity<List<FoodResponse>> getByHouseholdId(@PathVariable Long householdId) {
     return ResponseEntity.ok(service.getByHouseholdId(householdId));
   }
 
@@ -121,7 +121,7 @@ public class FoodController {
    */
   @GetMapping("/household/summary/{householdId}")
   public ResponseEntity<List<FoodSummaryResponse>> getSummaryByHousehold(
-      @PathVariable int householdId) {
+      @PathVariable Long householdId) {
     return ResponseEntity.ok(service.getFoodSummaryByHousehold(householdId));
   }
 
@@ -134,7 +134,7 @@ public class FoodController {
    */
   @GetMapping("/household/summary/detailed/{householdId}")
   public ResponseEntity<List<FoodDetailedResponse>> getSummaryDetailed(
-      @PathVariable int householdId) {
+      @PathVariable Long householdId) {
     return ResponseEntity.ok(service.getFoodDetailedByHousehold(householdId));
   }
 }
