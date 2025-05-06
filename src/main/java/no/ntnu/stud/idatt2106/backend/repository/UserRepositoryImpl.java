@@ -30,7 +30,6 @@ public class UserRepositoryImpl implements UserRepository {
     user.setLastName(rs.getString("last_name"));
     user.setSharePositionHousehold(rs.getBoolean("share_position_household"));
     user.setSharePositionGroup(rs.getBoolean("share_position_group"));
-    user.setPicture(rs.getBytes("picture"));
     user.setLastLatitude(rs.getFloat("last_latitude"));
     user.setLastLongitude(rs.getFloat("last_longitude"));
     return user;
