@@ -21,7 +21,8 @@ import no.ntnu.stud.idatt2106.backend.repository.SharedFoodRepository;
 import org.springframework.stereotype.Service;
 
 /**
- * Service class for handling operations related to shared food in group households.
+ * Service class for handling operations related to shared food in group
+ * households.
  */
 @Service
 @RequiredArgsConstructor
@@ -74,39 +75,42 @@ public class SharedFoodService {
 
   /**
    * Moves a specified amount of food from a household to a shared group.
-   * <p>This operation will:</p>
+   * <p>
+   * This operation will:
+   * </p>
    * <ul>
-   *   <li>Reduce the amount in the original food item</li>
-   *   <li>Create a new food entry with the shared amount and same household</li>
-   *   <li>Link the new food item to the group household via SharedFood</li>
+   * <li>Reduce the amount in the original food item</li>
+   * <li>Create a new food entry with the shared amount and same household</li>
+   * <li>Link the new food item to the group household via SharedFood</li>
    * </ul>
    *
-   * @param request shared food request with food ID, group household ID, and amount
-   * @return true if move was successful, false if not enough amount or food not found
+   * @param request shared food request with food ID, group household ID, and
+   *                amount
+   * @return true if move was successful, false if not enough amount or food not
+   *         found
    */
   public boolean moveFoodToSharedGroup(SharedFoodRequest request) {
-    Optional<Food> originalOpt = foodRepository.findById(request.getFoodId());
-    if (originalOpt.isEmpty()) {
+    Optional<Food> foodOpt = foodRepository.findById(request.getFoodId());
+    if (foodOpt.isEmpty()) {
       return false;
     }
 
-    Food original = originalOpt.get();
-    if (original.getAmount() < request.getAmount()) {
+    Food food = foodOpt.get();
+
+    if (food.getAmount() < request.getAmount()) {
       return false;
     }
 
-    original.setAmount(original.getAmount() - request.getAmount());
-    foodRepository.update(original);
+    SharedFoodKey key = new SharedFoodKey(food.getId(), request.getGroupHouseholdId());
+    if (repository.findById(key).isPresent()) {
+      return false;
+    }
 
-    Food cloned = new Food();
-    cloned.setTypeId(original.getTypeId());
-    cloned.setExpirationDate(original.getExpirationDate());
-    cloned.setAmount(request.getAmount());
-    cloned.setHouseholdId(original.getHouseholdId());
+    // Reduser beholdning
+    food.setAmount(food.getAmount() - request.getAmount());
+    foodRepository.update(food);
 
-    Long newFoodId = foodRepository.save(cloned);
-
-    SharedFoodKey key = new SharedFoodKey(newFoodId, request.getGroupHouseholdId());
+    // Opprett SharedFood
     SharedFood shared = new SharedFood(key, request.getAmount());
     repository.save(shared);
 
@@ -176,4 +180,62 @@ public class SharedFoodService {
         .filter(Objects::nonNull)
         .toList();
   }
+
+  /**
+   * Moves a specified amount of food from a shared group back to the household.
+   *
+   * @param request shared food request with food ID, group household ID, and
+   *                amount
+   * @return true if move was successful, false if not enough amount or not found
+   */
+  public boolean moveFoodFromSharedGroup(SharedFoodRequest request) {
+    SharedFoodKey key = new SharedFoodKey(request.getFoodId(), request.getGroupHouseholdId());
+    Optional<SharedFood> sharedOpt = repository.findById(key);
+    if (sharedOpt.isEmpty()) {
+      return false;
+    }
+
+    SharedFood shared = sharedOpt.get();
+    if (shared.getAmount() < request.getAmount()) {
+      return false;
+    }
+
+    Optional<Food> foodOpt = foodRepository.findById(request.getFoodId());
+    if (foodOpt.isEmpty()) {
+      return false;
+    }
+
+    Food sharedFood = foodOpt.get();
+
+    // Reduser mengde i shared food
+    shared.setAmount(shared.getAmount() - request.getAmount());
+    if (shared.getAmount() == 0) {
+      repository.deleteById(key);
+    } else {
+      repository.update(shared);
+    }
+
+    // Finn matchende batch i husholdning
+    Optional<Food> existingFoodOpt = foodRepository
+        .findByTypeIdAndExpirationDateAndHouseholdId(
+            sharedFood.getTypeId(),
+            sharedFood.getExpirationDate(),
+            sharedFood.getHouseholdId());
+
+    if (existingFoodOpt.isPresent()) {
+      Food existing = existingFoodOpt.get();
+      existing.setAmount(existing.getAmount() + request.getAmount());
+      foodRepository.update(existing);
+    } else {
+      Food foodToReturn = new Food();
+      foodToReturn.setTypeId(sharedFood.getTypeId());
+      foodToReturn.setExpirationDate(sharedFood.getExpirationDate());
+      foodToReturn.setAmount(request.getAmount());
+      foodToReturn.setHouseholdId(sharedFood.getHouseholdId());
+      foodRepository.save(foodToReturn);
+    }
+
+    return true;
+  }
+
 }

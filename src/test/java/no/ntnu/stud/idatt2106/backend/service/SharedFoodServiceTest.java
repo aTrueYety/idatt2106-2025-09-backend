@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -95,29 +96,34 @@ class SharedFoodServiceTest {
     assertTrue(result);
   }
 
+
   @Test
   void testMoveFoodToSharedGroup_shouldSucceed() {
     SharedFoodRequest request = new SharedFoodRequest();
     request.setFoodId(1L);
     request.setGroupHouseholdId(2L);
     request.setAmount(5.0f);
-
+  
     Food food = new Food();
     food.setId(1L);
     food.setAmount(10.0f);
     food.setTypeId(1L);
     food.setExpirationDate(LocalDate.now());
     food.setHouseholdId(3L);
-
+  
+    SharedFoodKey expectedKey = new SharedFoodKey(1L, 2L);
+  
     when(foodRepository.findById(1L)).thenReturn(Optional.of(food));
-    when(foodRepository.save(any())).thenReturn(42L);
-
+    when(repository.findById(expectedKey)).thenReturn(Optional.empty());
+  
     boolean result = service.moveFoodToSharedGroup(request);
-
+  
     assertTrue(result);
-    verify(repository).save(any());
-    verify(foodRepository).update(any());
+    verify(foodRepository).findById(1L);
+    verify(repository).findById(expectedKey);
+    verify(repository).save(any(SharedFood.class));
   }
+  
 
   @Test
   void testGetSharedFoodSummaryByGroup_shouldAggregateCorrectly() {

@@ -1,8 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
@@ -46,12 +45,6 @@ public class FoodRepositoryImpl implements FoodRepository {
     return jdbcTemplate.query(sql, rowMapper);
   }
 
-  /**
-   * Inserts a new food item into the database and sets its generated ID.
-   *
-   * @param food the food item to save
-   * @return the generated ID of the inserted food item
-   */
   @Override
   public Long save(Food food) {
     String sql = "INSERT INTO food (type_id, household_id, expiration_date, amount) "
@@ -59,8 +52,7 @@ public class FoodRepositoryImpl implements FoodRepository {
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
     jdbcTemplate.update(connection -> {
-      PreparedStatement ps = connection.prepareStatement(
-          sql, Statement.RETURN_GENERATED_KEYS);
+      var ps = connection.prepareStatement(sql, new String[] { "id" });
       ps.setLong(1, food.getTypeId());
       ps.setLong(2, food.getHouseholdId());
       ps.setDate(3, Date.valueOf(food.getExpirationDate()));
@@ -77,15 +69,10 @@ public class FoodRepositoryImpl implements FoodRepository {
     }
   }
 
-  /**
-   * Updates an existing food item.
-   *
-   * @param food the food item with updated fields
-   */
   @Override
   public void update(Food food) {
-    String sql = "UPDATE food SET type_id = ?, household_id = ?, expiration_date = ?, "
-        + "amount = ? WHERE id = ?";
+    String sql = "UPDATE food SET type_id = ?, household_id = ?, expiration_date = ?, amount = ? " 
+        + "WHERE id = ?";
     jdbcTemplate.update(sql,
         food.getTypeId(),
         food.getHouseholdId(),
@@ -94,26 +81,34 @@ public class FoodRepositoryImpl implements FoodRepository {
         food.getId());
   }
 
-  /**
-   * Deletes a food item by its ID.
-   *
-   * @param id the ID of the food item to delete
-   */
   @Override
   public void deleteById(Long id) {
     String sql = "DELETE FROM food WHERE id = ?";
     jdbcTemplate.update(sql, id);
   }
 
-  /**
-   * Retrieves all food items belonging to a given household.
-   *
-   * @param householdId the ID of the household
-   * @return a list of food items for the specified household
-   */
   @Override
   public List<Food> findByHouseholdId(long householdId) {
     String sql = "SELECT * FROM food WHERE household_id = ?";
     return jdbcTemplate.query(sql, rowMapper, householdId);
+  }
+
+  /**
+   * Finds a food entry based on its type, expiration date and household.
+   *
+   * @param typeId the ID of the food type
+   * @param expirationDate the expiration date of the food
+   * @param householdId the ID of the household
+   * @return an Optional containing the matched Food, or empty if not found
+   */
+  @Override
+  public Optional<Food> findByTypeIdAndExpirationDateAndHouseholdId(
+      Long typeId, LocalDate expirationDate, Long householdId) {
+
+    String sql 
+        = "SELECT * FROM food WHERE type_id = ? AND expiration_date = ? AND household_id = ?";
+    List<Food> results = jdbcTemplate.query(sql, rowMapper, typeId,
+        Date.valueOf(expirationDate), householdId);
+    return results.stream().findFirst();
   }
 }

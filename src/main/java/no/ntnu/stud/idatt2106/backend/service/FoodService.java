@@ -190,6 +190,7 @@ public class FoodService {
                 batch.setId(f.getId());
                 batch.setAmount(f.getAmount());
                 batch.setExpirationDate(f.getExpirationDate());
+                batch.setHouseholdId(f.getHouseholdId());
                 return batch;
               })
               .toList();

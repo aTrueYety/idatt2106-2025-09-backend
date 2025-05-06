@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
@@ -52,4 +53,8 @@ public interface FoodRepository {
    * @return a list of food items belonging to the given household
    */
   List<Food> findByHouseholdId(long householdId);
+  
+  Optional<Food> findByTypeIdAndExpirationDateAndHouseholdId(Long typeId, 
+      LocalDate expirationDate, Long householdId);
+
 }
