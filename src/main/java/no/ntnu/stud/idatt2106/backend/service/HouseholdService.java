@@ -202,26 +202,6 @@ public class HouseholdService {
     }
   }
 
-  /**
-   * Leaves the household of the currently logged in user.
-   *
-   * @param token the JWT token of the user
-   * @throws NoSuchElementException if the user is not in a household
-   */
-  public void leaveHousehold(String token) {
-    Long userId = jwtService.extractUserId(token.substring(7));
-    User user = userService.getUserById(userId);
-    Long householdId = user.getHouseholdId();
-    if (householdId == null) {
-      throw new NoSuchElementException("User with ID = " + userId + " is not in a household");
-    }
-    user.setHouseholdId(null);
-    userService.updateUserCredentials(user);
-
-    if (getMembers(householdId).size() == 0) {
-      householdRepository.deleteById(householdId);
-    }
-  }
 
   /**
    * Accepts a household invite by updating the user's household ID and
@@ -253,6 +233,50 @@ public class HouseholdService {
 
     householdInviteService.deleteHouseholdInvite(
         invite.getUserId(), invite.getHouseholdId());
+  }
+
+  /**
+   * Rejects a household invite by deleting the invite.
+   *
+   * @param request the request containing the household ID.
+   * @param token   the JWT token for authorization
+   */
+  public void rejectHouseholdInvite(HouseHoldInviteAcceptRequest request, String token) {
+    Validate.that(request.getHouseholdId(),
+        Validate.isNotNull(), "Household ID cannot be null");
+
+    User user = userService.getUserById(
+        jwtService.extractUserId(token.substring(7)));
+    Validate.that(user, Validate.isNotNull(), "User not found");
+
+    HouseholdInvite invite = householdInviteService
+        .findByUserIdAndHouseholdId(user.getId(), request.getHouseholdId());
+    Validate.that(invite,
+        Validate.isNotNull(), "No invite found");
+
+    householdInviteService.deleteHouseholdInvite(
+        invite.getUserId(), invite.getHouseholdId());
+  }
+
+  /**
+   * Leaves the household of the currently logged in user.
+   *
+   * @param token the JWT token of the user
+   * @throws NoSuchElementException if the user is not in a household
+   */
+  public void leaveHousehold(String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    User user = userService.getUserById(userId);
+    Long householdId = user.getHouseholdId();
+    if (householdId == null) {
+      throw new NoSuchElementException("User with ID = " + userId + " is not in a household");
+    }
+    user.setHouseholdId(null);
+    userService.updateUserCredentials(user);
+
+    if (getMembers(householdId).size() == 0) {
+      householdRepository.deleteById(householdId);
+    }
   }
 
   /**

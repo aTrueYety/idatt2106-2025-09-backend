@@ -110,6 +110,43 @@ public class HouseholdController {
   }
 
   /**
+   * Handles request to accept a household invite.
+   *
+   * @param request object with the id of the household to be joined
+   * @param token   the jwt token of the user
+   * @return a ResponseEntity with the response to the operation or an error
+   *         message
+   */
+  @PostMapping("accept")
+  public ResponseEntity<Void> acceptHouseholdInvite(
+      @RequestBody HouseHoldInviteAcceptRequest request,
+      @RequestHeader("Authorization") String token) {
+    householdService.acceptHouseholdInvite(request, token);
+    logger.info("User accepted household invite successfully");
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Handles request to reject a household invite.
+   *
+   * @param token the jwt token of the user
+   * @param request object with the id of the household to be rejected
+   * @return a ResponseEntity with the response to the operation or an error
+   *         message
+   */
+  @Operation(summary = "Rejects a household invite", description = """
+      Rejects a household invite. The user will not be added to the household.
+      """)
+  @PostMapping("reject")
+  public ResponseEntity<Void> rejectHouseholdInvite(
+      @RequestBody HouseHoldInviteAcceptRequest request,
+      @RequestHeader("Authorization") String token) {
+    householdService.rejectHouseholdInvite(request, token);
+    logger.info("User rejected household invite successfully");
+    return ResponseEntity.ok().build();
+  }
+
+  /**
    * Handles request to leave a household.
    *
    * @return a ResponseEntity with the response to the operation or an error
@@ -123,22 +160,6 @@ public class HouseholdController {
       @RequestHeader("Authorization") String token) {
     householdService.leaveHousehold(token);
     logger.info("User left household successfully");
-    return ResponseEntity.ok().build();
-  }
-
-  /**
-   * Handles request to accept a household invite.
-   *
-   * @param request object with the id of the household to be joined
-   * @return a ResponseEntity with the response to the operation or an error
-   *         message
-   */
-  @PostMapping("accept")
-  public ResponseEntity<Void> acceptHouseholdInvite(
-      @RequestBody HouseHoldInviteAcceptRequest request,
-      @RequestHeader("Authorization") String token) {
-    householdService.acceptHouseholdInvite(request, token);
-    logger.info("User accepted household invite successfully");
     return ResponseEntity.ok().build();
   }
 
