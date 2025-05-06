@@ -22,5 +22,6 @@ public class UserResponse {
   private boolean sharePositionGroup;
   private float lastLatitude;
   private float lastLongitude;
-  private byte[] picture;
+  private Boolean admin;
+  private Boolean superAdmin;
 }
