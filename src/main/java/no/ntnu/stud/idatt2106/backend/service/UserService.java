@@ -19,9 +19,10 @@ public class UserService {
 
   @Autowired
   private UserRepository userRepo;
-
   @Autowired
   private JwtService jwtService;
+  @Autowired
+  private AdminRegistrationKeyService adminRegistrationKeyService;
 
   /**
    * Retrieves a user by their ID.
@@ -196,6 +197,37 @@ public class UserService {
     userRepo.updateSharePositionHousehold(userId, sharedPositionHousehold);
     userRepo.updateSharePositionGroup(userId, sharedPositionGroup);
     return true;
+  }
+
+  /**
+   * Retrives all the admin users in the system.
+   *
+   * @param token the JWT token of the user logged in
+   * @return A list of {@Link UserResponse} representing the admin users in the
+   *         system
+   */
+  public List<UserResponse> getAllAdmins(String token) {
+    Validate.isValid(jwtService.extractIsSuperAdmin(token.substring(7)),
+        "You are not authorized to view all admins.");
+    return userRepo.findAll().stream()
+        .filter(User::isSuperAdmin)
+        .map(UserMapper::toResponse)
+        .toList();
+  }
+
+  /**
+   * Retrieves all the users in the system with pending admin registration keys.
+   *
+   * @param token the JWT token of the user logged in
+   * @return A list of {@Link UserResponse} representing the users with pending
+   *         admin registration keys
+   */
+  public List<UserResponse> getAllPendingAdmins(String token) {
+    Validate.isValid(jwtService.extractIsSuperAdmin(token.substring(7)),
+        "You are not authorized to view all users with pending admin registration keys.");
+    return userRepo.findAllWithPendingAdminInvites().stream()
+        .map(UserMapper::toResponse)
+        .toList();
   }
 
 }

@@ -5,6 +5,9 @@ import no.ntnu.stud.idatt2106.backend.model.request.UpdatePositionSharingRequest
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.UserUpdate;
 import no.ntnu.stud.idatt2106.backend.service.UserService;
+
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,5 +114,47 @@ public class UserController {
     UserResponse response = userService.getByToken(token);
     logger.info("User retrieved successfully");
     return ResponseEntity.ok(response);
+  }
+
+  /**
+   * Retrives all admin users in the system.
+   *
+   * @param token the JWT token of the user logged in
+   * @return A ResponseEntity with a list of all admin users in the system
+   */
+  @Operation(
+      summary = "Retrieves all admin users",
+      description = """
+          Retrieves all admin users in the system. Only available for super admins.
+          """
+  )
+  @GetMapping("/admins")
+  public ResponseEntity<List<UserResponse>> getAllAdmins(
+        @RequestHeader("Authorization") String token) {
+    logger.info("Fetching all admin users");
+    List<UserResponse> responses = userService.getAllAdmins(token);
+    logger.info("Admin users retrieved successfully");
+    return ResponseEntity.ok(responses);
+  }
+
+  /**
+   * Retrives all users with a pending admin registration key.
+   *
+   * @param token the JWT token of the user logged in
+   * @return A ResponseEntity with a list of all users with a pending admin registration key
+   */
+  @Operation(
+      summary = "Retrieves all users with a pending admin registration key",
+      description = """
+          Retrieves all users with a pending admin registration key. Available for super admins.
+          """
+  )
+  @GetMapping("/pending-admins")
+  public ResponseEntity<List<UserResponse>> getAllPendingAdmins(
+        @RequestHeader("Authorization") String token) {
+    logger.info("Fetching all users with a pending admin registration key");
+    List<UserResponse> responses = userService.getAllPendingAdmins(token);
+    logger.info("Users with pending admin registration keys retrieved successfully");
+    return ResponseEntity.ok(responses);
   }
 }
