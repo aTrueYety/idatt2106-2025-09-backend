@@ -1,6 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import no.ntnu.stud.idatt2106.backend.model.request.GroupHouseholdRequest;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/group-households")
 @RequiredArgsConstructor
+@Tag(name = "GroupHouseholds", description = "Endpoints for group-household operations")
 public class GroupHouseholdController {
 
   private static final Logger logger = LoggerFactory.getLogger(GroupHouseholdController.class);
@@ -61,6 +63,22 @@ public class GroupHouseholdController {
       @RequestBody Long groupId,
       @RequestHeader("Authorization") String token) {
     service.acceptInvite(groupId, token);
+    return ResponseEntity.status(201).build();
+  }
+
+  /**
+   * Rejects an invitation for a household to join a group.
+   *
+   * @param groupId the ID of the group to reject
+   * @param token   the JWT token of the user rejecting the invitation
+   * @return a ResponseEntity indicating the result of the operation
+   */
+  @Operation(summary = "Reject an invitation for a household to join a group")
+  @PostMapping("/reject")
+  public ResponseEntity<Void> reject(
+      @RequestBody Long groupId,
+      @RequestHeader("Authorization") String token) {
+    service.rejectInvite(groupId, token);
     return ResponseEntity.status(201).build();
   }
 
