@@ -33,7 +33,7 @@ public class HouseholdServiceIntegrationTest {
   // @BeforeEach
   // void setup() {
   //   jdbcTemplate.update("""
-  //       INSERT INTO household (id, adress, latitude, longitude, amount_water, last_water_change) 
+  //       INSERT INTO household (id, address, latitude, longitude, amount_water, last_water_change) 
   //       VALUES (1, 'Test Address', 10.0, 20.0, 100.0, '2025-04-01')
   //       """);
 

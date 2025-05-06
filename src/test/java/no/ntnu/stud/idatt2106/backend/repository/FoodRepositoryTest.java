@@ -25,9 +25,12 @@ public class FoodRepositoryTest {
 
   @Test
   void shouldSaveAndRetrieveFood() {
-    jdbc.update("""
-        INSERT INTO food_type (name, unit, calories_per_unit, picture) VALUES (?, ?, ?, ?)
-        """, "Rice", "kg", 350.0f, null);
+    jdbc.update(
+        "INSERT INTO food_type (name, unit, calories_per_unit, picture) VALUES (?, ?, ?, ?)",
+        "Rice", "kg", 350.0f, null);
+    jdbc.update(
+        "Insert into household (id, name, address, latitude, longitude) values (?, ?, ?, ?, ?)",
+        42, "Test Household", "Test Address", 0.0, 0.0);
 
     Food food = new Food();
     food.setTypeId(1L);

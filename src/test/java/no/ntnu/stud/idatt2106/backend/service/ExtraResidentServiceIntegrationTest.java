@@ -39,7 +39,7 @@ public class ExtraResidentServiceIntegrationTest {
     var householdKey = new GeneratedKeyHolder();
     jdbc.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
-          "INSERT INTO household (adress, latitude, longitude, amount_water, last_water_change) VALUES (?, ?, ?, ?, CURRENT_DATE)",
+          "INSERT INTO household (address, latitude, longitude, amount_water, last_water_change) VALUES (?, ?, ?, ?, CURRENT_DATE)",
           Statement.RETURN_GENERATED_KEYS);
       ps.setString(1, "Test Street");
       ps.setFloat(2, 1.1f);
