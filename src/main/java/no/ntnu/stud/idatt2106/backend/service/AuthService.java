@@ -292,16 +292,24 @@ public class AuthService {
    * Accepts an admin registration key and registers the user as an admin.
    *
    * @param request the registration key provided in the invitation
+   * @param token   the JWT token of the user accepting the invite
    */
-  public void acceptAdminInvite(AdminUpgradeRequest request) {
+  public void acceptAdminInvite(AdminUpgradeRequest request, String token) {
     Validate.that(request.getKey(), Validate.isNotBlankOrNull(), "Key cannot be blank or null");
 
     AdminRegistrationKey registrationKey = adminRegistrationKeyService.findByKey(request.getKey());
     Validate.that(registrationKey, Validate.isNotNull(), "Admin invitation not found");
-    User user = userService.getUserById(registrationKey.getUserId());
-    Validate.that(user, Validate.isNotNull(), "User not found");
-    user.setAdmin(true);
-    userService.updateUserCredentials(user);
+    User userInKey = userService.getUserById(registrationKey.getUserId());
+    Validate.that(userInKey, Validate.isNotNull(), "User not found");
+
+    User sender = userService.getUserByUsername(
+        jwtService.extractUserName(token.substring(7)));
+    Validate.that(sender, Validate.isNotNull(), "Sender not found");
+    Validate.that(userInKey.getId() != sender.getId(),
+        Validate.isTrue(), "You can only accept your own invitations");
+    
+    userInKey.setAdmin(true);
+    userService.updateUserCredentials(userInKey);
     adminRegistrationKeyService.deleteByKey(request.getKey());
   }
 }

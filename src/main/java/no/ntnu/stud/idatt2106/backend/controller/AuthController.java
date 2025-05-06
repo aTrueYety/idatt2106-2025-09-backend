@@ -166,8 +166,10 @@ public class AuthController {
   @Operation(summary = "Accept admin invitation", 
       description = "Accepts the admin invitation using the provided registration key")
   @PostMapping("/accept-admin-invite")
-  public ResponseEntity<Void> acceptAdminInvite(@RequestBody AdminUpgradeRequest request) {
-    service.acceptAdminInvite(request);
+  public ResponseEntity<Void> acceptAdminInvite(
+      @RequestBody AdminUpgradeRequest request, 
+      @RequestHeader("Authorization") String token) {
+    service.acceptAdminInvite(request, token);
     logger.info("Admin invite accepted with key: {}", request.getKey());
     return ResponseEntity.ok().build();
   }
