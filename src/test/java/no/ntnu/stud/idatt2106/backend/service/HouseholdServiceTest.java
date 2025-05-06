@@ -131,9 +131,10 @@ public class HouseholdServiceTest {
     request.setLongitude(34.23);
     request.setWaterAmountLiters(32.23);
     request.setLastWaterChangeDate(new Date());
-    request.setUsername("Testuser");
 
-    householdService.registerHousehold(request);
+    String token = "Bearer jwt.token";
+    when(jwtService.extractUserName(token.substring(7))).thenReturn("Testuser");
+    householdService.registerHousehold(request, token);
     verify(householdRepository).save(any(Household.class));
     verify(userService).getUserByUsername("Testuser");
     verify(userService).updateUserCredentials(any(User.class));

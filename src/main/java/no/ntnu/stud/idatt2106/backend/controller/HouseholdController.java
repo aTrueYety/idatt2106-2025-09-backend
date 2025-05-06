@@ -61,8 +61,9 @@ public class HouseholdController {
          description = "Creates a new household with the user creating it as a member")
   @PostMapping("/register")
   public ResponseEntity<Void> 
-      registerHousehold(@RequestBody CreateHouseholdRequest householdRequest) {
-    householdService.registerHousehold(householdRequest);
+      registerHousehold(@RequestBody CreateHouseholdRequest householdRequest,
+      @RequestHeader("Authorization") String token) {
+    householdService.registerHousehold(householdRequest, token);
     logger.info("Household created successfully");
     return ResponseEntity.ok().build();
   }

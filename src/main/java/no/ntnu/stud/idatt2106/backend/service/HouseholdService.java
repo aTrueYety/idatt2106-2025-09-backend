@@ -123,7 +123,7 @@ public class HouseholdService {
    *
    * @param householdReqeust DTO with information about the new household
    */
-  public void registerHousehold(CreateHouseholdRequest householdReqeust) {
+  public void registerHousehold(CreateHouseholdRequest householdReqeust, String token) {
     Validate.that(householdReqeust.getLongitude(),
         Validate.isNotNull(), "Longitude cannot be null");
     Validate.that(householdReqeust.getLatitude(),
@@ -140,7 +140,7 @@ public class HouseholdService {
 
     // Adds the user creating the household to the household.
     addUserToHousehold(
-        householdReqeust.getUsername(),
+        jwtService.extractUserName(token.substring(7)),
         registeredHousehold.getId());
   }
 
