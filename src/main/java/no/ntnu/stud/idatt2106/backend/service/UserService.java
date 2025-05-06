@@ -42,7 +42,7 @@ public class UserService {
    */
   public UserResponse getUserProfileById(Long id) {
     User user = userRepo.findById(id);
-    
+
     if (user == null) {
       throw new NoSuchElementException("User with ID = " + id + " not found");
     }
@@ -119,7 +119,7 @@ public class UserService {
   /**
    * Updates a users profile.
    *
-   * @param id the ID of the user to be updated
+   * @param id     the ID of the user to be updated
    * @param update the new user info
    * @return Repsonse object with the updated user
    * @throws NoSuchElementException if no user with the given ID exists
@@ -137,7 +137,7 @@ public class UserService {
     existingUser.setFirstName(update.getFirstName());
     existingUser.setLastName(update.getLastName());
 
-    //Email set to not verified if changed
+    // Email set to not verified if changed
     if (!existingUser.getEmail().equals(update.getEmail())) {
       existingUser.setEmailConfirmed(false);
     }
@@ -159,12 +159,12 @@ public class UserService {
     return UserMapper.toResponse(getUserById(id));
   }
 
-
   /**
    * Enables the sharing of the user's position for their household.
    *
    * @param userId The ID of the user for whom to enable position sharing.
-   * @return true if the user's position sharing was successfully enabled, false otherwise.
+   * @return true if the user's position sharing was successfully enabled, false
+   *         otherwise.
    */
   public boolean enableSharePositionForHousehold(Long userId) {
     User user = userRepo.findById(userId);
@@ -176,13 +176,19 @@ public class UserService {
   }
 
   /**
-   * Updates the sharing of the user's position for their household.
+   * Updates the sharing of the user's position for their household and group.
    *
-   * @param userId  The ID of the user for whom to update position sharing.
-   * @param enabled True to enable position sharing, false to disable it.
-   * @return true if the user's position sharing was successfully updated, false otherwise.
+   * @param userId                  The ID of the user for whom to update position
+   *                                sharing.
+   * @param sharedPositionHousehold True to enable position sharing for the
+   *                                household, false to disable it.
+   * @param sharedPositionGroup     True to enable position sharing for the group,
+   *                                false to disable it.
+   * @return true if the user's position sharing was successfully updated, false
+   *         if the user does not exist.
    */
-  public boolean updateSharePositionHouseholdOrGroup(Long userId, boolean sharedPositionHousehold, boolean sharedPositionGroup) {
+  public boolean updateSharePositionHouseholdOrGroup(Long userId, boolean sharedPositionHousehold,
+      boolean sharedPositionGroup) {
     User user = userRepo.findById(userId);
     if (user == null) {
       return false;
@@ -191,5 +197,5 @@ public class UserService {
     userRepo.updateSharePositionGroup(userId, sharedPositionGroup);
     return true;
   }
-  
+
 }
