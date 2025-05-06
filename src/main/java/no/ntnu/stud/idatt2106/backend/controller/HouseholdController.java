@@ -60,7 +60,8 @@ public class HouseholdController {
   @Operation(summary = "Creates a new household",
          description = "Creates a new household with the user creating it as a member")
   @PostMapping("/register")
-  public ResponseEntity<?> registerHousehold(@RequestBody CreateHouseholdRequest householdRequest) {
+  public ResponseEntity<Void> 
+      registerHousehold(@RequestBody CreateHouseholdRequest householdRequest) {
     householdService.registerHousehold(householdRequest);
     logger.info("Household created successfully");
     return ResponseEntity.ok().build();
@@ -100,7 +101,7 @@ public class HouseholdController {
       if they accept the invitation, sent by email.
       """)
   @PostMapping("invite-user")
-  public ResponseEntity<?> inviteUserToHousehold(
+  public ResponseEntity<Void> inviteUserToHousehold(
       @RequestBody InviteUserHouseholdRequest request,
       @RequestHeader("Authorization") String token) {
     householdService.inviteUserToHousehold(request, token);
@@ -118,7 +119,7 @@ public class HouseholdController {
           Removes the currently logged in user from their household.
           """)
   @PostMapping("leave")
-  public ResponseEntity<?> leaveHousehold(
+  public ResponseEntity<Void> leaveHousehold(
       @RequestHeader("Authorization") String token) {
     householdService.leaveHousehold(token);
     logger.info("User left household successfully");
@@ -133,7 +134,7 @@ public class HouseholdController {
    *         message
    */
   @PostMapping("accept/{inviteKey}")
-  public ResponseEntity<?> acceptHouseholdInvite(
+  public ResponseEntity<Void> acceptHouseholdInvite(
       @RequestBody HouseHoldInviteAcceptRequest request,
       @RequestHeader("Authorization") String token) {
     householdService.acceptHouseholdInvite(request, token);
