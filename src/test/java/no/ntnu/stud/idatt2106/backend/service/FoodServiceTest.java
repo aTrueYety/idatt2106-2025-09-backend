@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import no.ntnu.stud.idatt2106.backend.mapper.FoodMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
 import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodRequest;
@@ -26,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -324,5 +328,29 @@ class FoodServiceTest {
     double result = service.getCaloriesByHouseholdId(householdId);
 
     assertEquals(250, result);
+  }
+
+  @Test
+  void shouldGetFoodByHouseholdId() {
+    Food food1 = new Food();
+    Food food2 = new Food();
+    List<Food> foods = List.of(food1, food2);
+
+    FoodResponse response1 = new FoodResponse();
+    FoodResponse response2 = new FoodResponse();
+    List<FoodResponse> responses = List.of(response1, response2);
+
+    Long householdId = 1L;
+    when(repository.findByHouseholdId(householdId)).thenReturn(foods);
+
+    try (MockedStatic<FoodMapper> mapper = Mockito.mockStatic(FoodMapper.class)) {
+      mapper.when(() -> FoodMapper.toResponse(food1)).thenReturn(response1);
+      mapper.when(() -> FoodMapper.toResponse(food2)).thenReturn(response2);
+
+      List<FoodResponse> result = service.getByHouseholdId(householdId);
+
+      assertEquals(responses, result);
+      assertEquals(2, result.size());
+    }
   }
 }
