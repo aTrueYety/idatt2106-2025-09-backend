@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import no.ntnu.stud.idatt2106.backend.mapper.SharedFoodMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
 import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
+import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
 import no.ntnu.stud.idatt2106.backend.model.base.SharedFood;
 import no.ntnu.stud.idatt2106.backend.model.base.SharedFoodKey;
 import no.ntnu.stud.idatt2106.backend.model.request.SharedFoodRequest;
@@ -17,6 +18,7 @@ import no.ntnu.stud.idatt2106.backend.model.response.FoodDetailedResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.SharedFoodResponse;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
+import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.repository.SharedFoodRepository;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,8 @@ public class SharedFoodService {
   private final SharedFoodRepository repository;
   private final FoodRepository foodRepository;
   private final FoodTypeRepository foodTypeRepository;
+  private final GroupHouseholdRepository groupHouseholdRepository;
+
 
   /**
    * Creates a new shared food entry.
@@ -106,11 +110,9 @@ public class SharedFoodService {
       return false;
     }
 
-    // Reduser beholdning
     food.setAmount(food.getAmount() - request.getAmount());
     foodRepository.update(food);
 
-    // Opprett SharedFood
     SharedFood shared = new SharedFood(key, request.getAmount());
     repository.save(shared);
 
@@ -207,7 +209,6 @@ public class SharedFoodService {
 
     Food sharedFood = foodOpt.get();
 
-    // Reduser mengde i shared food
     shared.setAmount(shared.getAmount() - request.getAmount());
     if (shared.getAmount() == 0) {
       repository.deleteById(key);
@@ -215,7 +216,6 @@ public class SharedFoodService {
       repository.update(shared);
     }
 
-    // Finn matchende batch i husholdning
     Optional<Food> existingFoodOpt = foodRepository
         .findByTypeIdAndExpirationDateAndHouseholdId(
             sharedFood.getTypeId(),
@@ -237,5 +237,79 @@ public class SharedFoodService {
 
     return true;
   }
+
+  /**
+   * Retrieves a detailed summary of shared food for the entire group.
+   * <p>
+   * This method aggregates the shared food across all group households in the
+   * specified group.
+   * </p>
+   *
+   * @param groupId the ID of the group
+   * @return list of detailed food summaries for the entire group
+   */
+  public List<FoodDetailedResponse> getSharedFoodSummaryByGroupId(Long groupId) {
+    List<GroupHousehold> groupHouseholds = groupHouseholdRepository.findByGroupId(groupId);
+    List<Long> groupHouseholdIds = groupHouseholds.stream()
+        .map(GroupHousehold::getId)
+        .toList();
+  
+
+    List<SharedFood> sharedFoods = groupHouseholdIds.stream()
+        .flatMap(id -> repository.findByGroupHouseholdId(id).stream())
+        .toList();
+  
+        
+    Map<Long, Food> foodMap = sharedFoods.stream()
+        .map(sf -> foodRepository.findById(sf.getId().getFoodId()))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .collect(Collectors.toMap(Food::getId, food -> food));
+  
+    Map<Long, List<SharedFood>> groupedByType = sharedFoods.stream()
+        .filter(sf -> foodMap.containsKey(sf.getId().getFoodId()))
+        .collect(Collectors.groupingBy(
+            sf -> foodMap.get(sf.getId().getFoodId()).getTypeId()));
+  
+    return groupedByType.entrySet().stream()
+        .map(entry -> {
+          Long typeId = entry.getKey();
+          Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
+          if (typeOpt.isEmpty()) {
+            return null;
+          }
+          FoodType type = typeOpt.get();
+  
+          List<FoodBatchResponse> batches = entry.getValue().stream()
+              .map(sf -> {
+                Food food = foodMap.get(sf.getId().getFoodId());
+                FoodBatchResponse batch = new FoodBatchResponse();
+                batch.setId(food.getId());
+                batch.setExpirationDate(food.getExpirationDate());
+                batch.setAmount(sf.getAmount());
+                batch.setHouseholdId(food.getHouseholdId());
+                return batch;
+              })
+              .filter(Objects::nonNull)
+              .toList();
+  
+          double totalAmount = batches.stream()
+              .mapToDouble(FoodBatchResponse::getAmount)
+              .sum();
+          double totalCalories = totalAmount * type.getCaloriesPerUnit();
+  
+          FoodDetailedResponse response = new FoodDetailedResponse();
+          response.setTypeId(type.getId());
+          response.setTypeName(type.getName());
+          response.setUnit(type.getUnit());
+          response.setTotalAmount(totalAmount);
+          response.setTotalCalories(totalCalories);
+          response.setBatches(batches);
+          return response;
+        })
+        .filter(Objects::nonNull)
+        .toList();
+  }
+  
 
 }

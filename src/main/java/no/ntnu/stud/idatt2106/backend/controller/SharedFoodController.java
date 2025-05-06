@@ -77,7 +77,7 @@ public class SharedFoodController {
    */
   @Operation(summary = "Delete a shared food entry")
   @DeleteMapping("/{foodId}/{groupHouseholdId}")
-  public ResponseEntity<Void> delete(@PathVariable Long foodId, 
+  public ResponseEntity<Void> delete(@PathVariable Long foodId,
       @PathVariable Long groupHouseholdId) {
     return service.delete(foodId, groupHouseholdId)
         ? ResponseEntity.noContent().build()
@@ -125,6 +125,18 @@ public class SharedFoodController {
         ? ResponseEntity.ok().build()
         : ResponseEntity.badRequest().build();
   }
-  
+
+  /**
+   * Retrieves a detailed summary of shared food for the entire group.
+   *
+   * @param groupId the ID of the group
+   * @return ResponseEntity containing a list of detailed food responses
+   */
+  @Operation(summary = "Get detailed shared food summary for entire group (aggregated)")
+  @GetMapping("/summary/detailed/group/{groupId}")
+  public ResponseEntity<List<FoodDetailedResponse>> getSharedFoodSummaryByGroupId(
+      @PathVariable Long groupId) {
+    return ResponseEntity.ok(service.getSharedFoodSummaryByGroupId(groupId));
+  }
 
 }
