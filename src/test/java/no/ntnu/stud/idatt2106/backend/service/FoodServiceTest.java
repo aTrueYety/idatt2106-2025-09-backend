@@ -40,6 +40,9 @@ class FoodServiceTest {
   @Mock
   private FoodTypeRepository foodTypeRepository;
 
+  @Mock
+  private FoodTypeService foodTypeService;
+
   @Test
   void shouldCreateFood() {
     FoodRequest request = new FoodRequest();
@@ -295,5 +298,31 @@ class FoodServiceTest {
         .orElseThrow();
     
     assertEquals(1, response2.getTotalAmount());
+  }
+
+  @Test
+  void shouldGetCaloriesByHouseholdId() {
+    FoodType foodType = new FoodType();
+    foodType.setId(1L);
+    foodType.setCaloriesPerUnit(10f);
+
+    Food food1 = new Food();
+    food1.setTypeId(1L);
+    food1.setAmount(10);
+
+    Food food2 = new Food();
+    food2.setTypeId(1L);
+    food2.setAmount(15);
+
+    List<Food> foods = List.of(food1, food2);
+
+    Long householdId = 1L;
+    when(repository.findByHouseholdId(householdId)).thenReturn(foods);
+    when(foodTypeService.getCaloriesById(foodType.getId()))
+        .thenReturn(foodType.getCaloriesPerUnit());
+
+    double result = service.getCaloriesByHouseholdId(householdId);
+
+    assertEquals(250, result);
   }
 }
