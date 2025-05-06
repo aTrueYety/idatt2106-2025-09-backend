@@ -45,7 +45,6 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
         + "(adress, name, latitude, longitude, amount_water, last_water_change) "
         + "VALUES (?, ?, ?, ?, ?, ?)";
     
-    
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
     jdbcTemplate.update(connection -> {
