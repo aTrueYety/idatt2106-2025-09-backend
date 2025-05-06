@@ -18,6 +18,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodDetailedResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.FoodSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
@@ -256,5 +257,43 @@ class FoodServiceTest {
     });
 
     assertTrue(exception.getMessage().contains("FoodType with ID = 1 not found"));
+  }
+
+  @Test
+  void shouldReturnFoodSummaryByHousehold() {
+    Food food1 = new Food();
+    food1.setTypeId(1L);
+    food1.setAmount(10);
+
+    Food food2 = new Food();
+    food2.setTypeId(1L);
+    food2.setAmount(5);
+
+    Food food3 = new Food();
+    food3.setTypeId(2L);
+    food3.setAmount(1);
+
+    List<Food> foods = List.of(food1, food2, food3);
+
+    Long householdId = 1L;
+    when(repository.findByHouseholdId(householdId)).thenReturn(foods);
+
+    List<FoodSummaryResponse> result = service.getFoodSummaryByHousehold(householdId);
+
+    assertEquals(2, result.size());
+    
+    FoodSummaryResponse response1 = result.stream()
+        .filter(r -> r.getTypeId().equals(1L))
+        .findFirst()
+        .orElseThrow();
+    
+    assertEquals(15, response1.getTotalAmount());
+
+    FoodSummaryResponse response2 = result.stream()
+        .filter(r -> r.getTypeId().equals(2L))
+        .findFirst()
+        .orElseThrow();
+    
+    assertEquals(1, response2.getTotalAmount());
   }
 }
