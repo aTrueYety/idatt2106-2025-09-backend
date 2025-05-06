@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryResponse;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -24,9 +26,19 @@ public class EmergencyGroupRepositoryImpl implements EmergencyGroupRepository {
       rs.getString("description"));
 
   @Override
-  public void save(EmergencyGroup group) {
+  public EmergencyGroup save(EmergencyGroup group) {
     String sql = "INSERT INTO emergency_group (name, description) VALUES (?, ?)";
-    jdbcTemplate.update(sql, group.getName(), group.getDescription());
+    GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+
+    jdbcTemplate.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement(sql, new String[] { "id" });
+      ps.setString(1, group.getName());
+      ps.setString(2, group.getDescription());
+      return ps;
+    }, keyHolder);
+
+    Long generatedId = keyHolder.getKey().longValue();
+    return new EmergencyGroup(generatedId, group.getName(), group.getDescription());
   }
 
   @Override
