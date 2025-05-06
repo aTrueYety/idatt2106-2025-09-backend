@@ -115,7 +115,7 @@ public class HouseholdController {
    * @return a ResponseEntity with the response to the operation or an error
    *         message
    */
-  @PostMapping("accept/{inviteKey}")
+  @PostMapping("accept")
   public ResponseEntity<?> acceptHouseholdInvite(
       @RequestBody HouseHoldInviteAcceptRequest request,
       @RequestHeader("Authorization") String token) {
