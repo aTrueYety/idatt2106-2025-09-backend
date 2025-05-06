@@ -18,5 +18,4 @@ public class CreateHouseholdRequest {
   private Double latitude;
   private Double waterAmountLiters;
   private Date lastWaterChangeDate;
-  private String username;
 }
