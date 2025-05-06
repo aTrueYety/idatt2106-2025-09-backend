@@ -128,7 +128,7 @@ public class UserService {
     Validate.that(update.getFirstName(), Validate.isNotBlankOrNull());
     Validate.that(update.getLastName(), Validate.isNotBlankOrNull());
     Validate.that(update.getEmail(), Validate.isNotBlankOrNull());
-    
+
     User existingUser = userRepo.findById(id);
     if (existingUser == null) {
       throw new NoSuchElementException("User with ID = " + id + " not found");
@@ -182,12 +182,13 @@ public class UserService {
    * @param enabled True to enable position sharing, false to disable it.
    * @return true if the user's position sharing was successfully updated, false otherwise.
    */
-  public boolean updateSharePositionHousehold(Long userId, boolean enabled) {
+  public boolean updateSharePositionHouseholdOrGroup(Long userId, boolean sharedPositionHousehold, boolean sharedPositionGroup) {
     User user = userRepo.findById(userId);
     if (user == null) {
       return false;
     }
-    userRepo.updateSharePositionHousehold(userId, enabled);
+    userRepo.updateSharePositionHousehold(userId, sharedPositionHousehold);
+    userRepo.updateSharePositionGroup(userId, sharedPositionGroup);
     return true;
   }
   

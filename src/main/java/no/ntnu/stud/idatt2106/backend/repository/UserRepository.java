@@ -23,6 +23,8 @@ public interface UserRepository {
 
   void updateSharePositionHousehold(Long userId, boolean value);
 
+  void updateSharePositionGroup(Long userId, boolean value);
+
   void updateLastKnownPosition(Long userId, float latitude, float longitude);
   
   int updateSharePositionHouseholdForHousehold(Long householdId, boolean share);

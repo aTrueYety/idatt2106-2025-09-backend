@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -76,7 +80,7 @@ public class UserServiceTest {
     void shouldThrowIsUserNotFound() {
       Long userId = 5L;
       when(repository.findById(userId)).thenReturn(null);
-      
+
       UserUpdate update = new UserUpdate();
       update.setFirstName("First");
       update.setLastName("Last");
@@ -138,7 +142,7 @@ public class UserServiceTest {
       when(repository.findById(userId)).thenReturn(user);
       try (MockedStatic<UserMapper> mocked = Mockito.mockStatic(UserMapper.class)) {
         mocked.when(() -> UserMapper.toResponse(user)).thenReturn(expected);
-        
+
         UserResponse response = userService.getUserProfileById(userId);
 
         assertEquals(expected, response);
@@ -156,6 +160,78 @@ public class UserServiceTest {
       assertThrows(NoSuchElementException.class, () -> {
         userService.getUserProfileById(id);
       });
+    }
+
+    @Test
+    void shouldUpdateSharePositionHouseholdOrGroup_callsRepoAndReturnsTrue() {
+      Long userId = 1L;
+      User user = new User();
+      user.setId(userId);
+      user.setSharePositionHousehold(false);
+      user.setSharePositionGroup(false);
+      when(repository.findById(userId)).thenReturn(user);
+
+      boolean result = userService.updateSharePositionHouseholdOrGroup(
+          userId,
+          true,
+          true);
+
+      assertTrue(result, "Service should return true when user exists");
+      verify(repository).updateSharePositionHousehold(userId, true);
+      verify(repository).updateSharePositionGroup(userId, true);
+    }
+
+    @Test
+    void shouldReturnFalseAndNotCallRepo_whenUserNotFound() {
+      Long userId = 1L;
+      when(repository.findById(userId)).thenReturn(null);
+
+      boolean result = userService.updateSharePositionHouseholdOrGroup(
+          userId,
+          true,
+          true);
+
+      assertFalse(result, "Service should return false when user does not exist");
+      verify(repository, never()).updateSharePositionHousehold(anyLong(), anyBoolean());
+      verify(repository, never()).updateSharePositionGroup(anyLong(), anyBoolean());
+    }
+
+    @Test
+    void shouldReturnTrueAndCallRepo_whenUserFoundAndUpdateIsTrue() {
+      Long userId = 1L;
+      User user = new User();
+      user.setId(userId);
+      user.setSharePositionHousehold(false);
+      user.setSharePositionGroup(false);
+      when(repository.findById(userId)).thenReturn(user);
+
+      boolean result = userService.updateSharePositionHouseholdOrGroup(
+          userId,
+          true,
+          false);
+
+      assertTrue(result, "Service should return true when user exists");
+      verify(repository).updateSharePositionGroup(userId, false);
+      verify(repository).updateSharePositionHousehold(userId, true);
+    }
+
+    @Test
+    void shouldReturnFalseAndNotCallRepo_whenUserFoundAndUpdateIsFalse() {
+      Long userId = 1L;
+      User user = new User();
+      user.setId(userId);
+      user.setSharePositionHousehold(false);
+      user.setSharePositionGroup(false);
+      when(repository.findById(userId)).thenReturn(user);
+
+      boolean result = userService.updateSharePositionHouseholdOrGroup(
+          userId,
+          false,
+          false);
+
+      assertTrue(result, "Service should return true when user exists");
+      verify(repository).updateSharePositionGroup(userId, false);
+      verify(repository).updateSharePositionHousehold(userId, false);
     }
   }
 }
