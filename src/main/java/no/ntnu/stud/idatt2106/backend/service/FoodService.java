@@ -124,7 +124,7 @@ public class FoodService {
    * @return the total calories in the household
    */
   public double getCaloriesByHouseholdId(Long householdId) {
-    FoodTypeService foodTypeService = new FoodTypeService(foodTypeRepository);
+    FoodTypeService foodTypeService = new FoodTypeService();
 
     return repository.findByHouseholdId(householdId).stream()
         .mapToDouble(food -> food.getAmount() * foodTypeService.getCaloriesById(food.getTypeId()))

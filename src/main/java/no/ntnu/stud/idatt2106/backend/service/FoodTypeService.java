@@ -9,6 +9,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodTypeResponse;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,16 +18,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class FoodTypeService {
 
-  private final FoodTypeRepository repository;
-
-  /**
-   * Constructs a FoodTypeService with the given repository.
-   *
-   * @param repository the food type repository
-   */
-  public FoodTypeService(FoodTypeRepository repository) {
-    this.repository = repository;
-  }
+  @Autowired
+  private FoodTypeRepository repository;
 
   /**
    * Create a new food type.
