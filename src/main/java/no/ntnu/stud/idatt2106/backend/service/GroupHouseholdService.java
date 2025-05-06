@@ -88,7 +88,6 @@ public class GroupHouseholdService {
    * @param token   the JWT token
    */
   public void invite(GroupHouseholdRequest request, String token) {
-    Long userId = jwtService.extractUserId(token.substring(7));
     Validate.that(
         repository.findByHouseholdIdAndGroupId(
             request.getHouseholdId(), request.getGroupId()),
@@ -97,7 +96,15 @@ public class GroupHouseholdService {
     Validate.isValid(!groupInviteService.hasGroupInvite(request.getHouseholdId(), 
         request.getGroupId()),
         "Household already has an invite to this group.");
+
     // Validate that the user is a member of the group
+    Long userId = jwtService.extractUserId(token.substring(7));
+    User user = userService.getUserById(userId);
+    Validate.that(user.getHouseholdId(), Validate.isNotNull(), "User does not have a household.");
+    Validate.that(
+        repository.findByHouseholdIdAndGroupId(user.getHouseholdId(), request.getGroupId()),
+        Validate.isNotNull(),
+        "User's household is not a member of this group.");
     groupInviteService.createGroupInvite(request.getHouseholdId(), request.getGroupId());
   }
 
@@ -118,6 +125,22 @@ public class GroupHouseholdService {
         groupInviteService.hasGroupInvite(user.getHouseholdId(), groupId),
         "User's household does not have an invite to this group.");
     create(new GroupHouseholdRequest(user.getHouseholdId(), groupId));
+    groupInviteService.deleteGroupInvite(user.getHouseholdId(), groupId);
+  }
+
+  /**
+   * Rejects a group invitation.
+   *
+   * @param groupId the group ID
+   * @param token   the JWT token
+   */
+  public void rejectInvite(Long groupId, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    User user = userService.getUserById(userId);
+    Validate.that(user.getHouseholdId(), Validate.isNotNull(), "User does not have a household.");
+    Validate.isValid(
+        groupInviteService.hasGroupInvite(user.getHouseholdId(), groupId),
+        "User's household does not have an invite to this group.");
     groupInviteService.deleteGroupInvite(user.getHouseholdId(), groupId);
   }
 
