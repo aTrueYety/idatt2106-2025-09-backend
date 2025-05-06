@@ -77,8 +77,8 @@ public class SharedFoodController {
    */
   @Operation(summary = "Delete a shared food entry")
   @DeleteMapping("/{foodId}/{groupHouseholdId}")
-  public ResponseEntity<Void> 
-      delete(@PathVariable Long foodId, @PathVariable Long groupHouseholdId) {
+  public ResponseEntity<Void> delete(@PathVariable Long foodId, 
+      @PathVariable Long groupHouseholdId) {
     return service.delete(foodId, groupHouseholdId)
         ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();
@@ -110,6 +110,21 @@ public class SharedFoodController {
   public ResponseEntity<List<FoodDetailedResponse>> getSharedFoodSummary(
       @PathVariable Long groupHouseholdId) {
     return ResponseEntity.ok(service.getSharedFoodSummaryByGroup(groupHouseholdId));
-  } 
+  }
+
+  /**
+   * Moves food from a shared group back to the original household.
+   *
+   * @param request the request with food ID, group household ID and amount
+   * @return HTTP 200 OK if moved, 400 Bad Request if not enough food or not found
+   */
+  @Operation(summary = "Move food from a shared group back to the household")
+  @PostMapping("/unshare")
+  public ResponseEntity<Void> moveFoodBack(@RequestBody SharedFoodRequest request) {
+    return service.moveFoodFromSharedGroup(request)
+        ? ResponseEntity.ok().build()
+        : ResponseEntity.badRequest().build();
+  }
+  
 
 }
