@@ -61,8 +61,8 @@ public class UserController {
   @PatchMapping("/{id}/position-sharing")
   public ResponseEntity<String> updatePositionSharing(@PathVariable Long id,
       @RequestBody UpdatePositionSharingRequest request) {
-    boolean updated = userService.updateSharePositionHousehold(id,
-        request.isSharePositionHousehold());
+    boolean updated = userService.updateSharePositionHouseholdOrGroup(id,
+        request.isSharePositionHousehold(), request.isSharePositionGroup());
     if (updated) {
       return ResponseEntity.ok("Position sharing updated for user " + id);
     } else {

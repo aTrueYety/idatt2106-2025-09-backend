@@ -114,5 +114,11 @@ public class UserRepositoryImpl implements UserRepository {
     String sql = "UPDATE `user` SET share_position_household = ? WHERE id = ?";
     jdbcTemplate.update(sql, value, userId);
   }
+  
+  @Override
+  public void updateSharePositionGroup(Long userId, boolean value) {
+    String sql = "UPDATE `user` SET share_position_group = ? WHERE id = ?";
+    jdbcTemplate.update(sql, value, userId);
+  }
 
 }
