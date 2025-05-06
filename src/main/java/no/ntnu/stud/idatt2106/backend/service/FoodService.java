@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -161,6 +162,7 @@ public class FoodService {
    *
    * @param householdId the ID of the household
    * @return a list of FoodDetailedResponse with detailed info
+   * @throws NoSuchElementException if no foodtype with a given ID is found
    */
   public List<FoodDetailedResponse> getFoodDetailedByHousehold(Long householdId) {
     List<Food> foods = repository.findByHouseholdId(householdId);
@@ -171,11 +173,9 @@ public class FoodService {
     return grouped.entrySet().stream()
         .map(entry -> {
           Long typeId = entry.getKey();
-          Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
-          if (typeOpt.isEmpty()) {
-            return null;
-          }
-          FoodType type = typeOpt.get();
+          FoodType type = foodTypeRepository.findById(typeId).orElseThrow(() -> {
+            throw new NoSuchElementException("FoodType with ID = " + typeId + " not found");
+          });
           List<Food> foodList = entry.getValue();
           FoodDetailedResponse summary = new FoodDetailedResponse();
           summary.setTypeId(typeId);
