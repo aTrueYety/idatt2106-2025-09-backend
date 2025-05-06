@@ -222,5 +222,18 @@
 		</plugins>
 
 	</build>
-
+	<profiles>
+			<profile>
+				<id>test-e2e</id>
+				<activation>
+					<activeByDefault>false</activeByDefault>
+				</activation>
+				<dependencies>
+					<dependency>
+						<groupId>com.h2database</groupId>
+						<artifactId>h2</artifactId>
+					</dependency>
+				</dependencies>
+			</profile>
+		</profiles>
 </project>
