@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SharedFoodKey implements Serializable {
-  private int foodId;
-  private int groupHouseholdId;
+  private Long foodId;
+  private Long groupHouseholdId;
 }

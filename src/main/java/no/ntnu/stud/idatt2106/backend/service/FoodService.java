@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,19 +27,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class FoodService {
 
-  private final FoodRepository repository;
-  private final FoodTypeRepository foodTypeRepository;
+  @Autowired
+  private FoodRepository repository;
 
-  /**
-   * Constructs a FoodService with given repositories.
-   *
-   * @param repository         the food repository
-   * @param foodTypeRepository the food type repository
-   */
-  public FoodService(FoodRepository repository, FoodTypeRepository foodTypeRepository) {
-    this.repository = repository;
-    this.foodTypeRepository = foodTypeRepository;
-  }
+  @Autowired
+  private FoodTypeRepository foodTypeRepository;
+
+  @Autowired
+  private FoodTypeService foodTypeService;
 
   /**
    * Creates a new food item.
@@ -57,7 +54,7 @@ public class FoodService {
    * @param id the ID of the food item
    * @return an Optional containing FoodResponse if found, otherwise empty
    */
-  public Optional<FoodResponse> getById(int id) {
+  public Optional<FoodResponse> getById(Long id) {
     return repository.findById(id).map(FoodMapper::toResponse);
   }
 
@@ -79,7 +76,7 @@ public class FoodService {
    * @param update the update request
    * @return true if updated, false if not found
    */
-  public boolean update(int id, FoodUpdate update) {
+  public boolean update(Long id, FoodUpdate update) {
     Validate.that(update.getAmount(), Validate.isPositive());
     if (repository.findById(id).isEmpty()) {
       return false;
@@ -96,7 +93,7 @@ public class FoodService {
    * @param id the ID of the food item to delete
    * @return true if deleted, false if not found
    */
-  public boolean delete(int id) {
+  public boolean delete(Long id) {
     if (repository.findById(id).isEmpty()) {
       return false;
     }
@@ -110,7 +107,7 @@ public class FoodService {
    * @param householdId the ID of the household
    * @return a list of food items for the given household
    */
-  public List<FoodResponse> getByHouseholdId(int householdId) {
+  public List<FoodResponse> getByHouseholdId(Long householdId) {
     return repository.findByHouseholdId(householdId).stream()
         .map(FoodMapper::toResponse)
         .toList();
@@ -122,9 +119,7 @@ public class FoodService {
    * @param householdId the ID of the household
    * @return the total calories in the household
    */
-  public double getCaloriesByHouseholdId(long householdId) {
-    FoodTypeService foodTypeService = new FoodTypeService(foodTypeRepository);
-
+  public double getCaloriesByHouseholdId(Long householdId) {
     return repository.findByHouseholdId(householdId).stream()
         .mapToDouble(food -> food.getAmount() * foodTypeService.getCaloriesById(food.getTypeId()))
         .sum();
@@ -137,7 +132,7 @@ public class FoodService {
    * @param householdId the ID of the household
    * @return a list of FoodSummaryResponse grouped by type
    */
-  public List<FoodSummaryResponse> getFoodSummaryByHousehold(int householdId) {
+  public List<FoodSummaryResponse> getFoodSummaryByHousehold(Long householdId) {
     List<Food> foodList = repository.findByHouseholdId(householdId);
 
     return foodList.stream()
@@ -161,21 +156,20 @@ public class FoodService {
    *
    * @param householdId the ID of the household
    * @return a list of FoodDetailedResponse with detailed info
+   * @throws NoSuchElementException if no foodtype with a given ID is found
    */
-  public List<FoodDetailedResponse> getFoodDetailedByHousehold(int householdId) {
+  public List<FoodDetailedResponse> getFoodDetailedByHousehold(Long householdId) {
     List<Food> foods = repository.findByHouseholdId(householdId);
 
-    Map<Integer, List<Food>> grouped = foods.stream()
+    Map<Long, List<Food>> grouped = foods.stream()
         .collect(Collectors.groupingBy(Food::getTypeId));
 
     return grouped.entrySet().stream()
         .map(entry -> {
-          int typeId = entry.getKey();
-          Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
-          if (typeOpt.isEmpty()) {
-            return null;
-          }
-          FoodType type = typeOpt.get();
+          Long typeId = entry.getKey();
+          FoodType type = foodTypeRepository.findById(typeId).orElseThrow(() -> {
+            throw new NoSuchElementException("FoodType with ID = " + typeId + " not found");
+          });
           List<Food> foodList = entry.getValue();
           FoodDetailedResponse summary = new FoodDetailedResponse();
           summary.setTypeId(typeId);

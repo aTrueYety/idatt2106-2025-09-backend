@@ -8,8 +8,8 @@ import lombok.Data;
  */
 @Data
 public class FoodBatchResponse {
-  private long id;
-  private float amount;
+  private Long id;
+  private double amount;
   private LocalDate expirationDate;
-  private int householdId;
+  private Long householdId;
 }

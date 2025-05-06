@@ -109,6 +109,23 @@ public class HouseholdController {
   }
 
   /**
+   * Handles request to leave a household.
+   *
+   * @return a ResponseEntity with the response to the operation or an error
+   */
+  @Operation(summary = "Leaves the household of the currently logged in user",
+      description = """
+          Removes the currently logged in user from their household.
+          """)
+  @PostMapping("leave")
+  public ResponseEntity<?> leaveHousehold(
+      @RequestHeader("Authorization") String token) {
+    householdService.leaveHousehold(token);
+    logger.info("User left household successfully");
+    return ResponseEntity.ok().build();
+  }
+
+  /**
    * Handles request to accept a household invite.
    *
    * @param request object with the id of the household to be joined

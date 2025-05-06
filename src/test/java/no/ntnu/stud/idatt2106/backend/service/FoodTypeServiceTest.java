@@ -44,8 +44,9 @@
       @Test
       void shouldGetAllFoodTypes() {
           FoodType food = new FoodType();
-          food.setId(1);
+          food.setId(1L);
           food.setName("Apple");
+          food.setCaloriesPerUnit(12.0f);
 
           when(repository.findAll()).thenReturn(List.of(food));
 
@@ -62,18 +63,18 @@
           request.setCaloriesPerUnit(10f);
           request.setPicture(null);
 
-          when(repository.findById(1)).thenReturn(Optional.of(new FoodType()));
+          when(repository.findById(1L)).thenReturn(Optional.of(new FoodType()));
 
-          boolean updated = service.update(1, request);
+          boolean updated = service.update(1L, request);
           assertThat(updated).isTrue();
           verify(repository).update(any(FoodType.class));
       }
 
       @Test
       void shouldNotUpdateIfFoodTypeNotExists() {
-          when(repository.findById(1)).thenReturn(Optional.empty());
+          when(repository.findById(1L)).thenReturn(Optional.empty());
 
-          boolean updated = service.update(1, new FoodTypeRequest());
+          boolean updated = service.update(1L, new FoodTypeRequest());
           assertThat(updated).isFalse();
           verify(repository, never()).update(any());
       }

@@ -77,7 +77,8 @@ public class SharedFoodController {
    */
   @Operation(summary = "Delete a shared food entry")
   @DeleteMapping("/{foodId}/{groupHouseholdId}")
-  public ResponseEntity<Void> delete(@PathVariable int foodId, @PathVariable int groupHouseholdId) {
+  public ResponseEntity<Void> 
+      delete(@PathVariable Long foodId, @PathVariable Long groupHouseholdId) {
     return service.delete(foodId, groupHouseholdId)
         ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();
@@ -107,7 +108,7 @@ public class SharedFoodController {
   @Operation(summary = "Get detailed summary of shared food for a group")
   @GetMapping("/summary/detailed/{groupHouseholdId}")
   public ResponseEntity<List<FoodDetailedResponse>> getSharedFoodSummary(
-      @PathVariable int groupHouseholdId) {
+      @PathVariable Long groupHouseholdId) {
     return ResponseEntity.ok(service.getSharedFoodSummaryByGroup(groupHouseholdId));
   } 
 

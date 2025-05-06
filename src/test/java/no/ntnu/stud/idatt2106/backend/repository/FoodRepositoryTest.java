@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,8 +33,8 @@ public class FoodRepositoryTest {
         42, "Test Household", "Test Address", 0.0, 0.0);
 
     Food food = new Food();
-    food.setTypeId(1);
-    food.setHouseholdId(42);
+    food.setTypeId(1L);
+    food.setHouseholdId(42L);
     food.setExpirationDate(LocalDate.of(2025, 5, 20));
     food.setAmount(3);
 

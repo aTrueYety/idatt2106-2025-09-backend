@@ -13,7 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 @JdbcTest
 @ActiveProfiles("test")
-
 @Import(FoodTypeRepositoryImpl.class)
 public class FoodTypeRepositoryTest {
 

@@ -10,7 +10,4 @@ public class UserUpdate {
   private String firstName;
   private String lastName;
   private String email;
-  private boolean sharePositionHousehold;
-  private boolean sharePositionGroup;
-  private byte[] picture;
 }

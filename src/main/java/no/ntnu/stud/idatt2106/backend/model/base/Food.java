@@ -16,9 +16,9 @@ import lombok.Data;
  */
 @Data
 public class Food {
-  private int id;
-  private int typeId;
-  private int householdId;
+  private Long id;
+  private Long typeId;
+  private Long householdId;
   private LocalDate expirationDate;
-  private float amount;
+  private double amount;
 }
