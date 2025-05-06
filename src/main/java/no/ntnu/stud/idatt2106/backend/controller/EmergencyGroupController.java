@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,8 +33,10 @@ public class EmergencyGroupController {
 
   @Operation(summary = "Create a new emergency group")
   @PostMapping
-  public ResponseEntity<Void> create(@RequestBody EmergencyGroupRequest request) {
-    service.create(request);
+  public ResponseEntity<Void> create(
+      @RequestBody EmergencyGroupRequest request,
+      @RequestHeader("Authorization") String token) {
+    service.create(request, token);
     return ResponseEntity.status(201).build();
   }
 

@@ -304,22 +304,21 @@ public class HouseholdService {
 
     Household validatedHousehold = existingHousehold.get();
 
+    if (request.getName() != null) {
+      validatedHousehold.setName(request.getName());
+    }
     if (request.getAddress() != null) {
       validatedHousehold.setAddress(request.getAddress());
     }
-
     if (request.getLatitude() != null) {
       validatedHousehold.setLatitude(request.getLatitude());
     }
-
     if (request.getLongitude() != null) {
       validatedHousehold.setLongitude(request.getLongitude());
     }
-
     if (request.getWaterAmountLiters() != null) {
       validatedHousehold.setWaterAmountLiters(request.getWaterAmountLiters());
     }
-
     if (request.getLastWaterChangeDate() != null) {
       validatedHousehold.setLastWaterChangeDate(request.getLastWaterChangeDate());
     }

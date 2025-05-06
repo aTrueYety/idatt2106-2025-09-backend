@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -11,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.mapper.EmergencyGroupMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
+import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
+import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryResponse;
@@ -46,19 +49,28 @@ public class EmergencyGroupServiceTest {
   @Mock
   private ExtraResidentService extraResidentService;
 
+  @Mock
+  private JwtService jwtService;
+
   @Nested
   class CreateTests {
 
     @Test
     void shouldConvertToModelAndSave() {
       EmergencyGroupRequest request = new EmergencyGroupRequest();
+      request.setName("Group Name");
+      when(jwtService.extractUserId(anyString())).thenReturn(1L);
+      User user = new User();
+      user.setHouseholdId(1L);
+      when(userService.getUserById(1L)).thenReturn(user);
       EmergencyGroup group = new EmergencyGroup();
+      when(repository.save(group)).thenReturn(group);
 
       try (MockedStatic<EmergencyGroupMapper> mapper = 
           Mockito.mockStatic(EmergencyGroupMapper.class)) {
         mapper.when(() -> EmergencyGroupMapper.toModel(request)).thenReturn(group);
 
-        emergencyGroupService.create(request);
+        emergencyGroupService.create(request, "token123");
 
         verify(repository).save(group);
       }

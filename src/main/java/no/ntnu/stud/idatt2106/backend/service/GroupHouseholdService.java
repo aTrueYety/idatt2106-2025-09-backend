@@ -37,6 +37,9 @@ public class GroupHouseholdService {
   @Autowired
   private HouseholdRepository householdRepository;
 
+  @Autowired
+  private EmergencyGroupService emergencyGroupService;
+
 
 
   /**
@@ -75,10 +78,28 @@ public class GroupHouseholdService {
    * Deletes a group-household relation.
    *
    * @param id the relation ID
+   * @param token the JWT token
    * @return true if deleted, false otherwise
    */
-  public boolean delete(Long id) {
-    return repository.deleteById(id);
+  public boolean delete(Long id, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    User user = userService.getUserById(userId);
+    Validate.that(user.getHouseholdId(), Validate.isNotNull(), "User does not have a household.");
+    Validate.that(
+        repository.findByHouseholdIdAndGroupId(user.getHouseholdId(), id),
+        Validate.isNotNull(),
+        "User's household is not a member of this group.");
+    GroupHousehold groupHousehold = repository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("GroupHousehold not found with ID: " + id));
+    Validate.isValid(
+        groupHousehold.getHouseholdId().equals(user.getHouseholdId()),
+        "User's household does not match the group-household relation.");
+    boolean success = repository.deleteById(id);
+    List<GroupHousehold> groupHouseholds = repository.findByGroupId(groupHousehold.getGroupId());
+    if (groupHouseholds.isEmpty()) {
+      emergencyGroupService.delete(groupHousehold.getGroupId());
+    }
+    return success;
   }
 
   /**

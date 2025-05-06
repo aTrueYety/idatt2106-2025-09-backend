@@ -16,7 +16,7 @@ public interface EmergencyGroupRepository {
    *
    * @param group the EmergencyGroup to be saved
    */
-  void save(EmergencyGroup group);
+  EmergencyGroup save(EmergencyGroup group);
 
   /**
    * Retrieves an emergency group by its ID.

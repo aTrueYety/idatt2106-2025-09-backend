@@ -15,6 +15,8 @@ import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.repository.EmergencyGroupRepository;
 import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepository;
+import no.ntnu.stud.idatt2106.backend.util.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -28,14 +30,21 @@ public class EmergencyGroupService {
   private final GroupHouseholdRepository groupHouseholdRepository;
   private final UserService userService;
   private final ExtraResidentService extraResidentService;
+  private final JwtService jwtService;
 
   /**
    * Creates a new emergency group from the provided request.
    *
    * @param request the request containing emergency group data
+   * @param token   the authorization token (not used in this method)
    */
-  public void create(EmergencyGroupRequest request) {
-    repository.save(EmergencyGroupMapper.toModel(request));
+  public void create(EmergencyGroupRequest request, String token) {
+    User user = userService.getUserById(jwtService.extractUserId(token.substring(7)));
+    Validate.that(user.getHouseholdId(), Validate.isNotNull(), "User must be in a household");
+    Validate.that(request.getName(), Validate.isNotNull(), "Group name cannot be null");
+    
+    EmergencyGroup group = repository.save(EmergencyGroupMapper.toModel(request));
+    groupHouseholdRepository.save(new GroupHousehold(null, user.getHouseholdId(), group.getId()));
   }
 
   /**
