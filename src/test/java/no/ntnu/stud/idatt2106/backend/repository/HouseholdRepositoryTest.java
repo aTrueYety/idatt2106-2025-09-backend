@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,23 +34,20 @@ public class HouseholdRepositoryTest {
 
   @BeforeEach
   void setup() {
-    jdbcTemplate.update("DELETE FROM household");
-    jdbcTemplate.execute("ALTER TABLE household ALTER COLUMN id RESTART WITH 1");
-
     jdbcTemplate.update("""
         INSERT INTO household
-        (address, latitude, longitude, amount_water, last_water_change)
-        VALUES (?, ?, ?, ?, ?)
+        (id, address, latitude, longitude, amount_water, last_water_change)
+        VALUES (?, ?, ?, ?, ?, ?)
         """,
-        "Test address", 64.34, 34.45, 23, new Date()
+        45, "Test address", 64.34, 34.45, 23, new Date()
     );
 
     jdbcTemplate.update("""
         INSERT INTO household
-        (address, latitude, longitude, amount_water, last_water_change)
-        VALUES (?, ?, ?, ?, ?)
+        (id, address, latitude, longitude, amount_water, last_water_change)
+        VALUES (?, ?, ?, ?, ?, ?)
         """,
-        "Test address 2", 64.33, 31.45, 24, new Date()
+        46, "Test address 2", 64.33, 31.45, 24, new Date()
     );
   }
 
@@ -77,10 +75,10 @@ public class HouseholdRepositoryTest {
   void savedHouseholdsCanBeRetrievedById() {
 
 
-    var result = householdRepository.findById(1L);
+    var result = householdRepository.findById(45L);
 
     assertTrue(result.isPresent());
-    assertEquals(1L, result.get().getId());
+    assertEquals(45L, result.get().getId());
     assertEquals("Test address", result.get().getAddress());
     assertEquals(64.34, result.get().getLatitude());
     assertEquals(34.45, result.get().getLongitude());
@@ -131,15 +129,15 @@ public class HouseholdRepositoryTest {
     @Test
     void shouldDeleteExistingHousehold() {
       jdbcTemplate.update("""
-          INSERT INTO household (address, latitude, longitude, amount_water, last_water_change)
-          VALUES (?, ?, ?, ?, ?)
-          """, "Test address", 10.0, 20.0, 100.0, new Date());
+          INSERT INTO household (id, address, latitude, longitude, amount_water, last_water_change)
+          VALUES (?, ?, ?, ?, ?, ?)
+          """, 47, "Test address", 10.0, 20.0, 100.0, new Date());
 
 
       Integer countBefore = jdbcTemplate.queryForObject(
           "SELECT COUNT(*) FROM household WHERE id = ?",
           Integer.class,
-          1L);
+          47L);
       assertEquals(1, countBefore);
 
       householdRepository.deleteById(1L);
