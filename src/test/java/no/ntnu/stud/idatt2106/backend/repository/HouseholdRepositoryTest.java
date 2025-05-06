@@ -38,18 +38,18 @@ public class HouseholdRepositoryTest {
 
     jdbcTemplate.update("""
         INSERT INTO household
-        (adress, latitude, longitude, amount_water, last_water_change)
+        (address, latitude, longitude, amount_water, last_water_change)
         VALUES (?, ?, ?, ?, ?)
         """,
-        "Test adress", 64.34, 34.45, 23, new Date()
+        "Test address", 64.34, 34.45, 23, new Date()
     );
 
     jdbcTemplate.update("""
         INSERT INTO household
-        (adress, latitude, longitude, amount_water, last_water_change)
+        (address, latitude, longitude, amount_water, last_water_change)
         VALUES (?, ?, ?, ?, ?)
         """,
-        "Test adress 2", 64.33, 31.45, 24, new Date()
+        "Test address 2", 64.33, 31.45, 24, new Date()
     );
   }
 
@@ -81,7 +81,7 @@ public class HouseholdRepositoryTest {
 
     assertTrue(result.isPresent());
     assertEquals(1L, result.get().getId());
-    assertEquals("Test adress", result.get().getAddress());
+    assertEquals("Test address", result.get().getAddress());
     assertEquals(64.34, result.get().getLatitude());
     assertEquals(34.45, result.get().getLongitude());
     assertEquals(23, result.get().getWaterAmountLiters());
@@ -92,8 +92,8 @@ public class HouseholdRepositoryTest {
     List<Household> result = householdRepository.findAll();
 
     assertEquals(2, result.size());
-    assertTrue(result.stream().anyMatch(h -> h.getAddress().equals("Test adress")));
-    assertTrue(result.stream().anyMatch(h -> h.getAddress().equals("Test adress")));
+    assertTrue(result.stream().anyMatch(h -> h.getAddress().equals("Test address")));
+    assertTrue(result.stream().anyMatch(h -> h.getAddress().equals("Test address")));
   }
 
   @Nested
@@ -118,7 +118,7 @@ public class HouseholdRepositoryTest {
       // Assert
       Map<String, Object> result = 
           jdbcTemplate.queryForMap("SELECT * FROM household WHERE id = ?", id);
-      assertEquals("New Address", result.get("adress"));
+      assertEquals("New Address", result.get("address"));
       assertEquals(55.5, (Double) result.get("latitude"), 0.001);
       assertEquals(66.6, (Double) result.get("longitude"), 0.001);
       assertEquals(200.0, (Double) result.get("amount_water"), 0.001);
@@ -131,7 +131,7 @@ public class HouseholdRepositoryTest {
     @Test
     void shouldDeleteExistingHousehold() {
       jdbcTemplate.update("""
-          INSERT INTO household (adress, latitude, longitude, amount_water, last_water_change)
+          INSERT INTO household (address, latitude, longitude, amount_water, last_water_change)
           VALUES (?, ?, ?, ?, ?)
           """, "Test address", 10.0, 20.0, 100.0, new Date());
 

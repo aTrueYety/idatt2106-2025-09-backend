@@ -33,7 +33,7 @@ public class ExtraResidentRepositoryTest {
     jdbc.update("INSERT INTO extra_resident_type (id, name, consumption_water, consumption_food) VALUES (?, ?, ?, ?)",
         1L, "Visitor", 1.0f, 1.5f);
 
-    jdbc.update("INSERT INTO household (id, adress, latitude, longitude, amount_water, last_water_change) " +
+    jdbc.update("INSERT INTO household (id, address, latitude, longitude, amount_water, last_water_change) " +
         "VALUES (?, ?, ?, ?, ?, CURRENT_DATE)",
         1L, "Somewhere", 1.1f, 1.2f, 50.0f);
   }
