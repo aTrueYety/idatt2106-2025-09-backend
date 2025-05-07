@@ -127,7 +127,8 @@ public class MapObjectServiceTest {
   void shouldThrowWhenUpdatingMapObjectIfNotAdmin() {
     when(jwtService.extractIsAdmin(any())).thenReturn(false);
     MapObject mapObject = new MapObject();
-    assertThrows(IllegalArgumentException.class, () -> service.updateMapObject(mapObject, "Bearer token"));
+    assertThrows(IllegalArgumentException.class,
+        () -> service.updateMapObject(mapObject, "Bearer token"));
   }
 
   @Test
@@ -145,7 +146,8 @@ public class MapObjectServiceTest {
 
   @Test
   void shouldFindMapObjectsInBounds() {
-    when(repositoryImpl.findAllInBoundsWithDetail(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+    when(repositoryImpl
+        .findAllInBoundsWithDetail(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
         .thenReturn(Collections.emptyList());
     List<MapObjectResponse> result = service.getMapObjectsInBounds(0, 0, 0, 0);
     assertThat(result).isEmpty();
@@ -168,10 +170,12 @@ public class MapObjectServiceTest {
     response2.setLongitude(10.394000f);
     response2.setDescription("Test Description 2");
 
-    when(repositoryImpl.findAllInBoundsWithDetail(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
+    when(repositoryImpl
+        .findAllInBoundsWithDetail(anyDouble(), anyDouble(), anyDouble(), anyDouble()))
         .thenReturn(List.of(response1, response2));
 
-    List<MapObjectResponse> result = service.getMapObjectsInBounds(63.420000, 63.423000, 10.390000, 10.400000);
+    List<MapObjectResponse> result = service.getMapObjectsInBounds(63.420000,
+        63.423000, 10.390000, 10.400000);
 
     assertThat(result).hasSize(2);
     assertThat(result.get(0).getId()).isEqualTo(1L);
@@ -179,13 +183,15 @@ public class MapObjectServiceTest {
     assertThat(result.get(1).getId()).isEqualTo(2L);
     assertThat(result.get(1).getDescription()).isEqualTo("Test Description 2");
 
-    verify(repositoryImpl).findAllInBoundsWithDetail(63.420000, 63.423000, 10.390000, 10.400000);
+    verify(repositoryImpl).findAllInBoundsWithDetail(63.420000,
+        63.423000, 10.390000, 10.400000);
   }
 
   @Test
   void shouldFindClosestMapObject() {
     MapObjectResponse response = new MapObjectResponse();
-    when(repositoryImpl.findClosestWithDetail(anyDouble(), anyDouble(), anyLong())).thenReturn(response);
+    when(repositoryImpl.findClosestWithDetail(anyDouble(),
+        anyDouble(), anyLong())).thenReturn(response);
     MapObjectResponse result = service.getClosestMapObject(0, 0, 1);
     assertThat(result).isEqualTo(response);
     verify(repositoryImpl).findClosestWithDetail(0, 0, 1);

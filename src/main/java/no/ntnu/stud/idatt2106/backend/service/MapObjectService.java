@@ -5,7 +5,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.MapObject;
 import no.ntnu.stud.idatt2106.backend.model.request.MapObjectRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.MapObjectResponse;
 import no.ntnu.stud.idatt2106.backend.repository.MapObjectRepositoryImpl;
-import no.ntnu.stud.idatt2106.backend.service.factory.MapObjectFactory;
+import no.ntnu.stud.idatt2106.backend.service.mapper.MapObjectMapper;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class MapObjectService {
   public void createMapObject(MapObjectRequest request, String token) {
     Validate.isValid(jwtService.extractIsAdmin(token.substring(7)), "User is not admin");
 
-    MapObject object = MapObjectFactory.requestToMapObject(request);
+    MapObject object = MapObjectMapper.requestToMapObject(request);
     mapObjectRepository.save(object);
 
 

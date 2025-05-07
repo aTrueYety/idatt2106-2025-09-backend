@@ -2,11 +2,11 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-import no.ntnu.stud.idatt2106.backend.mapper.ExtraResidentTypeMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResidentType;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
 import no.ntnu.stud.idatt2106.backend.repository.ExtraResidentTypeRepository;
+import no.ntnu.stud.idatt2106.backend.service.mapper.ExtraResidentTypeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

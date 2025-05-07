@@ -1,10 +1,12 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
-
 import no.ntnu.stud.idatt2106.backend.model.base.MapObjectType;
 import no.ntnu.stud.idatt2106.backend.model.request.MapObjectTypeRequest;
 import no.ntnu.stud.idatt2106.backend.repository.MapObjectTypeRepositoryImpl;
@@ -14,6 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+/**
+ * Contains tests for MapObjectTypeService.
+ */
 public class MapObjectTypeServiceTest {
 
   @Mock

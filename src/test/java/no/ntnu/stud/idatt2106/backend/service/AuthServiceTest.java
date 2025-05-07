@@ -2,7 +2,6 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -15,9 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import jakarta.mail.MessagingException;
 import no.ntnu.stud.idatt2106.backend.model.base.PasswordResetKey;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.LoginRequest;
@@ -29,7 +26,6 @@ import no.ntnu.stud.idatt2106.backend.model.response.LoginResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.RegisterResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.CredentialsUpdate;
 import no.ntnu.stud.idatt2106.backend.util.EmailTemplates;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,10 +35,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import jakarta.mail.MessagingException;
 
 /**
  * Unit tests for the AuthService class.
@@ -52,18 +45,21 @@ public class AuthServiceTest {
 
   @Mock
   private JwtService jwtService;
+
   @Mock
   private AuthenticationManager authManager;
+
   @Mock
   private Authentication authentication;
+
   @Mock
   private UserService userService;
+
   @Mock
   private EmailService emailService;
+
   @Mock
   private PasswordResetService passwordResetKeyService;
-
-  private static final Logger logger = LoggerFactory.getLogger(AuthServiceTest.class);
 
   @Mock
   private BCryptPasswordEncoder encoder;
@@ -91,7 +87,6 @@ public class AuthServiceTest {
     RegisterRequest request = new RegisterRequest("newUser",
         "Password123", "new@example.com");
     RegisterResponse response = authService.register(request);
-    logger.info("Response: Test {}", response.getToken());
     assertEquals("Registration successful!", response.getMessage());
     assertEquals("token123", response.getToken());
   }
@@ -212,7 +207,8 @@ public class AuthServiceTest {
     RuntimeException exception = assertThrows(RuntimeException.class, () -> {
       authService.register(request);
     });
-    assertEquals("New password must be at least 8 characters long, including both a letter and a digit",
+    assertEquals(
+        "New password must be at least 8 characters long, including both a letter and a digit",
         exception.getMessage());
   }
 

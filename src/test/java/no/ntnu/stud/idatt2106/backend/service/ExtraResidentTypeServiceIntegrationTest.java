@@ -1,5 +1,8 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
 import no.ntnu.stud.idatt2106.backend.repository.ExtraResidentTypeRepositoryImpl;
@@ -9,10 +12,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+/**
+ * Integration tests for ExtraResidentTypeService.
+ */
 @JdbcTest
 @ActiveProfiles("test")
 @Import({ ExtraResidentTypeService.class, ExtraResidentTypeRepositoryImpl.class })

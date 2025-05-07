@@ -1,8 +1,15 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,12 +20,16 @@ import no.ntnu.stud.idatt2106.backend.model.base.SharedFoodKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+/**
+ * Tests for SharedFoodRepository.
+ */
 @ExtendWith(MockitoExtension.class)
 class SharedFoodRepositoryTest {
 
@@ -53,7 +64,7 @@ class SharedFoodRepositoryTest {
     List<SharedFood> returned = Collections.singletonList(sample);
     when(jdbcTemplate.query(
         eq("SELECT * FROM shared_food WHERE food_id = ? AND group_household_id = ?"),
-        any(RowMapper.class),
+        ArgumentMatchers.<RowMapper<SharedFood>>any(),
         eq(key.getFoodId()),
         eq(key.getGroupHouseholdId()))).thenReturn(returned);
 
@@ -65,7 +76,10 @@ class SharedFoodRepositoryTest {
   @Test
   void findById_whenNotFound_shouldReturnEmptyOptional() {
     when(jdbcTemplate.query(
-        anyString(), any(RowMapper.class), any(), any())).thenReturn(Collections.emptyList());
+        anyString(), 
+        ArgumentMatchers.<RowMapper<SharedFood>>any(), 
+        any(), 
+        any())).thenReturn(Collections.emptyList());
 
     Optional<SharedFood> result = repository.findById(key);
     assertFalse(result.isPresent());
@@ -76,7 +90,9 @@ class SharedFoodRepositoryTest {
     List<SharedFood> list = Arrays.asList(
         new SharedFood(new SharedFoodKey(1L, 1L), 1.0f),
         new SharedFood(new SharedFoodKey(2L, 2L), 2.0f));
-    when(jdbcTemplate.query(eq("SELECT * FROM shared_food"), any(RowMapper.class))).thenReturn(list);
+    when(jdbcTemplate.query(
+        eq("SELECT * FROM shared_food"), 
+        ArgumentMatchers.<RowMapper<SharedFood>>any())).thenReturn(list);
 
     List<SharedFood> result = repository.findAll();
     assertEquals(list, result);
@@ -123,7 +139,7 @@ class SharedFoodRepositoryTest {
     List<SharedFood> list = Arrays.asList(sample);
     when(jdbcTemplate.query(
         eq("SELECT * FROM shared_food WHERE group_household_id = ?"),
-        any(RowMapper.class),
+        ArgumentMatchers.<RowMapper<SharedFood>>any(),
         eq(groupId))).thenReturn(list);
 
     List<SharedFood> result = repository.findByGroupHouseholdId(groupId);

@@ -1,6 +1,8 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
-import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodTypeResponse;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepositoryImpl;
@@ -10,10 +12,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+/**
+ * Integration tests for FoodTypeService.
+ */
 @JdbcTest
 @ActiveProfiles("test")
 @Import({ FoodTypeService.class, FoodTypeRepositoryImpl.class })

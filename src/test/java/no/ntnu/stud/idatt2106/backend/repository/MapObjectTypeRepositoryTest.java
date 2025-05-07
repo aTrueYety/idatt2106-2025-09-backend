@@ -1,10 +1,9 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
-import no.ntnu.stud.idatt2106.backend.model.base.MapObjectType;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-
+import no.ntnu.stud.idatt2106.backend.model.base.MapObjectType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -12,6 +11,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+/**
+ * Tests for MapObjectTypeRepository.
+ */
 @JdbcTest
 @ActiveProfiles("test")
 @Import(MapObjectTypeRepositoryImpl.class)
@@ -41,7 +43,9 @@ public class MapObjectTypeRepositoryTest {
 
   @Test
   void shouldUpdate() {
-    jdbc.update("INSERT INTO map_object_type (id, name, icon) VALUES (?, ?, ?)", 1L, "Shelter", "old-icon.png");
+    jdbc.update("""
+        INSERT INTO map_object_type (id, name, icon) VALUES (?, ?, ?)
+        """, 1L, "Shelter", "old-icon.png");
 
     MapObjectType updateType = new MapObjectType(1L, "Updated Shelter", "new-icon.png");
     repository.update(updateType);
@@ -53,7 +57,9 @@ public class MapObjectTypeRepositoryTest {
 
   @Test
   void shouldDeleteById() {
-    jdbc.update("INSERT INTO map_object_type (id, name, icon) VALUES (?, ?, ?)", 2L, "Shelter", "icon.png");
+    jdbc.update("""
+        INSERT INTO map_object_type (id, name, icon) VALUES (?, ?, ?)
+        """, 2L, "Shelter", "icon.png");
 
     repository.deleteById(2L);
 
@@ -63,8 +69,12 @@ public class MapObjectTypeRepositoryTest {
 
   @Test
   void findAllShouldReturnMultiple() {
-    jdbc.update("INSERT INTO map_object_type (id, name, icon) VALUES (?, ?, ?)", 1L, "Shelter", "icon1.png");
-    jdbc.update("INSERT INTO map_object_type (id, name, icon) VALUES (?, ?, ?)", 2L, "Storage", "icon2.png");
+    jdbc.update("""
+        INSERT INTO map_object_type (id, name, icon) VALUES (?, ?, ?)
+        """, 1L, "Shelter", "icon1.png");
+    jdbc.update("""
+        INSERT INTO map_object_type (id, name, icon) VALUES (?, ?, ?)
+        """, 2L, "Storage", "icon2.png");
 
     List<MapObjectType> types = repository.findAll();
     assertThat(types).hasSize(2);
