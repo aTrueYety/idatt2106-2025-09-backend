@@ -1,5 +1,11 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.mapper.GroupHouseholdMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
 import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
@@ -7,14 +13,6 @@ import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.GroupHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Optional;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -160,6 +158,30 @@ public class GroupHouseholdServiceTests {
         verify(groupHouseholdRepository).save(newGroupHousehold);
         verify(groupInviteService).deleteGroupInvite(5L, groupId);
       }
+    }
+  }
+
+  @Nested
+  class RefectInviteTests {
+
+
+    @Test
+    void shouldDeleteInvite() {
+      Long userId = 1L;
+      Long householdId = 3L;
+      User user = new User();
+      user.setId(userId);
+      user.setHouseholdId(householdId);
+      String token = "Bearer token";
+      Long groupId = 10L;
+
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+      when(userService.getUserById(userId)).thenReturn(user);
+      when(groupInviteService.hasGroupInvite(householdId, groupId)).thenReturn(true);
+
+      groupHouseholdService.rejectInvite(groupId, token);
+
+      verify(groupInviteService).deleteGroupInvite(householdId, groupId);
     }
   }
 }
