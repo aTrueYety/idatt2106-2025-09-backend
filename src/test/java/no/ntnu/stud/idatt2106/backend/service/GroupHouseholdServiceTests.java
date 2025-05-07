@@ -1,5 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import no.ntnu.stud.idatt2106.backend.mapper.GroupHouseholdMapper;
+import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
 import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.GroupHouseholdRequest;
@@ -18,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -114,6 +118,48 @@ public class GroupHouseholdServiceTests {
       groupHouseholdService.invite(request, token);
       
       verify(groupInviteService).createGroupInvite(2L, 5L);
+    }
+  }
+
+  @Nested
+  class AcceptInviteTests {
+
+    @Test
+    void shouldCreateNewGroupHouseholdRequestAndDeleteInvite() {
+      Long userId = 2L;
+      User user = new User();
+      user.setId(userId);
+      user.setHouseholdId(5L);
+
+      Long groupId = 1L;
+      EmergencyGroup group = new EmergencyGroup();
+      group.setId(groupId);
+
+      String token = "Bearer token";
+
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(2L);
+      when(userService.getUserById(userId)).thenReturn(user);
+      when(groupHouseholdRepository.findByHouseholdIdAndGroupId(5L, 1L)).thenReturn(null);
+      when(groupInviteService.hasGroupInvite(5L, 1L)).thenReturn(true);
+
+      GroupHouseholdRequest createRequest = new GroupHouseholdRequest();
+      createRequest.setGroupId(groupId);
+      createRequest.setHouseholdId(5L);
+
+      GroupHousehold newGroupHousehold = new GroupHousehold();
+      newGroupHousehold.setGroupId(groupId);
+      newGroupHousehold.setHouseholdId(5L);
+
+      try (MockedStatic<GroupHouseholdMapper> mapper 
+          = Mockito.mockStatic(GroupHouseholdMapper.class)) {
+        mapper.when(() -> GroupHouseholdMapper.toModel(createRequest))
+            .thenReturn(newGroupHousehold);
+        
+        groupHouseholdService.acceptInvite(groupId, token);
+
+        verify(groupHouseholdRepository).save(newGroupHousehold);
+        verify(groupInviteService).deleteGroupInvite(5L, groupId);
+      }
     }
   }
 }
