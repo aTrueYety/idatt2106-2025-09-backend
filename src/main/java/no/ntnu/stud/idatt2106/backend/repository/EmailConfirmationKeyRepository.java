@@ -23,6 +23,14 @@ public interface EmailConfirmationKeyRepository {
   EmailConfirmationKey findByKey(String key);
 
   /**
+   * Finds an EmailConfirmationKey by its user ID.
+   *
+   * @param userId The user ID of the EmailConfirmationKey to find.
+   * @return An Optional containing the EmailConfirmationKey if found, or empty if
+   */
+  EmailConfirmationKey findByUserId(Long userId);
+
+  /**
    * Updates an existing EmailConfirmationKey in the database.
    *
    * @param key The EmailConfirmationKey to update.
@@ -35,4 +43,11 @@ public interface EmailConfirmationKeyRepository {
    * @param key The key of the EmailConfirmationKey to delete.
    */
   void deleteByKey(String key);
+
+  /**
+   * Deletes an EmailConfirmationKey by its user ID.
+   *
+   * @param userId The user ID of the EmailConfirmationKey to delete.
+   */
+  void deleteByUserId(Long userId);
 }

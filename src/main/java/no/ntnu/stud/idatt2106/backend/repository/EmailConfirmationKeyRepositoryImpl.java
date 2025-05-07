@@ -25,14 +25,21 @@ public class EmailConfirmationKeyRepositoryImpl implements EmailConfirmationKeyR
 
   @Override
   public void save(EmailConfirmationKey key) {
-    String sql = "INSERT INTO email_confirmation_key (user_id, created_at, `key`) VALUES (?, ?, ?)";
-    jdbcTemplate.update(sql, key.getUserId(), key.getCreatedAt(), key.getKey());
+    String sql = "INSERT INTO email_confirmation_key (user_id, `key`) VALUES (?, ?)";
+    jdbcTemplate.update(sql, key.getUserId(), key.getKey());
   }
 
   @Override
   public EmailConfirmationKey findByKey(String key) {
     String sql = "SELECT * FROM email_confirmation_key WHERE `key` = ?";
     List<EmailConfirmationKey> keys = jdbcTemplate.query(sql, rowMapper, key);
+    return keys.isEmpty() ? null : keys.get(0);
+  }
+
+  @Override
+  public EmailConfirmationKey findByUserId(Long userId) {
+    String sql = "SELECT * FROM email_confirmation_key WHERE user_id = ?";
+    List<EmailConfirmationKey> keys = jdbcTemplate.query(sql, rowMapper, userId);
     return keys.isEmpty() ? null : keys.get(0);
   }
 
@@ -48,4 +55,9 @@ public class EmailConfirmationKeyRepositoryImpl implements EmailConfirmationKeyR
     jdbcTemplate.update(sql, key);
   }
 
+  @Override
+  public void deleteByUserId(Long userId) {
+    String sql = "DELETE FROM email_confirmation_key WHERE user_id = ?";
+    jdbcTemplate.update(sql, userId);
+  }
 }
