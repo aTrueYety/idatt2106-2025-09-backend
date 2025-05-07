@@ -1,4 +1,3 @@
-/* */
 package no.ntnu.stud.idatt2106.backend.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -6,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -19,11 +16,9 @@ import org.springframework.test.context.ActiveProfiles;
 /**
  * Integration test class for the UserRepository class.
  */
-
- /* 
 @JdbcTest
 @ActiveProfiles("Test")
-@Import(UserRepository.class)
+@Import(UserRepositoryImpl.class)
 public class UserRepositoryTest {
 
   @Autowired
@@ -117,8 +112,7 @@ public class UserRepositoryTest {
 
     User userBefore = userRepository.findUserByUsername("newuser");
     assertEquals(null, userBefore);
-    int rowsAffected = userRepository.addUser(user);
-    assertEquals(1, rowsAffected);
+    userRepository.addUser(user);
     User userAfter = userRepository.findUserByUsername("newuser");
     assertEquals("newuser", userAfter.getUsername());
   }
@@ -136,4 +130,3 @@ public class UserRepositoryTest {
     assertEquals("updateduser", updatedUser.getUsername());
   }
 }
-*/
