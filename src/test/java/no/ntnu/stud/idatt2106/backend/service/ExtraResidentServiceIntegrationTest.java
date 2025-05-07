@@ -18,6 +18,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.test.context.ActiveProfiles;
 
+/**
+ * Integration tests for ExtraResidentService.
+ */
 @JdbcTest
 @ActiveProfiles("test")
 @Import({ ExtraResidentService.class, ExtraResidentRepositoryImpl.class })
@@ -38,7 +41,10 @@ public class ExtraResidentServiceIntegrationTest {
     var householdKey = new GeneratedKeyHolder();
     jdbc.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
-          "INSERT INTO household (address, latitude, longitude, amount_water, last_water_change) VALUES (?, ?, ?, ?, CURRENT_DATE)",
+          """
+              INSERT INTO household (address, latitude, longitude, amount_water, last_water_change) 
+              VALUES (?, ?, ?, ?, CURRENT_DATE)
+          """,
           Statement.RETURN_GENERATED_KEYS);
       ps.setString(1, "Test Street");
       ps.setFloat(2, 1.1f);
@@ -52,7 +58,10 @@ public class ExtraResidentServiceIntegrationTest {
     var typeKey = new GeneratedKeyHolder();
     jdbc.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
-          "INSERT INTO extra_resident_type (name, consumption_water, consumption_food) VALUES (?, ?, ?)",
+          """
+              INSERT INTO extra_resident_type (name, consumption_water, consumption_food) 
+              VALUES (?, ?, ?)
+              """,
           Statement.RETURN_GENERATED_KEYS);
       ps.setString(1, "Guest");
       ps.setFloat(2, 1.5f);

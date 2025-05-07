@@ -37,13 +37,15 @@ import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Contains tests for the HouseholdService class.
  */
+@ExtendWith(MockitoExtension.class)
 public class HouseholdServiceTest {
 
   @InjectMocks
@@ -72,8 +74,6 @@ public class HouseholdServiceTest {
 
   @BeforeEach
   void setup() {
-    MockitoAnnotations.openMocks(this);
-
     User mockUser = new User();
     mockUser.setUsername("Testuser");
     when(userService.getUserByUsername("Testuser")).thenReturn(mockUser);

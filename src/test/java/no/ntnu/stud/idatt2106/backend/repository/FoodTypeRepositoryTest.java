@@ -8,9 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+/**
+ * Contains tests for FoodTypeRepository.
+ */
 @JdbcTest
 @ActiveProfiles("test")
 @Import(FoodTypeRepositoryImpl.class)
@@ -18,9 +20,6 @@ public class FoodTypeRepositoryTest {
 
   @Autowired
   private FoodTypeRepository repository;
-
-  @Autowired
-  private JdbcTemplate jdbc;
 
   @Test
   void shouldSaveAndFindFoodType() {

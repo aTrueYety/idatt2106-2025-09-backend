@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Contains tests for the EventService class.
+ * Contains unit tests for the EventService class.
  */
 @ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
