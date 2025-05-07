@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,10 +37,13 @@ public class SharedFoodController {
    */
   @Operation(summary = "Create a new shared food entry")
   @PostMapping
-  public ResponseEntity<Void> create(@RequestBody SharedFoodRequest request) {
-    service.create(request);
+  public ResponseEntity<Void> create(
+      @RequestBody SharedFoodRequest request,
+      @RequestHeader("Authorization") String token) {
+    service.create(request, token);
     return ResponseEntity.status(201).build();
   }
+  
 
   /**
    * Retrieves all shared food entries.
@@ -58,32 +62,34 @@ public class SharedFoodController {
    * @param request the shared food request containing updated information
    * @return ResponseEntity indicating the result of the update operation
    */
-  @Operation(summary = "Update amount for shared food entry")
   @PutMapping
-  public ResponseEntity<Void> update(@RequestBody SharedFoodRequest request) {
-    return service.update(request)
+  public ResponseEntity<Void> update(
+      @RequestBody SharedFoodRequest request,
+      @RequestHeader("Authorization") String token) {
+    return service.update(request, token)
         ? ResponseEntity.ok().build()
         : ResponseEntity.notFound().build();
   }
+  
 
   /**
    * Deletes a shared food entry based on the provided food ID and group household
    * ID.
    *
    * @param foodId           the ID of the food item
-   * @param groupHouseholdId the ID of the group household associated with the
-   *                         food
    * @return ResponseEntity indicating the result of the delete operation
    */
   @Operation(summary = "Delete a shared food entry")
-  @DeleteMapping("/{foodId}/{groupHouseholdId}")
-  public ResponseEntity<Void> delete(@PathVariable Long foodId,
-      @PathVariable Long groupHouseholdId) {
-    return service.delete(foodId, groupHouseholdId)
+  @DeleteMapping("/{foodId}/{groupId}")
+  public ResponseEntity<Void> delete(
+      @PathVariable Long foodId,
+      @PathVariable Long groupId,
+      @RequestHeader("Authorization") String token) {
+    return service.delete(foodId, groupId, token)
         ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();
   }
-
+  
   /**
    * Moves a portion of food to a shared group.
    *
@@ -93,8 +99,10 @@ public class SharedFoodController {
    */
   @Operation(summary = "Move food to a shared group (reduces original amount)")
   @PostMapping("/move")
-  public ResponseEntity<Void> moveFood(@RequestBody SharedFoodRequest request) {
-    return service.moveFoodToSharedGroup(request)
+  public ResponseEntity<Void> moveFood(
+      @RequestBody SharedFoodRequest request,
+      @RequestHeader("Authorization") String token) {
+    return service.moveFoodToSharedGroup(request, token)
         ? ResponseEntity.ok().build()
         : ResponseEntity.badRequest().build();
   }
@@ -120,11 +128,14 @@ public class SharedFoodController {
    */
   @Operation(summary = "Move food from a shared group back to the household")
   @PostMapping("/unshare")
-  public ResponseEntity<Void> moveFoodBack(@RequestBody SharedFoodRequest request) {
-    return service.moveFoodFromSharedGroup(request)
+  public ResponseEntity<Void> moveFoodBack(
+      @RequestBody SharedFoodRequest request,
+      @RequestHeader("Authorization") String token) {
+    return service.moveFoodFromSharedGroup(request, token)
         ? ResponseEntity.ok().build()
         : ResponseEntity.badRequest().build();
   }
+  
 
   /**
    * Retrieves a detailed summary of shared food for the entire group.

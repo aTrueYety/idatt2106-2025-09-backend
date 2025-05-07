@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SharedFoodRequest {
   private Long foodId;
-  private Long groupHouseholdId;
   private float amount;
+  private Long groupId;
 }
