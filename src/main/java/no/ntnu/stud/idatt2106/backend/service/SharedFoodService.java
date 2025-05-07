@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import no.ntnu.stud.idatt2106.backend.mapper.SharedFoodMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
 import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
@@ -21,6 +20,7 @@ import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
 import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.repository.SharedFoodRepository;
+import no.ntnu.stud.idatt2106.backend.service.mapper.SharedFoodMapper;
 import org.springframework.stereotype.Service;
 
 /**

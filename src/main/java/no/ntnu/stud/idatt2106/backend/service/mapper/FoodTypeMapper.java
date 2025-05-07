@@ -1,4 +1,4 @@
-package no.ntnu.stud.idatt2106.backend.mapper;
+package no.ntnu.stud.idatt2106.backend.service.mapper;
 
 import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;

@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import no.ntnu.stud.idatt2106.backend.mapper.ExtraResidentMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResident;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.ExtraResidentUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.ExtraResidentRepository;
+import no.ntnu.stud.idatt2106.backend.service.mapper.ExtraResidentMapper;
 import org.springframework.stereotype.Service;
 
 

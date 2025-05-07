@@ -1,4 +1,4 @@
-package no.ntnu.stud.idatt2106.backend.service.factory;
+package no.ntnu.stud.idatt2106.backend.service.mapper;
 
 import no.ntnu.stud.idatt2106.backend.model.base.MapObject;
 import no.ntnu.stud.idatt2106.backend.model.request.MapObjectRequest;
@@ -7,7 +7,7 @@ import no.ntnu.stud.idatt2106.backend.model.request.MapObjectRequest;
  * Factory class for creating MapObject objects and converting between different
  * representations of map objects.
  */
-public class MapObjectFactory {
+public class MapObjectMapper {
   /**
    * Converts a MapObjectRequest object to a MapObject object.
    *

@@ -3,11 +3,11 @@ package no.ntnu.stud.idatt2106.backend.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import no.ntnu.stud.idatt2106.backend.mapper.KitMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Kit;
 import no.ntnu.stud.idatt2106.backend.model.request.KitRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.KitResponse;
 import no.ntnu.stud.idatt2106.backend.repository.KitRepository;
+import no.ntnu.stud.idatt2106.backend.service.mapper.KitMapper;
 import org.springframework.stereotype.Service;
 
 /**

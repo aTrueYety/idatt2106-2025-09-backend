@@ -1,26 +1,48 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
-import no.ntnu.stud.idatt2106.backend.model.response.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.HouseholdKitResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.KitResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.LevelOfPreparednessResponse;
+import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
+/**
+ * Unit tests for LevelOfPreparedneddService.
+ */
+@ExtendWith(MockitoExtension.class)
 public class LevelOfPreparednessServiceTest {
 
+  @Mock
   private FoodService foodService;
+  @Mock
   private HouseholdService householdService;
+  @Mock
   private HouseholdKitService householdKitService;
+  @Mock
   private KitService kitService;
+  @Mock
   private ExtraResidentService extraResidentService;
+  @Mock
   private ExtraResidentTypeService extraResidentTypeService;
+  @Mock
   private UserService userService;
 
+  @InjectMocks
   private LevelOfPreparednessService preparednessService;
 
   private ExtraResidentResponse extraResident1;
@@ -30,18 +52,6 @@ public class LevelOfPreparednessServiceTest {
 
   @BeforeEach
   void setup() {
-    foodService = mock(FoodService.class);
-    householdService = mock(HouseholdService.class);
-    householdKitService = mock(HouseholdKitService.class);
-    kitService = mock(KitService.class);
-    extraResidentService = mock(ExtraResidentService.class);
-    extraResidentTypeService = mock(ExtraResidentTypeService.class);
-    userService = mock(UserService.class);
-
-    preparednessService = new LevelOfPreparednessService(
-        foodService, householdKitService,
-        kitService, extraResidentService, extraResidentTypeService, userService);
-
     // Shared test data
     extraResident1 = new ExtraResidentResponse();
     extraResident1.setId(1L);
@@ -182,7 +192,8 @@ public class LevelOfPreparednessServiceTest {
     householdResponse.setWaterAmountLiters(12.0);
 
     // Mock individual preparedness data
-    when(foodService.getCaloriesByHouseholdId(householdId)).thenReturn(4000.0); // 2/3 of required calories
+    when(foodService.getCaloriesByHouseholdId(householdId))
+        .thenReturn(4000.0); // 2/3 of required calories
     when(userService.getUsersByHouseholdId(householdId)).thenReturn(List.of(new UserResponse()));
     when(extraResidentService.getAll()).thenReturn(List.of());
     when(householdKitService.getByHouseholdId(householdId))
@@ -217,7 +228,8 @@ public class LevelOfPreparednessServiceTest {
     when(kitService.getAll()).thenReturn(List.of(new KitResponse(),
         new KitResponse(), new KitResponse()));
 
-    LevelOfPreparednessResponse response = preparednessService.getPreparednessForHousehold(householdResponse);
+    LevelOfPreparednessResponse response = 
+        preparednessService.getPreparednessForHousehold(householdResponse);
 
     assertNotNull(response);
     assertEquals(1.0, response.getLevelOfPreparednessFood());
@@ -227,7 +239,7 @@ public class LevelOfPreparednessServiceTest {
   }
 
   @Test
-  public void testGetPreparednessFOrHouseholdNotPerfectPreparedness() {
+  public void testGetPreparednessForHouseholdNotPerfectPreparedness() {
     long householdId = 6L;
 
     HouseholdResponse householdResponse = new HouseholdResponse();
@@ -243,7 +255,8 @@ public class LevelOfPreparednessServiceTest {
     when(kitService.getAll()).thenReturn(List.of(new KitResponse(),
         new KitResponse(), new KitResponse()));
 
-    LevelOfPreparednessResponse response = preparednessService.getPreparednessForHousehold(householdResponse);
+    LevelOfPreparednessResponse response = 
+        preparednessService.getPreparednessForHousehold(householdResponse);
 
     assertNotNull(response);
     assertEquals(0.35714, response.getLevelOfPreparednessFood(), 0.0001);
@@ -271,7 +284,8 @@ public class LevelOfPreparednessServiceTest {
 
     // Water decreases to 3L -> 3 / 40 = 0.075
     householdResponse.setWaterAmountLiters(3.0);
-    double decreasedResult = preparednessService.calculateLevelOfPreparednessWater(householdResponse);
+    double decreasedResult = 
+        preparednessService.calculateLevelOfPreparednessWater(householdResponse);
     assertEquals(0.075, decreasedResult, 0.0001);
   }
 
@@ -314,11 +328,13 @@ public class LevelOfPreparednessServiceTest {
         new KitResponse(),
         new KitResponse()));
 
-    double initialResult = preparednessService.calculateOverallLevelOfPreparedness(householdResponse);
+    double initialResult = preparednessService
+        .calculateOverallLevelOfPreparedness(householdResponse);
     assertEquals(1.0, initialResult, 0.0001);
 
     householdResponse.setWaterAmountLiters(6.0);
-    double decreasedResult = preparednessService.calculateOverallLevelOfPreparedness(householdResponse);
+    double decreasedResult = preparednessService
+        .calculateOverallLevelOfPreparedness(householdResponse);
     assertTrue(decreasedResult < 1.0);
     assertTrue(decreasedResult < initialResult);
   }

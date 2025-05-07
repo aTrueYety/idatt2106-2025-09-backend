@@ -1,5 +1,10 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.ExtraResidentUpdate;
@@ -13,12 +18,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+/**
+ * Integration tests for ExtraResidentService.
+ */
 @JdbcTest
 @ActiveProfiles("test")
 @Import({ ExtraResidentService.class, ExtraResidentRepositoryImpl.class })
@@ -39,7 +41,10 @@ public class ExtraResidentServiceIntegrationTest {
     var householdKey = new GeneratedKeyHolder();
     jdbc.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
-          "INSERT INTO household (address, latitude, longitude, amount_water, last_water_change) VALUES (?, ?, ?, ?, CURRENT_DATE)",
+          """
+              INSERT INTO household (address, latitude, longitude, amount_water, last_water_change) 
+              VALUES (?, ?, ?, ?, CURRENT_DATE)
+          """,
           Statement.RETURN_GENERATED_KEYS);
       ps.setString(1, "Test Street");
       ps.setFloat(2, 1.1f);
@@ -53,7 +58,10 @@ public class ExtraResidentServiceIntegrationTest {
     var typeKey = new GeneratedKeyHolder();
     jdbc.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(
-          "INSERT INTO extra_resident_type (name, consumption_water, consumption_food) VALUES (?, ?, ?)",
+          """
+              INSERT INTO extra_resident_type (name, consumption_water, consumption_food) 
+              VALUES (?, ?, ?)
+              """,
           Statement.RETURN_GENERATED_KEYS);
       ps.setString(1, "Guest");
       ps.setFloat(2, 1.5f);

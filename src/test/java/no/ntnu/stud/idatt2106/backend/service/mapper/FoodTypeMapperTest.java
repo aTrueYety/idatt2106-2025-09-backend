@@ -1,12 +1,15 @@
-package no.ntnu.stud.idatt2106.backend.mapper;
+package no.ntnu.stud.idatt2106.backend.service.mapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodTypeResponse;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+/**
+ * Unit tets for the FoodTypeMapper class.
+ */
 public class FoodTypeMapperTest {
 
   @Test

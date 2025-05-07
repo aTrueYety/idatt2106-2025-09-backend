@@ -1,17 +1,18 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResidentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+/**
+ * Contains tests for ExtraResidentTypeRepository.
+ */
 @JdbcTest
 @ActiveProfiles("test")
 @Import(ExtraResidentTypeRepositoryImpl.class)
@@ -19,9 +20,6 @@ public class ExtraResidentTypeRepositoryTest {
 
   @Autowired
   private ExtraResidentTypeRepository repository;
-
-  @Autowired
-  private JdbcTemplate jdbc;
 
   @Test
   void shouldSaveAndRetrieve() {
