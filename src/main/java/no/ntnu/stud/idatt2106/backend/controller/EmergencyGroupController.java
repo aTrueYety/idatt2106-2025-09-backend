@@ -9,7 +9,6 @@ import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryRespon
 import no.ntnu.stud.idatt2106.backend.repository.EmergencyGroupRepository;
 import no.ntnu.stud.idatt2106.backend.service.EmergencyGroupService;
 import no.ntnu.stud.idatt2106.backend.service.mapper.EmergencyGroupMapper;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
