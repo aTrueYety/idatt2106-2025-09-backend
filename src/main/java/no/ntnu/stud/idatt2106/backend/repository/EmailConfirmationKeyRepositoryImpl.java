@@ -5,10 +5,12 @@ import no.ntnu.stud.idatt2106.backend.model.base.EmailConfirmationKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * Repository implementation for managing EmailConfirmationKey entities.
  */
+@Repository
 public class EmailConfirmationKeyRepositoryImpl implements EmailConfirmationKeyRepository {
   @Autowired
   private JdbcTemplate jdbcTemplate;

@@ -76,4 +76,14 @@ public class AdminRegistrationKeyService {
     Validate.that(key, Validate.isNotNull(), "Registration key cannot be null");
     repository.deleteByKey(key);
   }
+
+  /**
+   * Deletes an admin registration key by its user ID.
+   *
+   * @param userId the user ID to delete the registration key for
+   */
+  public void deleteByUserId(Long userId) {
+    Validate.that(userId, Validate.isNotNull(), "User ID cannot be null");
+    repository.deleteByUserId(userId);
+  }
 }
