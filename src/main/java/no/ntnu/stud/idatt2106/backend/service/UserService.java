@@ -237,7 +237,7 @@ public class UserService {
   /**
    * Send an email to the user with a link to verify their email address.
    *
-   * @param user the user to send the email to
+   * @param token the JWT token of the user logged in
    */
   public void sendEmailVerification(String token) {
     User user = getUserById(jwtService.extractUserId(token.substring(7)));
