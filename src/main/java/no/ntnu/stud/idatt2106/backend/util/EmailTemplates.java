@@ -42,7 +42,7 @@ public class EmailTemplates {
     return "<html><body>"
       + "<h1>Tilbakestill passord</h1>"
       + "<p>Vennligst klikk på lenken nedenfor for å tilbakestille passordet ditt:</p>"
-      + "<p><a href='http://localhost:3000/reset-password/" + resetKey + "'>Tilbakestill passord</a></p>"
+      + "<p><a href='{frontendUrl}/reset-password/" + resetKey + "'>Tilbakestill passord</a></p>"
       + "<p>Hvis du ikke ba om dette, vennligst ignorer denne e-posten.</p>"
       + "</body></html>";
   }
@@ -59,7 +59,7 @@ public class EmailTemplates {
       + "<h1>Gratulerer, " + username + "!</h1>"
       + "<p>Du har blitt oppgradert til admin.</p>"
       + "<p>Bruk lenken nedenfor for å registrere deg som admin:</p>"
-      + "<p><a href='http://localhost:3000/register-admin/" + registrationKey + "'>Registrer deg som admin</a></p>"
+      + "<p><a href='{frontendUrl}/register-admin/" + registrationKey + "'>Registrer deg som admin</a></p>"
       + "</body></html>";
   }
 
@@ -72,7 +72,7 @@ public class EmailTemplates {
     return "<html><body>"
       + "<h1>Bekreft e-postadresse</h1>"
       + "<p>Vennligst klikk på lenken nedenfor for å bekrefte e-postadressen din:</p>"
-      + "<p><a href='http://localhost:3000/confirm-email/" + confirmationKey + "'>Bekreft e-post</a></p>"
+      + "<p><a href='{frontendUrl}/confirm-email/" + confirmationKey + "'>Bekreft e-post</a></p>"
       + "</body></html>";
   }
 }
