@@ -34,12 +34,15 @@ import no.ntnu.stud.idatt2106.backend.model.response.HouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.LevelOfPreparednessResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
+import no.ntnu.stud.idatt2106.backend.service.mapper.HouseholdMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -76,14 +79,6 @@ public class HouseholdServiceTest {
   void setup() {
     User mockUser = new User();
     mockUser.setUsername("Testuser");
-    when(userService.getUserByUsername("Testuser")).thenReturn(mockUser);
-    when(householdRepository.save(any(Household.class))).thenAnswer(i -> {
-      Household h = i.getArgument(0);
-      h.setId(1L);
-      return h;
-    });
-    when(householdRepository.findById(1L)).thenReturn(Optional.of(new Household()));
-
     existingHousehold = new Household();
     existingHousehold.setId(1L);
     existingHousehold.setAddress("Test address");
@@ -125,19 +120,46 @@ public class HouseholdServiceTest {
 
   @Test
   void shouldRegisterHousehold() {
+    Date waterChange = new Date();
     CreateHouseholdRequest request = new CreateHouseholdRequest();
     request.setAddress("Test");
     request.setLatitude(32.3);
     request.setLongitude(34.23);
     request.setWaterAmountLiters(32.23);
-    request.setLastWaterChangeDate(new Date());
+    request.setLastWaterChangeDate(waterChange);
+
+    User user = new User();
+    user.setUsername("Testuser");
+    when(userService.getUserByUsername("Testuser")).thenReturn(user);
 
     String token = "Bearer jwt.token";
     when(jwtService.extractUserName(token.substring(7))).thenReturn("Testuser");
-    householdService.registerHousehold(request, token);
-    verify(householdRepository).save(any(Household.class));
-    verify(userService).getUserByUsername("Testuser");
-    verify(userService).updateUserCredentials(any(User.class));
+
+    Household household = new Household();
+    household.setAddress("Test");
+    household.setLatitude(32.3);
+    household.setLongitude(34.23);
+    household.setWaterAmountLiters(32.23);
+    household.setLastWaterChangeDate(waterChange);
+
+    Household registeredHousehold = new Household();
+    registeredHousehold.setId(1L);
+    registeredHousehold.setAddress("Test");
+    registeredHousehold.setLatitude(32.3);
+    registeredHousehold.setLongitude(34.23);
+    registeredHousehold.setWaterAmountLiters(32.23);
+    registeredHousehold.setLastWaterChangeDate(waterChange);
+
+    try (MockedStatic<HouseholdMapper> mapper = Mockito.mockStatic(HouseholdMapper.class)) {
+      mapper.when(() -> HouseholdMapper.toEntity(request)).thenReturn(household);
+      when(householdRepository.save(household)).thenReturn(registeredHousehold);
+      when(householdRepository.findById(1L)).thenReturn(Optional.of(registeredHousehold));
+
+      householdService.registerHousehold(request, token);
+      verify(householdRepository).save(any(Household.class));
+      verify(userService).getUserByUsername("Testuser");
+      verify(userService).updateUserCredentials(any(User.class));
+    }
   }
 
   @Test
@@ -231,7 +253,6 @@ public class HouseholdServiceTest {
       mockUser.setHouseholdId(100L);
 
       Long userId = 1L;
-      when(userService.userExists(userId)).thenReturn(true);
       when(userService.getUserById(userId)).thenReturn(mockUser);
       when(householdRepository.findById(mockUser.getHouseholdId()))
           .thenReturn(Optional.of(mockHousehold));
@@ -246,7 +267,6 @@ public class HouseholdServiceTest {
     @Test
     void shouldThrowExceptionIfUserDoesentExist() {
       Long userId = 1L;
-      when(userService.userExists(userId)).thenReturn(false);
       when(jwtService.extractUserId(anyString())).thenReturn(userId);
 
       NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
@@ -347,8 +367,6 @@ public class HouseholdServiceTest {
       HouseholdInvite invite = new HouseholdInvite();
       invite.setHouseholdId(newHouseholdId);
       invite.setUserId(userId);
-      when(householdInviteService.findByUserIdAndHouseholdId(userId, 
-          newHouseholdId)).thenReturn(invite);
 
       Long oldHouseholdId = 1L;
       User user = new User();
@@ -373,7 +391,6 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldThrowIfInviteNotFound() {
-      when(householdInviteService.findByUserIdAndHouseholdId(0L, 0L)).thenReturn(null);
       when(jwtService.extractUserId(anyString())).thenReturn(0L);
 
       assertThrows(IllegalArgumentException.class, () -> {
@@ -502,10 +519,8 @@ public class HouseholdServiceTest {
     
     User user = new User();
     user.setId(1L);
-    Long householdId = 1L;
     when(jwtService.extractUserId(anyString())).thenReturn(user.getId());
     when(userService.getUserById(user.getId())).thenReturn(user);
-    when(householdRepository.findById(householdId)).thenReturn(Optional.of(existingHousehold));
 
     assertThrows(NoSuchElementException.class, () -> {
       householdService.leaveHousehold("Bearer token");
