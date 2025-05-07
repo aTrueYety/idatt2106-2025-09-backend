@@ -129,4 +129,61 @@ public class UserRepositoryTest {
     User updatedUser = userRepository.findById(1L);
     assertEquals("updateduser", updatedUser.getUsername());
   }
+
+  @Test
+  void shouldReturnAllUsers() {
+    jdbcTemplate.update("""
+      INSERT INTO `user` (id, username, email, password, household_id) VALUES
+      (1, 'user1', 'user1@example.com', 'pass1', 10),
+      (2, 'user2', 'user2@example.com', 'pass2', 10),
+      (3, 'user3', 'user3@example.com', 'pass3', 20)
+        """);
+
+    List<User> users = userRepository.findAll();
+
+    assertEquals(3, users.size());
+    assertTrue(users.stream().anyMatch(u -> u.getUsername().equals("user1")));
+    assertTrue(users.stream().anyMatch(u -> u.getUsername().equals("user2")));
+  }
+
+  @Test
+  void shouldUpdatePosition() {
+    jdbcTemplate.update("""
+      INSERT INTO `user` (id, username, email, password, household_id) VALUES
+      (1, 'user1', 'user1@example.com', 'pass1', 10)
+        """);
+    
+    userRepository.updateLastKnownPosition(1L, 20.0f, 11.1f);
+
+    assertEquals(userRepository.findById(1L).getLastLatitude(), 20.0f, 0.00001);
+    assertEquals(userRepository.findById(1L).getLastLongitude(), 11.1f, 0.00001);
+  }
+
+  @Test
+  void shouldUpdateSharePositionHouseholdStatus() {
+    jdbcTemplate.update("""
+      INSERT INTO `user` (id, username, email, password, household_id) VALUES
+      (1, 'user1', 'user1@example.com', 'pass1', 10)
+        """);
+    
+    userRepository.updateSharePositionHousehold(1L, false);
+    assertEquals(false, userRepository.findById(1L).isSharePositionHousehold());
+
+    userRepository.updateSharePositionHousehold(1L, true);
+    assertEquals(true, userRepository.findById(1L).isSharePositionHousehold());
+  }
+
+  @Test
+  void shouldUpdateSharePositionGroupStatus() {
+    jdbcTemplate.update("""
+      INSERT INTO `user` (id, username, email, password, household_id) VALUES
+      (1, 'user1', 'user1@example.com', 'pass1', 10)
+        """);
+    
+    userRepository.updateSharePositionGroup(1L, false);
+    assertEquals(false, userRepository.findById(1L).isSharePositionGroup());
+
+    userRepository.updateSharePositionGroup(1L, true);
+    assertEquals(true, userRepository.findById(1L).isSharePositionGroup());
+  }
 }
