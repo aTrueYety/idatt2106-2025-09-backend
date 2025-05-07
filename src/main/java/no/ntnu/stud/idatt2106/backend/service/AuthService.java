@@ -43,6 +43,8 @@ public class AuthService {
   private PasswordResetService passwordResetKeyService;
   @Autowired
   private AdminRegistrationKeyService adminRegistrationKeyService;
+  @Autowired
+  private RecaptchaService recaptchaService;
 
   private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -68,6 +70,9 @@ public class AuthService {
         Validate.isTrue(), "Email is not valid");
     Validate.that(userService.getUserByEmail(registerRequest.getEmail()),
         Validate.isNull(), "Email is already in use");
+
+    Validate.isValid(recaptchaService.verifyToken(registerRequest.getRecaptchaToken()),
+        "reCAPTCHA verification failed");
 
     User user = new User();
 
