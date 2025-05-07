@@ -13,7 +13,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EventResponse;
 import no.ntnu.stud.idatt2106.backend.repository.EventRepository;
-import no.ntnu.stud.idatt2106.backend.service.factory.EventFactory;
+import no.ntnu.stud.idatt2106.backend.service.mapper.EventMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,9 +52,9 @@ public class EventServiceTest {
       EventRequest request = new EventRequest();
       Event event = new Event();
 
-      try (MockedStatic<EventFactory> eventFactory = Mockito.mockStatic(EventFactory.class)) {
+      try (MockedStatic<EventMapper> eventFactory = Mockito.mockStatic(EventMapper.class)) {
         when(jwtService.extractIsAdmin(token.substring(7))).thenReturn(true);
-        eventFactory.when(() -> EventFactory.requestToEvent(request)).thenReturn(event);
+        eventFactory.when(() -> EventMapper.requestToEvent(request)).thenReturn(event);
         when(repository.save(event)).thenReturn(1);
 
         int result = eventService.saveEvent(request, token);

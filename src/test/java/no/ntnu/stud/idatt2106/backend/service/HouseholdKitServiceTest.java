@@ -9,12 +9,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import no.ntnu.stud.idatt2106.backend.mapper.HouseholdKitMapper;
+
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdKit;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseholdKitRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.MoveHouseholdKitRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdKitResponse;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdKitRepository;
+import no.ntnu.stud.idatt2106.backend.service.mapper.HouseholdKitMapper;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

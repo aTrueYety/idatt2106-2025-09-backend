@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-import no.ntnu.stud.idatt2106.backend.mapper.EmergencyGroupMapper;
+
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
 import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
@@ -19,6 +19,8 @@ import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.repository.EmergencyGroupRepository;
 import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepository;
+import no.ntnu.stud.idatt2106.backend.service.mapper.EmergencyGroupMapper;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

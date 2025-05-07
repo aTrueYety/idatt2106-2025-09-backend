@@ -1,11 +1,11 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
-import no.ntnu.stud.idatt2106.backend.mapper.InfoPageMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.InfoPage;
 import no.ntnu.stud.idatt2106.backend.model.request.InfoPageRequest;
 import no.ntnu.stud.idatt2106.backend.model.update.InfoPageUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.InfoPageRepository;
+import no.ntnu.stud.idatt2106.backend.service.mapper.InfoPageMapper;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

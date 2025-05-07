@@ -1,5 +1,10 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.ExtraResidentUpdate;
@@ -12,12 +17,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @ActiveProfiles("test")

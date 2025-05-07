@@ -1,13 +1,13 @@
-package no.ntnu.stud.idatt2106.backend.service.factory;
+package no.ntnu.stud.idatt2106.backend.service.mapper;
 
 import no.ntnu.stud.idatt2106.backend.model.base.Severity;
 import no.ntnu.stud.idatt2106.backend.model.request.SeverityRequest;
 
 /**
- * Factory class for creating Severity objects and converting between different
+ * Mapper class for creating Severity objects and converting between different
  * representations of severity levels.
  */
-public class SeverityFactory {
+public class SeverityMapper {
   /**
    * Converts a SeverityRequest object to a Severity object.
    *

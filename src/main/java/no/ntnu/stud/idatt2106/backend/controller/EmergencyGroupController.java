@@ -3,12 +3,13 @@ package no.ntnu.stud.idatt2106.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import no.ntnu.stud.idatt2106.backend.mapper.EmergencyGroupMapper;
 import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.repository.EmergencyGroupRepository;
 import no.ntnu.stud.idatt2106.backend.service.EmergencyGroupService;
+import no.ntnu.stud.idatt2106.backend.service.mapper.EmergencyGroupMapper;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

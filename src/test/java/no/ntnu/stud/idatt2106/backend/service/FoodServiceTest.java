@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import no.ntnu.stud.idatt2106.backend.mapper.FoodMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
 import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodRequest;
@@ -24,6 +23,8 @@ import no.ntnu.stud.idatt2106.backend.model.response.FoodSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
+import no.ntnu.stud.idatt2106.backend.service.mapper.FoodMapper;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -3,6 +3,8 @@ package no.ntnu.stud.idatt2106.backend.mapper;
 import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodTypeResponse;
+import no.ntnu.stud.idatt2106.backend.service.mapper.FoodTypeMapper;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

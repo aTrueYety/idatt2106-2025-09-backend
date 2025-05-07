@@ -1,11 +1,12 @@
   package no.ntnu.stud.idatt2106.backend.service;
 
-  import no.ntnu.stud.idatt2106.backend.mapper.FoodTypeMapper;
   import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
   import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;
   import no.ntnu.stud.idatt2106.backend.model.response.FoodTypeResponse;
   import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
-  import org.junit.jupiter.api.BeforeEach;
+import no.ntnu.stud.idatt2106.backend.service.mapper.FoodTypeMapper;
+
+import org.junit.jupiter.api.BeforeEach;
   import org.junit.jupiter.api.Test;
   import org.mockito.*;
 

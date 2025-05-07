@@ -1,4 +1,4 @@
-package no.ntnu.stud.idatt2106.backend.service.factory;
+package no.ntnu.stud.idatt2106.backend.service.mapper;
 
 import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
@@ -7,7 +7,7 @@ import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
  * Factory class for creating Event objects and converting between different
  * representations of events.
  */
-public class EventFactory {
+public class EventMapper {
   /**
    * Converts an EventRequest object to an Event object.
    *

@@ -5,7 +5,7 @@ import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.Severity;
 import no.ntnu.stud.idatt2106.backend.model.request.SeverityRequest;
 import no.ntnu.stud.idatt2106.backend.repository.SeverityRepository;
-import no.ntnu.stud.idatt2106.backend.service.factory.SeverityFactory;
+import no.ntnu.stud.idatt2106.backend.service.mapper.SeverityMapper;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class SeverityService {
   public int saveSeverity(SeverityRequest severity, String token) {
     Validate.that(jwtService.extractIsAdmin(token.substring(7)), 
         Validate.isTrue(), "User is not an admin");
-    return severityRepository.save(SeverityFactory.requestToSeverity(severity));
+    return severityRepository.save(SeverityMapper.requestToSeverity(severity));
   }
 
   /**

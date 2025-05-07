@@ -1,5 +1,10 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResident;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentResponse;
@@ -10,12 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 public class ExtraResidentServiceTest {
 
