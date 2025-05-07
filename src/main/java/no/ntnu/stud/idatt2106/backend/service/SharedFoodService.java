@@ -362,13 +362,17 @@ public class SharedFoodService {
     GroupHousehold groupHousehold = groupHouseholdRepository
         .findByHouseholdIdAndGroupId(householdId, groupId);
     if (groupHousehold == null) {
-      return; 
+      return;
     }
   
     List<SharedFood> sharedFoods = repository.findByGroupHouseholdId(groupHousehold.getId());
     for (SharedFood shared : sharedFoods) {
-      Long foodId = shared.getId().getFoodId();
+      float amount = shared.getAmount();
+      if (amount == 0f) {
+        continue; // Skip unsharing if nothing was shared
+      }
   
+      Long foodId = shared.getId().getFoodId();
       Optional<Food> foodOpt = foodRepository.findById(foodId);
       if (foodOpt.isEmpty()) {
         continue;
@@ -378,7 +382,6 @@ public class SharedFoodService {
       if (!Objects.equals(food.getHouseholdId(), householdId)) {
         continue;
       }
-      float amount = shared.getAmount();
   
       Optional<Food> existingOpt = foodRepository.findByTypeIdAndExpirationDateAndHouseholdId(
           food.getTypeId(), food.getExpirationDate(), householdId);
@@ -399,5 +402,6 @@ public class SharedFoodService {
       repository.deleteById(shared.getId());
     }
   }
+  
   
 }
