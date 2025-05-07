@@ -29,7 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  */
 @ExtendWith(MockitoExtension.class)
 public class GroupHouseholdServiceTests {
-  
+
   @InjectMocks
   private GroupHouseholdService groupHouseholdService;
 
@@ -50,6 +50,9 @@ public class GroupHouseholdServiceTests {
 
   @Mock
   private HouseholdRepository householdRepository;
+
+  @Mock
+  private SharedFoodService sharedFoodService;
 
   @Nested
   class DeleteTests {
@@ -116,7 +119,7 @@ public class GroupHouseholdServiceTests {
       when(groupHouseholdRepository.findByHouseholdIdAndGroupId(4L, 5L)).thenReturn(groupHousehold);
 
       groupHouseholdService.invite(request, token);
-      
+
       verify(groupInviteService).createGroupInvite(2L, 5L);
     }
   }
@@ -150,11 +153,10 @@ public class GroupHouseholdServiceTests {
       newGroupHousehold.setGroupId(groupId);
       newGroupHousehold.setHouseholdId(5L);
 
-      try (MockedStatic<GroupHouseholdMapper> mapper 
-          = Mockito.mockStatic(GroupHouseholdMapper.class)) {
+      try (MockedStatic<GroupHouseholdMapper> mapper = Mockito.mockStatic(GroupHouseholdMapper.class)) {
         mapper.when(() -> GroupHouseholdMapper.toModel(createRequest))
             .thenReturn(newGroupHousehold);
-        
+
         groupHouseholdService.acceptInvite(groupId, token);
 
         verify(groupHouseholdRepository).save(newGroupHousehold);
@@ -165,7 +167,6 @@ public class GroupHouseholdServiceTests {
 
   @Nested
   class RefectInviteTests {
-
 
     @Test
     void shouldDeleteInvite() {
@@ -217,8 +218,7 @@ public class GroupHouseholdServiceTests {
       response2.setHouseholdId(4L);
       List<GroupHouseholdResponse> responses = List.of(response1, response2);
 
-      try (MockedStatic<GroupHouseholdMapper> mapper 
-            = Mockito.mockStatic(GroupHouseholdMapper.class)) {
+      try (MockedStatic<GroupHouseholdMapper> mapper = Mockito.mockStatic(GroupHouseholdMapper.class)) {
         mapper.when(() -> GroupHouseholdMapper.toResponse(groupHousehold1)).thenReturn(response1);
         mapper.when(() -> GroupHouseholdMapper.toResponse(groupHousehold2)).thenReturn(response2);
 
