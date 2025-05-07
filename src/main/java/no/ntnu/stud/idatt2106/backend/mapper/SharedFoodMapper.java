@@ -11,10 +11,16 @@ import no.ntnu.stud.idatt2106.backend.model.response.SharedFoodResponse;
  */
 public class SharedFoodMapper {
 
-  public static SharedFood toModel(SharedFoodRequest request) {
-    SharedFoodKey key = new SharedFoodKey(request.getFoodId(), request.getGroupHouseholdId());
-    return new SharedFood(key, request.getAmount());
+  /**
+   * Creates a SharedFood model from foodId, groupHouseholdId and amount.
+   * Used in controller/service after resolving groupHouseholdId.
+   */
+  public static SharedFood toModel(Long foodId, Long groupHouseholdId, float amount) {
+    return new SharedFood(new SharedFoodKey(foodId, groupHouseholdId), amount);
   }
+
+
+  
 
   /**
    * Converts a SharedFood entity to a SharedFoodResponse DTO.
@@ -23,12 +29,9 @@ public class SharedFoodMapper {
    * @return the corresponding SharedFoodResponse DTO
    */
   public static SharedFoodResponse toResponse(SharedFood food) {
-    Long foodId = food.getId().getFoodId();
-    Long groupHouseholdId = food.getId().getGroupHouseholdId();
-    float amount = food.getAmount();
-
-    return new SharedFoodResponse(foodId, groupHouseholdId, amount);
+    return new SharedFoodResponse(
+        food.getId().getFoodId(),
+        food.getId().getGroupHouseholdId(),
+        food.getAmount());
   }
 }
-
-

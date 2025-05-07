@@ -12,4 +12,6 @@ public class FoodBatchResponse {
   private double amount;
   private LocalDate expirationDate;
   private Long householdId;
+  private Long groupHouseholdId;
+
 }
