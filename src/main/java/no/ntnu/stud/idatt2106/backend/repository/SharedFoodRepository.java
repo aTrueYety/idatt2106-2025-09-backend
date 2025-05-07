@@ -21,4 +21,7 @@ public interface SharedFoodRepository {
   
   List<SharedFood> findByGroupHouseholdId(Long groupHouseholdId);
 
+
+
+
 }

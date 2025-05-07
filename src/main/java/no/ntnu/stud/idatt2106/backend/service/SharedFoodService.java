@@ -19,6 +19,7 @@ import no.ntnu.stud.idatt2106.backend.model.response.SharedFoodResponse;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
 import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepository;
+import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.repository.SharedFoodRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,22 +33,48 @@ public class SharedFoodService {
 
   private final SharedFoodRepository repository;
   private final FoodRepository foodRepository;
+  private final HouseholdRepository householdRepository;
   private final FoodTypeRepository foodTypeRepository;
   private final GroupHouseholdRepository groupHouseholdRepository;
+  private final JwtService jwtService;
 
   /**
-   * Creates a new shared food entry.
+   * Creates a new shared food entry in the repository.
    *
-   * @param request the shared food request to be persisted
+   * @param request The request containing food ID, group household ID, and
+   *                amount.
+   * @param token   The JWT token of the user performing the operation.
    */
-  public void create(SharedFoodRequest request) {
-    repository.save(SharedFoodMapper.toModel(request));
+  public void create(SharedFoodRequest request, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    Long householdId = getHouseholdIdByUser(userId);
+
+    Optional<Food> foodOpt = foodRepository.findById(request.getFoodId());
+    if (foodOpt.isEmpty()) {
+      throw new IllegalArgumentException("Food not found");
+    }
+
+    Food food = foodOpt.get();
+    if (!Objects.equals(food.getHouseholdId(), householdId)) {
+      throw new IllegalStateException("Food does not belong to your household");
+    }
+
+    GroupHousehold groupHousehold = groupHouseholdRepository
+        .findByHouseholdIdAndGroupId(householdId, request.getGroupId());
+    if (groupHousehold == null) {
+      throw new IllegalStateException("Group household membership not found");
+    }
+
+    repository.save(SharedFoodMapper.toModel(
+        food.getId(),
+        groupHousehold.getId(),
+        request.getAmount()));
   }
 
   /**
-   * Retrieves all shared food entries in the system.
+   * Retrieves all shared food items from the repository.
    *
-   * @return list of shared food responses
+   * @return A list of shared food responses.
    */
   public List<SharedFoodResponse> getAll() {
     return repository.findAll().stream()
@@ -56,148 +83,124 @@ public class SharedFoodService {
   }
 
   /**
-   * Updates an existing shared food amount.
+   * Updates the amount of a shared food item in the repository.
    *
-   * @param request shared food request with updated amount
-   * @return true if update was successful, false if not found
+   * @param request The request containing updated information.
+   * @param token   The JWT token of the user performing the operation.
+   * @return true if the update was successful, false otherwise.
    */
-  public boolean update(SharedFoodRequest request) {
-    return repository.update(SharedFoodMapper.toModel(request));
+  public boolean update(SharedFoodRequest request, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    Long householdId = getHouseholdIdByUser(userId);
+
+    GroupHousehold groupHousehold = groupHouseholdRepository
+        .findByHouseholdIdAndGroupId(householdId, request.getGroupId());
+
+    if (groupHousehold == null) {
+      return false;
+    }
+
+    SharedFood food = SharedFoodMapper.toModel(
+        request.getFoodId(),
+        groupHousehold.getId(),
+        request.getAmount());
+
+    return repository.update(food);
   }
 
   /**
-   * Deletes a shared food entry based on composite key.
+   * Deletes a shared food item from the repository.
    *
-   * @param foodId           the food ID
-   * @param groupHouseholdId the group household ID
-   * @return true if deleted, false if not found
+   * @param foodId  The ID of the food item to delete.
+   * @param groupId The ID of the group household.
+   * @param token   The JWT token of the user performing the operation.
+   * @return true if the deletion was successful, false otherwise.
    */
-  public boolean delete(Long foodId, Long groupHouseholdId) {
-    return repository.deleteById(new SharedFoodKey(foodId, groupHouseholdId));
+  public boolean delete(Long foodId, Long groupId, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    Long householdId = getHouseholdIdByUser(userId);
+
+    GroupHousehold groupHousehold = groupHouseholdRepository
+        .findByHouseholdIdAndGroupId(householdId, groupId);
+
+    if (groupHousehold == null) {
+      return false;
+    }
+
+    return repository.deleteById(new SharedFoodKey(foodId, groupHousehold.getId()));
   }
 
   /**
-   * Moves a specified amount of food from a household to a shared group.
-   * <p>
-   * This operation will:
-   * </p>
-   * <ul>
-   * <li>Reduce the amount in the original food item</li>
-   * <li>Create a new food entry with the shared amount and same household</li>
-   * <li>Link the new food item to the group household via SharedFood</li>
-   * </ul>
+   * Moves food from the household to a shared group.
    *
-   * @param request shared food request with food ID, group household ID, and
-   *                amount
-   * @return true if move was successful, false if not enough amount or food not
-   *         found
+   * @param request The request containing food details and amount to move.
+   * @param token   The JWT token of the user performing the operation.
+   * @return true if the operation was successful, false otherwise.
    */
-  public boolean moveFoodToSharedGroup(SharedFoodRequest request) {
+  public boolean moveFoodToSharedGroup(SharedFoodRequest request, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    Long householdId = getHouseholdIdByUser(userId);
+
     Optional<Food> foodOpt = foodRepository.findById(request.getFoodId());
     if (foodOpt.isEmpty()) {
       return false;
     }
-    
+
     Food food = foodOpt.get();
+    if (!Objects.equals(food.getHouseholdId(), householdId)) {
+      return false;
+    }
     if (food.getAmount() < request.getAmount()) {
       return false;
     }
 
     GroupHousehold groupHousehold = groupHouseholdRepository
-        .findByHouseholdIdAndGroupId(food.getHouseholdId(), request.getGroupId());
+        .findByHouseholdIdAndGroupId(householdId, request.getGroupId());
     if (groupHousehold == null) {
       return false;
     }
 
     SharedFoodKey key = new SharedFoodKey(food.getId(), groupHousehold.getId());
-    if (repository.findById(key).isPresent()) {
 
-      return false;
+    Optional<SharedFood> existingSharedOpt = repository.findById(key);
+    if (existingSharedOpt.isPresent()) {
+      SharedFood existing = existingSharedOpt.get();
+      existing.setAmount(existing.getAmount() + request.getAmount());
+      repository.update(existing);
+    } else {
+      repository.save(new SharedFood(key, request.getAmount()));
     }
 
     food.setAmount(food.getAmount() - request.getAmount());
     foodRepository.update(food);
 
-    SharedFood shared = new SharedFood(key, request.getAmount());
-    repository.save(shared);
-
     return true;
   }
 
   /**
-   * Retrieves a detailed summary of shared food grouped by food type.
-   * Includes total amount, calories, and individual batch info.
+   * Moves food from a shared group back to the household.
    *
-   * @param groupHouseholdId the ID of the group household
-   * @return list of detailed food summaries for the group
+   * @param request The request containing food details and amount to move.
+   * @param token   The JWT token of the user performing the operation.
+   * @return true if the operation was successful, false otherwise.
    */
-  public List<FoodDetailedResponse> getSharedFoodSummaryByGroup(Long groupHouseholdId) {
-    List<SharedFood> sharedFoods = repository.findByGroupHouseholdId(groupHouseholdId);
+  public boolean moveFoodFromSharedGroup(SharedFoodRequest request, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    Long householdId = getHouseholdIdByUser(userId);
 
-    Map<Long, Food> foodMap = sharedFoods.stream()
-        .map(sf -> foodRepository.findById(sf.getId().getFoodId()))
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .collect(Collectors.toMap(Food::getId, food -> food));
+    Optional<Food> foodOpt = foodRepository.findById(request.getFoodId());
+    if (foodOpt.isEmpty()) {
+      return false;
+    }
+    Food food = foodOpt.get();
 
-    Map<Long, List<SharedFood>> groupedByType = sharedFoods.stream()
-        .filter(sf -> foodMap.containsKey(sf.getId().getFoodId()))
-        .collect(Collectors.groupingBy(
-            sf -> foodMap.get(sf.getId().getFoodId()).getTypeId()));
+    GroupHousehold groupHousehold = groupHouseholdRepository
+        .findByHouseholdIdAndGroupId(householdId, request.getGroupId());
+    if (groupHousehold == null) {
+      return false;
+    }
 
-    return groupedByType.entrySet().stream()
-        .map(entry -> {
-          Long typeId = entry.getKey();
-          Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
-          if (typeOpt.isEmpty()) {
-            return null;
-          }
-
-          FoodType type = typeOpt.get();
-
-          List<FoodBatchResponse> batches = entry.getValue().stream()
-              .map(sf -> {
-                Food food = foodMap.get(sf.getId().getFoodId());
-                FoodBatchResponse batch = new FoodBatchResponse();
-                batch.setId(food.getId());
-                batch.setExpirationDate(food.getExpirationDate());
-                batch.setAmount(sf.getAmount());
-                batch.setHouseholdId(food.getHouseholdId());
-                batch.setGroupHouseholdId(sf.getId().getGroupHouseholdId());
-                return batch;
-              })
-              .filter(Objects::nonNull)
-              .toList();
-
-          float totalAmount = (float) batches.stream()
-              .mapToDouble(FoodBatchResponse::getAmount)
-              .sum();
-
-          float totalCalories = totalAmount * type.getCaloriesPerUnit();
-
-          FoodDetailedResponse response = new FoodDetailedResponse();
-          response.setTypeId(type.getId());
-          response.setTypeName(type.getName());
-          response.setUnit(type.getUnit());
-          response.setTotalAmount(totalAmount);
-          response.setTotalCalories(totalCalories);
-          response.setBatches(batches);
-
-          return response;
-        })
-        .filter(Objects::nonNull)
-        .toList();
-  }
-
-  /**
-   * Moves a specified amount of food from a shared group back to the household.
-   *
-   * @param request shared food request with food ID, group household ID, and
-   *                amount
-   * @return true if move was successful, false if not enough amount or not found
-   */
-  public boolean moveFoodFromSharedGroup(SharedFoodRequest request) {
-    SharedFoodKey key = new SharedFoodKey(request.getFoodId(), request.getGroupHouseholdId());
+    SharedFoodKey key = new SharedFoodKey(food.getId(), groupHousehold.getId());
     Optional<SharedFood> sharedOpt = repository.findById(key);
     if (sharedOpt.isEmpty()) {
       return false;
@@ -208,13 +211,6 @@ public class SharedFoodService {
       return false;
     }
 
-    Optional<Food> foodOpt = foodRepository.findById(request.getFoodId());
-    if (foodOpt.isEmpty()) {
-      return false;
-    }
-
-    Food sharedFood = foodOpt.get();
-
     shared.setAmount(shared.getAmount() - request.getAmount());
     if (shared.getAmount() == 0) {
       repository.deleteById(key);
@@ -222,92 +218,135 @@ public class SharedFoodService {
       repository.update(shared);
     }
 
-    Optional<Food> existingFoodOpt = foodRepository
-        .findByTypeIdAndExpirationDateAndHouseholdId(
-            sharedFood.getTypeId(),
-            sharedFood.getExpirationDate(),
-            sharedFood.getHouseholdId());
+    Optional<Food> existingOpt = foodRepository.findByTypeIdAndExpirationDateAndHouseholdId(
+        food.getTypeId(), food.getExpirationDate(), food.getHouseholdId());
 
-    if (existingFoodOpt.isPresent()) {
-      Food existing = existingFoodOpt.get();
+    if (existingOpt.isPresent()) {
+      Food existing = existingOpt.get();
       existing.setAmount(existing.getAmount() + request.getAmount());
       foodRepository.update(existing);
     } else {
-      Food foodToReturn = new Food();
-      foodToReturn.setTypeId(sharedFood.getTypeId());
-      foodToReturn.setExpirationDate(sharedFood.getExpirationDate());
-      foodToReturn.setAmount(request.getAmount());
-      foodToReturn.setHouseholdId(sharedFood.getHouseholdId());
-      foodRepository.save(foodToReturn);
+      Food newFood = new Food();
+      newFood.setTypeId(food.getTypeId());
+      newFood.setExpirationDate(food.getExpirationDate());
+      newFood.setAmount(request.getAmount());
+      newFood.setHouseholdId(food.getHouseholdId());
+      foodRepository.save(newFood);
     }
 
     return true;
   }
 
   /**
-   * Retrieves a detailed summary of shared food for the entire group.
-   * <p>
-   * This method aggregates the shared food across all group households in the
-   * specified group.
-   * </p>
+   * Retrieves a summary of shared food items for a specific group household.
    *
-   * @param groupId the ID of the group
-   * @return list of detailed food summaries for the entire group
+   * @param groupHouseholdId The ID of the group household.
+   * @return A list of detailed responses containing shared food information.
+   */
+  public List<FoodDetailedResponse> getSharedFoodSummaryByGroup(Long groupHouseholdId) {
+    List<SharedFood> sharedFoods = repository.findByGroupHouseholdId(groupHouseholdId);
+    Map<Long, Food> foodMap = sharedFoods.stream()
+        .map(sf -> foodRepository.findById(sf.getId().getFoodId()))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .collect(Collectors.toMap(Food::getId, f -> f));
+
+    Map<Long, List<SharedFood>> grouped = sharedFoods.stream()
+        .filter(sf -> foodMap.containsKey(sf.getId().getFoodId()))
+        .collect(Collectors.groupingBy(sf -> foodMap.get(sf.getId().getFoodId()).getTypeId()));
+
+    return grouped.entrySet().stream().map(entry -> {
+      Long typeId = entry.getKey();
+      Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
+      if (typeOpt.isEmpty()) {
+        return null;
+      }
+
+      FoodType type = typeOpt.get();
+      List<FoodBatchResponse> batches = entry.getValue().stream().map(sf -> {
+        Food food = foodMap.get(sf.getId().getFoodId());
+        FoodBatchResponse b = new FoodBatchResponse();
+        b.setId(food.getId());
+        b.setAmount(sf.getAmount());
+        b.setExpirationDate(food.getExpirationDate());
+        b.setHouseholdId(food.getHouseholdId());
+        b.setGroupHouseholdId(sf.getId().getGroupHouseholdId());
+        return b;
+      }).toList();
+
+      float totalAmount = (float) batches.stream().mapToDouble(FoodBatchResponse::getAmount).sum();
+      float totalCalories = totalAmount * type.getCaloriesPerUnit();
+
+      FoodDetailedResponse response = new FoodDetailedResponse();
+      response.setTypeId(type.getId());
+      response.setTypeName(type.getName());
+      response.setUnit(type.getUnit());
+      response.setTotalAmount(totalAmount);
+      response.setTotalCalories(totalCalories);
+      response.setBatches(batches);
+      return response;
+    }).filter(Objects::nonNull).toList();
+  }
+
+  /**
+   * Retrieves a summary of shared food items for all households in a specific
+   * group.
+   *
+   * @param groupId The ID of the group.
+   * @return A list of detailed responses containing shared food information.
    */
   public List<FoodDetailedResponse> getSharedFoodSummaryByGroupId(Long groupId) {
     List<GroupHousehold> memberships = groupHouseholdRepository.findByGroupId(groupId);
-
     List<SharedFood> sharedFoods = memberships.stream()
-        .flatMap(gh -> repository.findByGroupHouseholdId(gh.getId()).stream())
+        .flatMap(m -> repository.findByGroupHouseholdId(m.getId()).stream())
         .toList();
 
     Map<Long, Food> foodMap = sharedFoods.stream()
         .map(sf -> foodRepository.findById(sf.getId().getFoodId()))
         .filter(Optional::isPresent)
         .map(Optional::get)
-        .collect(Collectors.toMap(Food::getId, food -> food));
+        .collect(Collectors.toMap(Food::getId, f -> f));
 
-    Map<Long, List<SharedFood>> groupedByType = sharedFoods.stream()
+    Map<Long, List<SharedFood>> grouped = sharedFoods.stream()
         .filter(sf -> foodMap.containsKey(sf.getId().getFoodId()))
         .collect(Collectors.groupingBy(sf -> foodMap.get(sf.getId().getFoodId()).getTypeId()));
 
-    return groupedByType.entrySet().stream()
-        .map(entry -> {
-          Long typeId = entry.getKey();
-          Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
-          if (typeOpt.isEmpty()) {
-            return null;
-          }
-          FoodType type = typeOpt.get();
+    return grouped.entrySet().stream().map(entry -> {
+      Long typeId = entry.getKey();
+      Optional<FoodType> typeOpt = foodTypeRepository.findById(typeId);
+      if (typeOpt.isEmpty()) {
+        return null;
+      }
 
-          List<FoodBatchResponse> batches = entry.getValue().stream()
-              .map(sf -> {
-                Food food = foodMap.get(sf.getId().getFoodId());
-                FoodBatchResponse batch = new FoodBatchResponse();
-                batch.setId(food.getId());
-                batch.setAmount(sf.getAmount());
-                batch.setExpirationDate(food.getExpirationDate());
-                batch.setHouseholdId(food.getHouseholdId());
-                batch.setGroupHouseholdId(sf.getId().getGroupHouseholdId());
-                return batch;
-              })
-              .toList();
+      FoodType type = typeOpt.get();
+      List<FoodBatchResponse> batches = entry.getValue().stream().map(sf -> {
+        Food food = foodMap.get(sf.getId().getFoodId());
+        FoodBatchResponse b = new FoodBatchResponse();
+        b.setId(food.getId());
+        b.setAmount(sf.getAmount());
+        b.setExpirationDate(food.getExpirationDate());
+        b.setHouseholdId(food.getHouseholdId());
+        b.setGroupHouseholdId(sf.getId().getGroupHouseholdId());
+        return b;
+      }).toList();
 
-          float totalAmount = (float) batches.stream().mapToDouble(FoodBatchResponse::getAmount)
-              .sum();
-          float totalCalories = totalAmount * type.getCaloriesPerUnit();
+      float totalAmount = (float) batches.stream().mapToDouble(FoodBatchResponse::getAmount).sum();
+      float totalCalories = totalAmount * type.getCaloriesPerUnit();
 
-          FoodDetailedResponse response = new FoodDetailedResponse();
-          response.setTypeId(type.getId());
-          response.setTypeName(type.getName());
-          response.setUnit(type.getUnit());
-          response.setTotalAmount(totalAmount);
-          response.setTotalCalories(totalCalories);
-          response.setBatches(batches);
-          return response;
-        })
-        .filter(Objects::nonNull)
-        .toList();
+      FoodDetailedResponse response = new FoodDetailedResponse();
+      response.setTypeId(type.getId());
+      response.setTypeName(type.getName());
+      response.setUnit(type.getUnit());
+      response.setTotalAmount(totalAmount);
+      response.setTotalCalories(totalCalories);
+      response.setBatches(batches);
+      return response;
+    }).filter(Objects::nonNull).toList();
   }
 
+  private Long getHouseholdIdByUser(Long userId) {
+    return householdRepository.findByUserId(userId)
+        .orElseThrow(() -> new IllegalArgumentException("Household not found for user"))
+        .getId();
+  }
 }
