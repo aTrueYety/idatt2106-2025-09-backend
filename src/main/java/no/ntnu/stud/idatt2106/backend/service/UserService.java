@@ -214,7 +214,7 @@ public class UserService {
     Validate.isValid(jwtService.extractIsSuperAdmin(token.substring(7)),
         "You are not authorized to view all admins.");
     return userRepo.findAll().stream()
-        .filter(User::isSuperAdmin)
+        .filter(User::isAdmin)
         .map(UserMapper::toResponse)
         .toList();
   }
