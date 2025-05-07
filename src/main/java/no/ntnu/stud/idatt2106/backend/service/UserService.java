@@ -3,10 +3,12 @@ package no.ntnu.stud.idatt2106.backend.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import no.ntnu.stud.idatt2106.backend.mapper.UserMapper;
+import no.ntnu.stud.idatt2106.backend.model.base.EmailConfirmationKey;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.UserUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.UserRepository;
+import no.ntnu.stud.idatt2106.backend.util.EmailTemplates;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,9 @@ public class UserService {
   @Autowired
   private JwtService jwtService;
   @Autowired
-  private AdminRegistrationKeyService adminRegistrationKeyService;
+  private EmailService emailService;
+  @Autowired
+  private EmailConfirmationKeyService emailConfirmationKeyService;
 
   /**
    * Retrieves a user by their ID.
@@ -230,4 +234,49 @@ public class UserService {
         .toList();
   }
 
+  /**
+   * Send an email to the user with a link to verify their email address.
+   *
+   * @param user the user to send the email to
+   */
+  public void sendEmailVerification(String token) {
+    User user = getUserById(jwtService.extractUserId(token.substring(7)));
+    Validate.that(user, Validate.isNotNull(), "User not found");
+
+    Validate.that(user.getEmail(), Validate.isNotBlankOrNull(), "Email cannot be null or empty");
+    
+    if (emailConfirmationKeyService.emailConfirmationKeyExists(user.getId())) {
+      emailConfirmationKeyService.deleteEmailConfirmationKey(user.getId());
+    }
+    String key = emailConfirmationKeyService.createEmailConfirmationKey(user.getId());
+    
+    try {
+      emailService.sendHtmlEmail(
+          user.getEmail(), 
+          "Verify your email address", 
+          EmailTemplates.getEmailConfirmationTemplate(key));
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to send email verification", e);
+    }
+  }
+
+  /**
+   * Confirms the user's email address using the provided key.
+   *
+   * @param key the confirmation key
+   */
+  public void confirmEmail(String key) {
+    Validate.that(key, Validate.isNotBlankOrNull(), "Key cannot be null or empty");
+
+    EmailConfirmationKey emailConfirmationKey = emailConfirmationKeyService
+        .getEmailConfirmationKeyByKey(key);
+    Validate.that(emailConfirmationKey, Validate.isNotNull(), "Invalid key");
+
+    User user = getUserById(emailConfirmationKey.getUserId());
+    Validate.that(user, Validate.isNotNull(), "User not found");
+
+    user.setEmailConfirmed(true);
+    userRepo.updateUser(user);
+    emailConfirmationKeyService.deleteEmailConfirmationKey(user.getId());
+  }
 }
