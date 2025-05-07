@@ -370,11 +370,14 @@ public class SharedFoodService {
       Long foodId = shared.getId().getFoodId();
   
       Optional<Food> foodOpt = foodRepository.findById(foodId);
-      if (foodOpt.isEmpty()) continue;
+      if (foodOpt.isEmpty()) {
+        continue;
+      }
   
       Food food = foodOpt.get();
-      if (!Objects.equals(food.getHouseholdId(), householdId)) continue;
-  
+      if (!Objects.equals(food.getHouseholdId(), householdId)) {
+        continue;
+      }
       float amount = shared.getAmount();
   
       Optional<Food> existingOpt = foodRepository.findByTypeIdAndExpirationDateAndHouseholdId(
