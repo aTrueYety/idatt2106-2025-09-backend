@@ -306,7 +306,7 @@ public class AuthService {
     User sender = userService.getUserByUsername(
         jwtService.extractUserName(token.substring(7)));
     Validate.that(sender, Validate.isNotNull(), "Sender not found");
-    Validate.that(userInKey.getId() != sender.getId(),
+    Validate.that(userInKey.getId().equals(sender.getId()),
         Validate.isTrue(), "You can only accept your own invitations");
     
     userInKey.setAdmin(true);
