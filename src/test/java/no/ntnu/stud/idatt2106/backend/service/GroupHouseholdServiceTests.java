@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
+import no.ntnu.stud.idatt2106.backend.model.request.GroupHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 
@@ -78,6 +79,41 @@ public class GroupHouseholdServiceTests {
 
       assertEquals(true, result);
       verify(groupHouseholdRepository).deleteById(groupHouseholdId);
+    }
+  }
+
+  @Nested
+  class InviteTests {
+
+    @Test
+    void shouldCreateGroupInvite() {
+      Long householdId = 2L;
+      Long groupId = 5L;
+      GroupHouseholdRequest request = new GroupHouseholdRequest();
+      request.setGroupId(groupId);
+      request.setHouseholdId(householdId);
+      String token = "Bearer token";
+
+      when(groupHouseholdRepository.findByHouseholdIdAndGroupId(2L, 5L)).thenReturn(null);
+      when(groupInviteService.hasGroupInvite(2L, 5L)).thenReturn(false);
+
+      Long userId = 6L;
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+
+      User user = new User();
+      user.setId(userId);
+      user.setHouseholdId(4L);
+
+      GroupHousehold groupHousehold = new GroupHousehold();
+      groupHousehold.setHouseholdId(4L);
+      groupHousehold.setGroupId(5L);
+
+      when(userService.getUserById(6L)).thenReturn(user);
+      when(groupHouseholdRepository.findByHouseholdIdAndGroupId(4L, 5L)).thenReturn(groupHousehold);
+
+      groupHouseholdService.invite(request, token);
+      
+      verify(groupInviteService).createGroupInvite(2L, 5L);
     }
   }
 }
