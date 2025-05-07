@@ -51,4 +51,11 @@ public interface AdminRegistrationKeyRepository {
    * @param key The Key of the AdminRegistrationKey to delete.
    */
   void deleteByKey(String key);
+
+  /**
+   * Deletes an AdminRegistrationKey by its user ID.
+   *
+   * @param userId The user ID of the AdminRegistrationKey to delete.
+   */
+  void deleteByUserId(Long userId);
 }

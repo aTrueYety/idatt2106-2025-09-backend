@@ -129,12 +129,7 @@ public class HouseholdService {
     Validate.that(householdReqeust.getLatitude(),
         Validate.isNotNull(), "Latitude cannot be null");
 
-    Household household = new Household();
-    household.setAddress(householdReqeust.getAddress());
-    household.setLatitude(householdReqeust.getLatitude());
-    household.setLongitude(householdReqeust.getLongitude());
-    household.setWaterAmountLiters(householdReqeust.getWaterAmountLiters());
-    household.setLastWaterChangeDate(householdReqeust.getLastWaterChangeDate());
+    Household household = HouseholdMapper.toEntity(householdReqeust);
 
     Household registeredHousehold = householdRepository.save(household);
 

@@ -62,4 +62,10 @@ public class AdminRegistrationKeyRepositoryImpl implements AdminRegistrationKeyR
     jdbcTemplate.update(sql, key);
   }
 
+  @Override
+  public void deleteByUserId(Long userId) {
+    String sql = "DELETE FROM admin_registration_key WHERE user_id = ?";
+    jdbcTemplate.update(sql, userId);
+  }
+
 }

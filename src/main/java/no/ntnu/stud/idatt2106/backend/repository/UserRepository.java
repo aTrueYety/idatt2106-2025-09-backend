@@ -28,5 +28,7 @@ public interface UserRepository {
   void updateLastKnownPosition(Long userId, float latitude, float longitude);
   
   int updateSharePositionHouseholdForHousehold(Long householdId, boolean share);
+
+  List<User> findAllWithPendingAdminInvites();
 }
 

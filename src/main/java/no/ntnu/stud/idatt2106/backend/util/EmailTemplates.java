@@ -62,4 +62,17 @@ public class EmailTemplates {
       + "<p><a href='http://localhost:3000/register-admin/" + registrationKey + "'>Registrer deg som admin</a></p>"
       + "</body></html>";
   }
+
+  /**
+   * Generates an email template for confirming an email address.
+   *
+   * @param confirmationKey the confirmation key for email verification
+   */
+  public static String getEmailConfirmationTemplate(String confirmationKey) {
+    return "<html><body>"
+      + "<h1>Bekreft e-postadresse</h1>"
+      + "<p>Vennligst klikk på lenken nedenfor for å bekrefte e-postadressen din:</p>"
+      + "<p><a href='http://localhost:3000/confirm-email/" + confirmationKey + "'>Bekreft e-post</a></p>"
+      + "</body></html>";
+  }
 }

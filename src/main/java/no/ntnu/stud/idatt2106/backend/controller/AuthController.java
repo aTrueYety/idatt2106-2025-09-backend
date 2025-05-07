@@ -3,6 +3,7 @@ package no.ntnu.stud.idatt2106.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import no.ntnu.stud.idatt2106.backend.model.request.AdminInviteRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.AdminRemoveRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.AdminUpgradeRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.LoginRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetKeyRequest;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -164,13 +166,49 @@ public class AuthController {
    * @return a ResponseEntity indicating success or failure
    */
   @Operation(summary = "Accept admin invitation", 
-      description = "Accepts the admin invitation using the provided registration key")
+      description = "Accepts the admin invitation using the provided registration key and loges in "
+                  + "the user again")
   @PostMapping("/accept-admin-invite")
-  public ResponseEntity<Void> acceptAdminInvite(
+  public ResponseEntity<LoginResponse> acceptAdminInvite(
       @RequestBody AdminUpgradeRequest request, 
       @RequestHeader("Authorization") String token) {
-    service.acceptAdminInvite(request, token);
+    LoginResponse response = service.acceptAdminInvite(request, token);
     logger.info("Admin invite accepted with key: {}", request.getKey());
+    return ResponseEntity.ok().body(response);
+  }
+
+  /**
+   * Deletes a user's admin registration key.
+   *
+   * @param request the request containing the registration key to delete
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Delete admin registration key", 
+      description = "Deletes the admin registration key for the user")
+  @DeleteMapping("/admin-invite")
+  public ResponseEntity<Void> deleteAdminRegistrationKey(
+      @RequestBody AdminRemoveRequest request) {
+    service.deleteAdminRegistrationKey(request);
+    logger.info("Admin registration key deleted for user: {}", request);
     return ResponseEntity.ok().build();
   }
+
+  /**
+   * Handels the request to remove a user's admin status.
+   *
+   * @param request the ID of the user whose admin status is to be removed
+   * @param token the JWT token of the user sending the request
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Remove admin status", 
+      description = "Removes the admin status of the user with the provided ID")
+  @DeleteMapping("/admin")
+  public ResponseEntity<Void> removeAdmin(
+      @RequestBody AdminRemoveRequest request,
+      @RequestHeader("Authorization") String token) {
+    service.removeAdmin(request, token);
+    logger.info("Admin status removed for " + request.getUsername());
+    return ResponseEntity.ok().build();
+  }
+
 }

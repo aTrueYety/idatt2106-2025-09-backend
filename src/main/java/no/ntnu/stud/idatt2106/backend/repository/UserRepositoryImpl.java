@@ -121,4 +121,11 @@ public class UserRepositoryImpl implements UserRepository {
     jdbcTemplate.update(sql, value, userId);
   }
 
+  @Override
+  public List<User> findAllWithPendingAdminInvites() {
+    String sql = "SELECT u.* FROM `user` u "
+           + "JOIN `admin_registration_key` ark ON u.id = ark.user_id";
+    return jdbcTemplate.query(sql, userRowMapper);
+  }
+
 }

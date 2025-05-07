@@ -1,6 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.UpdatePositionSharingRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.UserUpdate;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -111,5 +113,88 @@ public class UserController {
     UserResponse response = userService.getByToken(token);
     logger.info("User retrieved successfully");
     return ResponseEntity.ok(response);
+  }
+
+  /**
+   * Retrives all admin users in the system.
+   *
+   * @param token the JWT token of the user logged in
+   * @return A ResponseEntity with a list of all admin users in the system
+   */
+  @Operation(
+      summary = "Retrieves all admin users",
+      description = """
+          Retrieves all admin users in the system. Only available for super admins.
+          """
+  )
+  @GetMapping("/admins")
+  public ResponseEntity<List<UserResponse>> getAllAdmins(
+        @RequestHeader("Authorization") String token) {
+    logger.info("Fetching all admin users");
+    List<UserResponse> responses = userService.getAllAdmins(token);
+    logger.info("Admin users retrieved successfully");
+    return ResponseEntity.ok(responses);
+  }
+
+  /**
+   * Retrives all users with a pending admin registration key.
+   *
+   * @param token the JWT token of the user logged in
+   * @return A ResponseEntity with a list of all users with a pending admin registration key
+   */
+  @Operation(
+      summary = "Retrieves all users with a pending admin registration key",
+      description = """
+          Retrieves all users with a pending admin registration key. Available for super admins.
+          """
+  )
+  @GetMapping("/pending-admins")
+  public ResponseEntity<List<UserResponse>> getAllPendingAdmins(
+        @RequestHeader("Authorization") String token) {
+    logger.info("Fetching all users with a pending admin registration key");
+    List<UserResponse> responses = userService.getAllPendingAdmins(token);
+    logger.info("Users with pending admin registration keys retrieved successfully");
+    return ResponseEntity.ok(responses);
+  }
+
+  /**
+   * Handles the request to send an email verification link to the user.
+   *
+   * @param token the JWT token of the user logged in
+   * @return A ResponseEntity with a message indicating the result of the operation
+   */
+  @Operation(
+      summary = "Sends an email verification link to the user",
+      description = """
+          Sends an email verification link to the user currently logged in using their JWT token.
+          """
+  )
+  @PostMapping("/send-email-verification")
+  public ResponseEntity<String> sendEmailVerification(
+        @RequestHeader("Authorization") String token) {
+    logger.info("Sending email verification link to user");
+    userService.sendEmailVerification(token);
+    logger.info("Email verification link sent successfully");
+    return ResponseEntity.ok("Email verification link sent successfully");
+  }
+
+  /**
+   * Handles the request to confirm the user's email address.
+   *
+   * @param key the confirmation key
+   * @return A ResponseEntity with a message indicating the result of the operation
+   */
+  @Operation(
+      summary = "Confirms the user's email address",
+      description = """
+          Confirms the user's email address using the provided confirmation key.
+          """
+  )
+  @PostMapping("/confirm-email/{key}")
+  public ResponseEntity<String> confirmEmail(@PathVariable String key) {
+    logger.info("Confirming email address with key = {}", key);
+    userService.confirmEmail(key);
+    logger.info("Email address confirmed successfully");
+    return ResponseEntity.ok("Email address confirmed successfully");
   }
 }
