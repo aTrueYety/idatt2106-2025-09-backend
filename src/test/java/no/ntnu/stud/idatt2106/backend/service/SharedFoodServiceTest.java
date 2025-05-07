@@ -29,7 +29,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-
 /**
  * Contains tests for SharedFoodService.
  */
@@ -455,6 +454,163 @@ class SharedFoodServiceTest {
     assertThat(result).isFalse();
     verify(sharedRepo, never()).findById(any());
     verify(groupRepo, never()).findByHouseholdIdAndGroupId(any(), any());
+  }
+
+  @Test
+  void shouldReturnSummaryByGroupHouseholdId() {
+    final Long groupHouseholdId = 7L;
+    final Long foodId = 10L;
+    final Long typeId = 3L;
+
+    Food food = new Food();
+    food.setId(foodId);
+    food.setTypeId(typeId);
+    food.setExpirationDate(LocalDate.of(2025, 10, 10));
+    food.setAmount(20f);
+    food.setHouseholdId(4L);
+
+    FoodType type = new FoodType();
+    type.setId(typeId);
+    type.setName("Mel");
+    type.setUnit("kg");
+    type.setCaloriesPerUnit(360f);
+
+    SharedFood shared = new SharedFood(new SharedFoodKey(foodId, groupHouseholdId), 2f);
+    when(sharedRepo.findByGroupHouseholdId(groupHouseholdId)).thenReturn(List.of(shared));
+    when(foodRepo.findById(foodId)).thenReturn(Optional.of(food));
+    when(typeRepo.findById(typeId)).thenReturn(Optional.of(type));
+
+    List<FoodDetailedResponse> result = service.getSharedFoodSummaryByGroup(groupHouseholdId);
+
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getTypeName()).isEqualTo("Mel");
+    assertThat(result.get(0).getTotalAmount()).isEqualTo(2f);
+    assertThat(result.get(0).getTotalCalories()).isEqualTo(720f);
+  }
+
+  @Test
+  void shouldUnshareAllFromGroup() {
+    Long householdId = 10L;
+    Long groupId = 5L;
+    Long groupHouseholdId = 20L;
+    final Long foodId = 99L;
+    final Long typeId = 7L;
+
+    GroupHousehold groupHousehold = new GroupHousehold();
+    groupHousehold.setId(groupHouseholdId);
+    groupHousehold.setGroupId(groupId);
+    groupHousehold.setHouseholdId(householdId);
+
+    Food food = new Food();
+    food.setId(foodId);
+    food.setTypeId(typeId);
+    food.setExpirationDate(LocalDate.of(2025, 8, 10));
+    food.setHouseholdId(householdId);
+
+    final SharedFood shared = new SharedFood(new SharedFoodKey(foodId, groupHouseholdId), 4f);
+
+    Food existing = new Food();
+    existing.setId(100L);
+    existing.setTypeId(typeId);
+    existing.setExpirationDate(food.getExpirationDate());
+    existing.setAmount(6f);
+    existing.setHouseholdId(householdId);
+
+    Household household = new Household();
+    household.setId(householdId);
+    when(householdRepo.findByUserId(any())).thenReturn(Optional.of(household));
+
+    when(groupRepo.findByHouseholdIdAndGroupId(householdId, groupId)).thenReturn(groupHousehold);
+    when(sharedRepo.findByGroupHouseholdId(groupHouseholdId)).thenReturn(List.of(shared));
+    when(foodRepo.findById(foodId)).thenReturn(Optional.of(food));
+    when(foodRepo.findByTypeIdAndExpirationDateAndHouseholdId(typeId,
+        food.getExpirationDate(), householdId))
+        .thenReturn(Optional.of(existing));
+
+    service.unshareAllFromGroup(householdId, groupId);
+
+    verify(foodRepo).update(existing);
+    assertThat(existing.getAmount()).isEqualTo(10f);
+    verify(sharedRepo).deleteById(new SharedFoodKey(foodId, groupHouseholdId));
+  }
+
+  @Test
+  void shouldNotUnshareIfGroupHouseholdNotFound() {
+    Long householdId = 15L;
+    Long groupId = 3L;
+
+    Household household = new Household();
+    household.setId(householdId);
+    when(householdRepo.findByUserId(any())).thenReturn(Optional.of(household));
+    when(groupRepo.findByHouseholdIdAndGroupId(householdId, groupId)).thenReturn(null);
+
+    service.unshareAllFromGroup(householdId, groupId);
+
+    verify(sharedRepo, never()).findByGroupHouseholdId(any());
+    verify(foodRepo, never()).update(any());
+    verify(sharedRepo, never()).deleteById(any());
+  }
+
+  @Test
+  void shouldSkipUnsharingIfFoodNotFound() {
+    Long householdId = 20L;
+    Long groupId = 4L;
+
+    GroupHousehold groupHousehold = new GroupHousehold();
+    groupHousehold.setId(100L);
+    groupHousehold.setHouseholdId(householdId);
+    groupHousehold.setGroupId(groupId);
+
+    Household household = new Household();
+    household.setId(householdId);
+    when(householdRepo.findByUserId(any())).thenReturn(Optional.of(household));
+    
+    when(groupRepo.findByHouseholdIdAndGroupId(householdId, groupId)).thenReturn(groupHousehold);
+    SharedFood shared = new SharedFood(new SharedFoodKey(99L, 100L), 3f);
+    when(sharedRepo.findByGroupHouseholdId(100L)).thenReturn(List.of(shared));
+    when(foodRepo.findById(99L)).thenReturn(Optional.empty());
+
+    service.unshareAllFromGroup(householdId, groupId);
+
+    verify(sharedRepo).findByGroupHouseholdId(100L);
+    verify(foodRepo).findById(99L);
+    verify(foodRepo, never()).update(any());
+    verify(sharedRepo, never()).deleteById(any());
+  }
+
+  @Test
+  void shouldSkipUnsharingIfAmountIsZero() {
+    Long householdId = 50L;
+    Long groupId = 6L;
+  
+    GroupHousehold groupHousehold = new GroupHousehold();
+    groupHousehold.setId(120L);
+    groupHousehold.setHouseholdId(householdId);
+    groupHousehold.setGroupId(groupId);
+  
+    final SharedFood shared = new SharedFood(new SharedFoodKey(77L, 120L), 0f);
+  
+    Food food = new Food();
+    food.setId(77L);
+    food.setTypeId(3L);
+    food.setHouseholdId(householdId);
+    food.setExpirationDate(LocalDate.now());
+    food.setAmount(10f);
+  
+    Household household = new Household();
+    household.setId(householdId);
+  
+    when(householdRepo.findByUserId(any())).thenReturn(Optional.of(household));
+    when(groupRepo.findByHouseholdIdAndGroupId(householdId, groupId)).thenReturn(groupHousehold);
+    when(sharedRepo.findByGroupHouseholdId(120L)).thenReturn(List.of(shared));
+    when(foodRepo.findById(77L)).thenReturn(Optional.of(food));
+    when(foodRepo.findByTypeIdAndExpirationDateAndHouseholdId(
+        3L, food.getExpirationDate(), householdId)).thenReturn(Optional.of(food));
+  
+    service.unshareAllFromGroup(householdId, groupId);
+  
+    verify(foodRepo, never()).update(any());
+    verify(sharedRepo, never()).deleteById(any());
   }
   
 
