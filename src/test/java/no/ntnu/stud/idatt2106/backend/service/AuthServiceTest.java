@@ -26,6 +26,8 @@ import no.ntnu.stud.idatt2106.backend.model.response.LoginResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.RegisterResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.CredentialsUpdate;
 import no.ntnu.stud.idatt2106.backend.util.EmailTemplates;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -64,6 +66,9 @@ public class AuthServiceTest {
   @Mock
   private BCryptPasswordEncoder encoder;
 
+  @Mock
+  private RecaptchaService recaptchaService;
+
   @InjectMocks
   private AuthService authService;
 
@@ -84,8 +89,11 @@ public class AuthServiceTest {
 
     when(jwtService.generateToken(anyString(), anyLong(), anyBoolean(), anyBoolean()))
         .thenReturn("token123");
+    when(recaptchaService.verifyToken(anyString())).thenReturn(true);
+
+      
     RegisterRequest request = new RegisterRequest("newUser",
-        "Password123", "new@example.com");
+        "Password123", "new@example.com", "recaptchaToken123");
     RegisterResponse response = authService.register(request);
     assertEquals("Registration successful!", response.getMessage());
     assertEquals("token123", response.getToken());
@@ -103,7 +111,6 @@ public class AuthServiceTest {
 
     Authentication authentication = mock(Authentication.class);
     when(authentication.isAuthenticated()).thenReturn(true);
-
     when(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
         .thenReturn(authentication);
     when(userService.getUserByUsername("username")).thenReturn(user);
@@ -122,7 +129,7 @@ public class AuthServiceTest {
     when(userService.getUserByUsername("existingUser")).thenReturn(new User());
 
     RegisterRequest request = new RegisterRequest("existingUser",
-        "Password123", "email@example.com");
+        "Password123", "email@example.com", "recaptchaToken123");
 
     try {
       authService.register(request);
@@ -136,7 +143,8 @@ public class AuthServiceTest {
 
     when(userService.getUserByEmail("existing@example.com")).thenReturn(new User());
 
-    RegisterRequest request = new RegisterRequest("newUser", "Password123", "existing@example.com");
+    RegisterRequest request = new RegisterRequest(
+          "newUser", "Password123", "existing@example.com", "recaptchaToken123");
 
     try {
       authService.register(request);
@@ -180,13 +188,14 @@ public class AuthServiceTest {
     when(userService.getUserByUsername(anyString())).thenReturn(null);
     when(userService.getUserByEmail(anyString())).thenReturn(null);
     when(authManager.authenticate(any())).thenReturn(mock(Authentication.class));
+    when(recaptchaService.verifyToken(anyString())).thenReturn(true);
 
     doThrow(new MessagingException("Simulated failure"))
         .when(emailService)
         .sendHtmlEmail(anyString(), anyString(), anyString());
 
     RegisterRequest request = new RegisterRequest("testuser",
-        "SterktPassord1", "jacoblein@gmail.com");
+        "SterktPassord1", "jacoblein@gmail.com", "recaptchaToken123");
 
     // Act & Assert
     RuntimeException exception = assertThrows(RuntimeException.class, () -> {
@@ -201,7 +210,7 @@ public class AuthServiceTest {
     when(userService.getUserByUsername(anyString())).thenReturn(null);
 
     RegisterRequest request = new RegisterRequest("testuser",
-        "SterktPassord", "jacoblein@gmail.com");
+        "SterktPassord", "jacoblein@gmail.com", "recaptchaToken123");
 
     // Act & Assert
     RuntimeException exception = assertThrows(RuntimeException.class, () -> {
@@ -218,7 +227,7 @@ public class AuthServiceTest {
     when(userService.getUserByUsername(anyString())).thenReturn(null);
 
     RegisterRequest request = new RegisterRequest("testuser",
-        "SterktPassord1", "jacoblein@gmail");
+        "SterktPassord1", "jacoblein@gmail", "recaptchaToken123");
 
     // Act & Assert
     RuntimeException exception = assertThrows(RuntimeException.class, () -> {
@@ -233,7 +242,7 @@ public class AuthServiceTest {
     when(userService.getUserByUsername(anyString())).thenReturn(null);
 
     RegisterRequest request = new RegisterRequest("testuser",
-        "SterktPassord1", "jacobleingmail.com");
+        "SterktPassord1", "jacobleingmail.com", "recaptchaToken123");
 
     // Act & Assert
     RuntimeException exception = assertThrows(RuntimeException.class, () -> {
@@ -370,7 +379,8 @@ public class AuthServiceTest {
 
   @Test
   public void testRegister_throwsExceptionWhenUsernameIsNull() {
-    RegisterRequest request = new RegisterRequest(null, "Password123", "email@example.com");
+    RegisterRequest request = new RegisterRequest(
+          null, "Password123", "email@example.com", "recaptchaToken123");
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
       authService.register(request);
@@ -380,7 +390,8 @@ public class AuthServiceTest {
 
   @Test
   public void testRegister_throwsExceptionWhenPasswordIsNull() {
-    RegisterRequest request = new RegisterRequest("testuser", null, "email@example.com");
+    RegisterRequest request = new RegisterRequest(
+          "testuser", null, "email@example.com", "recaptchaToken123");
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
       authService.register(request);
@@ -390,7 +401,8 @@ public class AuthServiceTest {
 
   @Test
   public void testRegister_throwsExceptionWhenEmailIsNull() {
-    RegisterRequest request = new RegisterRequest("testuser", "Password123", "null");
+    RegisterRequest request = new RegisterRequest(
+          "testuser", "Password123", "null", "recaptchaToken123");
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
       authService.register(request);
