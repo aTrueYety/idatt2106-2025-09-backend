@@ -40,7 +40,8 @@ public class GroupHouseholdService {
   @Autowired
   private EmergencyGroupService emergencyGroupService;
 
-
+  @Autowired
+  private SharedFoodService sharedFoodService;
 
   /**
    * Creates a new group-household relation.
@@ -77,7 +78,7 @@ public class GroupHouseholdService {
   /**
    * Deletes a group-household relation.
    *
-   * @param id the relation ID
+   * @param id    the relation ID
    * @param token the JWT token
    * @return true if deleted, false otherwise
    */
@@ -94,6 +95,9 @@ public class GroupHouseholdService {
     Validate.isValid(
         groupHousehold.getHouseholdId().equals(user.getHouseholdId()),
         "User's household does not match the group-household relation.");
+
+    sharedFoodService.unshareAllFromGroup(userId, groupHousehold.getGroupId());
+
     boolean success = repository.deleteById(id);
     List<GroupHousehold> groupHouseholds = repository.findByGroupId(groupHousehold.getGroupId());
     if (groupHouseholds.isEmpty()) {
@@ -114,7 +118,7 @@ public class GroupHouseholdService {
             request.getHouseholdId(), request.getGroupId()),
         Validate.isNull(),
         "Household is already in this group.");
-    Validate.isValid(!groupInviteService.hasGroupInvite(request.getHouseholdId(), 
+    Validate.isValid(!groupInviteService.hasGroupInvite(request.getHouseholdId(),
         request.getGroupId()),
         "Household already has an invite to this group.");
 

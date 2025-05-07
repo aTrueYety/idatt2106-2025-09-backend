@@ -349,4 +349,52 @@ public class SharedFoodService {
         .orElseThrow(() -> new IllegalArgumentException("Household not found for user"))
         .getId();
   }
+
+  /**
+   * Unshares all food items from a specific group for a user.
+   *
+   * @param userId  The ID of the user.
+   * @param groupId The ID of the group.
+   */
+  public void unshareAllFromGroup(Long userId, Long groupId) {
+    Long householdId = getHouseholdIdByUser(userId);
+  
+    GroupHousehold groupHousehold = groupHouseholdRepository
+        .findByHouseholdIdAndGroupId(householdId, groupId);
+    if (groupHousehold == null) {
+      return; 
+    }
+  
+    List<SharedFood> sharedFoods = repository.findByGroupHouseholdId(groupHousehold.getId());
+    for (SharedFood shared : sharedFoods) {
+      Long foodId = shared.getId().getFoodId();
+  
+      Optional<Food> foodOpt = foodRepository.findById(foodId);
+      if (foodOpt.isEmpty()) continue;
+  
+      Food food = foodOpt.get();
+      if (!Objects.equals(food.getHouseholdId(), householdId)) continue;
+  
+      float amount = shared.getAmount();
+  
+      Optional<Food> existingOpt = foodRepository.findByTypeIdAndExpirationDateAndHouseholdId(
+          food.getTypeId(), food.getExpirationDate(), householdId);
+  
+      if (existingOpt.isPresent()) {
+        Food existing = existingOpt.get();
+        existing.setAmount(existing.getAmount() + amount);
+        foodRepository.update(existing);
+      } else {
+        Food newFood = new Food();
+        newFood.setTypeId(food.getTypeId());
+        newFood.setExpirationDate(food.getExpirationDate());
+        newFood.setAmount(amount);
+        newFood.setHouseholdId(householdId);
+        foodRepository.save(newFood);
+      }
+  
+      repository.deleteById(shared.getId());
+    }
+  }
+  
 }

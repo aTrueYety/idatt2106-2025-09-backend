@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -349,7 +350,108 @@ class SharedFoodServiceTest {
 
     List<FoodDetailedResponse> result = service.getSharedFoodSummaryByGroupId(groupId);
 
-    assertThat(result).isEmpty(); 
+    assertThat(result).isEmpty();
   }
+
+  @Test
+  void shouldFailToMoveFoodToSharedGroupIfInsufficientAmount() {
+    final String token = "Bearer test";
+    final Long userId = 1L;
+    final Long householdId = 2L;
+    final float availableAmount = 3f;
+    final float requestedAmount = 5f;
+
+    SharedFoodRequest request = new SharedFoodRequest();
+    request.setFoodId(10L);
+    request.setAmount(requestedAmount);
+    request.setGroupId(1L);
+
+    Food food = new Food();
+    food.setId(10L);
+    food.setHouseholdId(householdId);
+    food.setAmount(availableAmount);
+    food.setExpirationDate(LocalDate.now());
+
+    GroupHousehold group = new GroupHousehold();
+    group.setId(99L);
+    group.setHouseholdId(householdId);
+    group.setGroupId(1L);
+
+    when(jwtService.extractUserId("test")).thenReturn(userId);
+    Household household = new Household();
+    household.setId(householdId);
+    when(householdRepo.findByUserId(userId)).thenReturn(Optional.of(household));
+    when(foodRepo.findById(10L)).thenReturn(Optional.of(food));
+    when(groupRepo.findByHouseholdIdAndGroupId(householdId, 1L)).thenReturn(group);
+
+    boolean result = service.moveFoodToSharedGroup(request, token);
+
+    assertThat(result).isFalse();
+    verify(sharedRepo, never()).save(any());
+    verify(sharedRepo, never()).update(any());
+    verify(foodRepo, never()).update(any());
+  }
+
+  @Test
+  void shouldFailToMoveFoodFromSharedGroupIfNoSharedFoodExists() {
+    final String token = "Bearer test";
+    final Long userId = 7L;
+    final Long householdId = 14L;
+
+    SharedFoodRequest request = new SharedFoodRequest();
+    request.setFoodId(50L);
+    request.setAmount(3f);
+    request.setGroupId(1L);
+
+    Food food = new Food();
+    food.setId(50L);
+    food.setHouseholdId(householdId);
+    food.setTypeId(20L);
+    food.setExpirationDate(LocalDate.now());
+
+    GroupHousehold group = new GroupHousehold();
+    group.setId(200L);
+    group.setHouseholdId(householdId);
+    group.setGroupId(1L);
+
+    when(jwtService.extractUserId("test")).thenReturn(userId);
+    Household household = new Household();
+    household.setId(householdId);
+    when(householdRepo.findByUserId(userId)).thenReturn(Optional.of(household));
+    when(foodRepo.findById(50L)).thenReturn(Optional.of(food));
+    when(groupRepo.findByHouseholdIdAndGroupId(householdId, 1L)).thenReturn(group);
+    when(sharedRepo.findById(new SharedFoodKey(50L, 200L))).thenReturn(Optional.empty());
+
+    boolean result = service.moveFoodFromSharedGroup(request, token);
+
+    assertThat(result).isFalse();
+    verify(sharedRepo, never()).update(any());
+    verify(foodRepo, never()).update(any());
+  }
+
+  @Test
+  void shouldFailToMoveFoodFromSharedGroupIfFoodNotFound() {
+    final String token = "Bearer test";
+    final Long userId = 8L;
+    final Long householdId = 22L;
+
+    SharedFoodRequest request = new SharedFoodRequest();
+    request.setFoodId(99L);
+    request.setAmount(2f);
+    request.setGroupId(1L);
+
+    when(jwtService.extractUserId("test")).thenReturn(userId);
+    Household household = new Household();
+    household.setId(householdId);
+    when(householdRepo.findByUserId(userId)).thenReturn(Optional.of(household));
+    when(foodRepo.findById(99L)).thenReturn(Optional.empty());
+
+    boolean result = service.moveFoodFromSharedGroup(request, token);
+
+    assertThat(result).isFalse();
+    verify(sharedRepo, never()).findById(any());
+    verify(groupRepo, never()).findByHouseholdIdAndGroupId(any(), any());
+  }
+  
 
 }
