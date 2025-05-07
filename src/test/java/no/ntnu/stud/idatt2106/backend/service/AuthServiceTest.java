@@ -252,6 +252,23 @@ public class AuthServiceTest {
   }
 
   @Test
+  void testRegister_throwsExceptionWhenRecaptchaFails() throws MessagingException {
+
+    when(userService.getUserByUsername(anyString())).thenReturn(null);
+    when(userService.getUserByEmail(anyString())).thenReturn(null);
+    when(recaptchaService.verifyToken(anyString())).thenReturn(false);
+
+    RegisterRequest request = new RegisterRequest("testuser",
+        "SterktPassord1", "jacoblein@gmail.com", "recaptchaToken123");
+    
+    // Act & Assert
+    RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+      authService.register(request);
+    });
+    assertEquals("reCAPTCHA verification failed", exception.getMessage());
+  }
+
+  @Test
   public void testChangeCredentials_throwsExceptionWhenUsernameNotAvailable() {
 
     User currentUser = new User();
