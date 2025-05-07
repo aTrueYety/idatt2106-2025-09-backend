@@ -9,8 +9,10 @@ import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.mapper.GroupHouseholdMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
 import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
+import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.GroupHouseholdRequest;
+import no.ntnu.stud.idatt2106.backend.model.response.GroupHouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import org.junit.jupiter.api.Nested;
@@ -182,6 +184,49 @@ public class GroupHouseholdServiceTests {
       groupHouseholdService.rejectInvite(groupId, token);
 
       verify(groupInviteService).deleteGroupInvite(householdId, groupId);
+    }
+  }
+
+  @Nested
+  class GetByUserIdTests {
+
+    @Test
+    void shouldReturnAlllGroupMemberships() {
+      Long userId = 1L;
+      Long householdId = 4L;
+      Household household = new Household();
+      household.setId(householdId);
+
+      when(householdRepository.findByUserId(userId)).thenReturn(Optional.of(household));
+
+      GroupHousehold groupHousehold1 = new GroupHousehold();
+      groupHousehold1.setGroupId(1L);
+      groupHousehold1.setHouseholdId(4L);
+      GroupHousehold groupHousehold2 = new GroupHousehold();
+      groupHousehold2.setGroupId(5L);
+      groupHousehold2.setHouseholdId(4L);
+      List<GroupHousehold> groupHouseholds = List.of(groupHousehold1, groupHousehold2);
+
+      when(groupHouseholdRepository.findByHouseholdId(householdId)).thenReturn(groupHouseholds);
+
+      GroupHouseholdResponse response1 = new GroupHouseholdResponse();
+      response1.setGroupId(1L);
+      response1.setHouseholdId(4L);
+      GroupHouseholdResponse response2 = new GroupHouseholdResponse();
+      response2.setGroupId(5L);
+      response2.setHouseholdId(4L);
+      List<GroupHouseholdResponse> responses = List.of(response1, response2);
+
+      try (MockedStatic<GroupHouseholdMapper> mapper 
+            = Mockito.mockStatic(GroupHouseholdMapper.class)) {
+        mapper.when(() -> GroupHouseholdMapper.toResponse(groupHousehold1)).thenReturn(response1);
+        mapper.when(() -> GroupHouseholdMapper.toResponse(groupHousehold2)).thenReturn(response2);
+
+        List<GroupHouseholdResponse> result = groupHouseholdService.getByUserId(userId);
+
+        assertEquals(responses, result);
+        verify(groupHouseholdRepository).findByHouseholdId(householdId);
+      }
     }
   }
 }
