@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
  * Integration test class for the UserRepository class.
  */
 @JdbcTest
-@ActiveProfiles("Test")
+@ActiveProfiles("test")
 @Import(UserRepositoryImpl.class)
 public class UserRepositoryTest {
 
