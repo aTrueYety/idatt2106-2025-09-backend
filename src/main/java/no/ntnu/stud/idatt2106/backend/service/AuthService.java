@@ -5,6 +5,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.AdminRegistrationKey;
 import no.ntnu.stud.idatt2106.backend.model.base.PasswordResetKey;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.AdminInviteRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.AdminRemoveRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.AdminUpgradeRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.LoginRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetKeyRequest;
@@ -294,7 +295,7 @@ public class AuthService {
    * @param request the registration key provided in the invitation
    * @param token   the JWT token of the user accepting the invite
    */
-  public void acceptAdminInvite(AdminUpgradeRequest request, String token) {
+  public LoginResponse acceptAdminInvite(AdminUpgradeRequest request, String token) {
     Validate.that(request.getKey(), Validate.isNotBlankOrNull(), "Key cannot be blank or null");
 
     AdminRegistrationKey registrationKey = adminRegistrationKeyService.findByKey(request.getKey());
@@ -311,6 +312,10 @@ public class AuthService {
     userInKey.setAdmin(true);
     userService.updateUserCredentials(userInKey);
     adminRegistrationKeyService.deleteByKey(request.getKey());
+
+    String newToken = jwtService.generateToken(
+        userInKey.getUsername(), userInKey.getId(), userInKey.isAdmin(), userInKey.isSuperAdmin());
+    return new LoginResponse("Admin registration successful!", newToken);
   }
 
   /**
@@ -318,22 +323,26 @@ public class AuthService {
    *
    * @param request the request containing the registration key to delete
    */
-  public void deleteAdminRegistrationKey(AdminUpgradeRequest request) {
-    Validate.that(request.getKey(), Validate.isNotBlankOrNull(), "Key cannot be blank or null");
+  public void deleteAdminRegistrationKey(AdminRemoveRequest request) {
+    Validate.that(
+          request.getUsername(), Validate.isNotBlankOrNull(), "Username cannot be blank or null");
 
-    AdminRegistrationKey registrationKey = adminRegistrationKeyService.findByKey(request.getKey());
+    User user = userService.getUserByUsername(request.getUsername());
+
+    AdminRegistrationKey registrationKey = 
+        adminRegistrationKeyService.findByUserId(user.getId());
     Validate.that(registrationKey, Validate.isNotNull(), "Admin invitation not found");
 
-    adminRegistrationKeyService.deleteByKey(request.getKey());
+    adminRegistrationKeyService.deleteByUserId(user.getId());
   }
 
   /**
    * Removes admin status from a user.
    *
-   * @param userId the ID of the user whose admin status is to be removed
+   * @param request the request containing the user ID to remove admin status from
    * @param token  the JWT token of the user sending the request
    */
-  public void removeAdmin(Long userId, String token) {
+  public void removeAdmin(AdminRemoveRequest request, String token) {
     Validate.that(token, Validate.isNotBlankOrNull(), "Token cannot be blank or null");
 
     User sender = userService.getUserByUsername(
@@ -341,7 +350,7 @@ public class AuthService {
     Validate.that(sender, Validate.isNotNull(), "Sender not found");
     Validate.that(sender.isSuperAdmin(), Validate.isTrue(), "Sender is not a super admin");
 
-    User user = userService.getUserById(userId);
+    User user = userService.getUserByUsername(request.getUsername());
     Validate.that(user, Validate.isNotNull(), "User not found");
     Validate.that(user.isAdmin(), Validate.isTrue(), "User is not an admin");
 
