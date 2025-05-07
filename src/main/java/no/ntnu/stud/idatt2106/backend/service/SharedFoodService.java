@@ -35,7 +35,6 @@ public class SharedFoodService {
   private final FoodTypeRepository foodTypeRepository;
   private final GroupHouseholdRepository groupHouseholdRepository;
 
-
   /**
    * Creates a new shared food entry.
    *
@@ -98,15 +97,21 @@ public class SharedFoodService {
     if (foodOpt.isEmpty()) {
       return false;
     }
-
+    
     Food food = foodOpt.get();
-
     if (food.getAmount() < request.getAmount()) {
       return false;
     }
 
-    SharedFoodKey key = new SharedFoodKey(food.getId(), request.getGroupHouseholdId());
+    GroupHousehold groupHousehold = groupHouseholdRepository
+        .findByHouseholdIdAndGroupId(food.getHouseholdId(), request.getGroupId());
+    if (groupHousehold == null) {
+      return false;
+    }
+
+    SharedFoodKey key = new SharedFoodKey(food.getId(), groupHousehold.getId());
     if (repository.findById(key).isPresent()) {
+
       return false;
     }
 
@@ -158,6 +163,7 @@ public class SharedFoodService {
                 batch.setExpirationDate(food.getExpirationDate());
                 batch.setAmount(sf.getAmount());
                 batch.setHouseholdId(food.getHouseholdId());
+                batch.setGroupHouseholdId(sf.getId().getGroupHouseholdId());
                 return batch;
               })
               .filter(Objects::nonNull)
@@ -249,28 +255,22 @@ public class SharedFoodService {
    * @return list of detailed food summaries for the entire group
    */
   public List<FoodDetailedResponse> getSharedFoodSummaryByGroupId(Long groupId) {
-    List<GroupHousehold> groupHouseholds = groupHouseholdRepository.findByGroupId(groupId);
-    List<Long> groupHouseholdIds = groupHouseholds.stream()
-        .map(GroupHousehold::getId)
-        .toList();
-  
+    List<GroupHousehold> memberships = groupHouseholdRepository.findByGroupId(groupId);
 
-    List<SharedFood> sharedFoods = groupHouseholdIds.stream()
-        .flatMap(id -> repository.findByGroupHouseholdId(id).stream())
+    List<SharedFood> sharedFoods = memberships.stream()
+        .flatMap(gh -> repository.findByGroupHouseholdId(gh.getId()).stream())
         .toList();
-  
-        
+
     Map<Long, Food> foodMap = sharedFoods.stream()
         .map(sf -> foodRepository.findById(sf.getId().getFoodId()))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .collect(Collectors.toMap(Food::getId, food -> food));
-  
+
     Map<Long, List<SharedFood>> groupedByType = sharedFoods.stream()
         .filter(sf -> foodMap.containsKey(sf.getId().getFoodId()))
-        .collect(Collectors.groupingBy(
-            sf -> foodMap.get(sf.getId().getFoodId()).getTypeId()));
-  
+        .collect(Collectors.groupingBy(sf -> foodMap.get(sf.getId().getFoodId()).getTypeId()));
+
     return groupedByType.entrySet().stream()
         .map(entry -> {
           Long typeId = entry.getKey();
@@ -279,25 +279,24 @@ public class SharedFoodService {
             return null;
           }
           FoodType type = typeOpt.get();
-  
+
           List<FoodBatchResponse> batches = entry.getValue().stream()
               .map(sf -> {
                 Food food = foodMap.get(sf.getId().getFoodId());
                 FoodBatchResponse batch = new FoodBatchResponse();
                 batch.setId(food.getId());
-                batch.setExpirationDate(food.getExpirationDate());
                 batch.setAmount(sf.getAmount());
+                batch.setExpirationDate(food.getExpirationDate());
                 batch.setHouseholdId(food.getHouseholdId());
+                batch.setGroupHouseholdId(sf.getId().getGroupHouseholdId());
                 return batch;
               })
-              .filter(Objects::nonNull)
               .toList();
-  
-          double totalAmount = batches.stream()
-              .mapToDouble(FoodBatchResponse::getAmount)
+
+          float totalAmount = (float) batches.stream().mapToDouble(FoodBatchResponse::getAmount)
               .sum();
-          double totalCalories = totalAmount * type.getCaloriesPerUnit();
-  
+          float totalCalories = totalAmount * type.getCaloriesPerUnit();
+
           FoodDetailedResponse response = new FoodDetailedResponse();
           response.setTypeId(type.getId());
           response.setTypeName(type.getName());
@@ -310,6 +309,5 @@ public class SharedFoodService {
         .filter(Objects::nonNull)
         .toList();
   }
-  
 
 }

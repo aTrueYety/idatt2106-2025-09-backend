@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
 import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
+import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
 import no.ntnu.stud.idatt2106.backend.model.base.SharedFood;
 import no.ntnu.stud.idatt2106.backend.model.base.SharedFoodKey;
 import no.ntnu.stud.idatt2106.backend.model.request.SharedFoodRequest;
@@ -21,6 +22,7 @@ import no.ntnu.stud.idatt2106.backend.model.response.FoodDetailedResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.SharedFoodResponse;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
+import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.repository.SharedFoodRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +42,11 @@ class SharedFoodServiceTest {
   private FoodRepository foodRepository;
   @Mock
   private FoodTypeRepository foodTypeRepository;
+
+  @Mock
+  private GroupHouseholdRepository groupHouseholdRepository;
+
+  private Long groupId;
 
   @BeforeEach
   void setup() {
@@ -96,34 +103,36 @@ class SharedFoodServiceTest {
     assertTrue(result);
   }
 
-
   @Test
   void testMoveFoodToSharedGroup_shouldSucceed() {
     SharedFoodRequest request = new SharedFoodRequest();
     request.setFoodId(1L);
-    request.setGroupHouseholdId(2L);
+    request.setGroupId(2L); // Nytt felt
+
     request.setAmount(5.0f);
-  
+
     Food food = new Food();
     food.setId(1L);
     food.setAmount(10.0f);
     food.setTypeId(1L);
     food.setExpirationDate(LocalDate.now());
     food.setHouseholdId(3L);
-  
-    SharedFoodKey expectedKey = new SharedFoodKey(1L, 2L);
-  
+
+    GroupHousehold groupHousehold = new GroupHousehold(99L, 3L, 2L); // householdId = 3, groupId = 2
+
+    SharedFoodKey expectedKey = new SharedFoodKey(1L, 99L);
+
     when(foodRepository.findById(1L)).thenReturn(Optional.of(food));
+    when(groupHouseholdRepository.findByHouseholdIdAndGroupId(3L, 2L)).thenReturn(groupHousehold);
     when(repository.findById(expectedKey)).thenReturn(Optional.empty());
-  
+
     boolean result = service.moveFoodToSharedGroup(request);
-  
+
     assertTrue(result);
     verify(foodRepository).findById(1L);
     verify(repository).findById(expectedKey);
     verify(repository).save(any(SharedFood.class));
   }
-  
 
   @Test
   void testGetSharedFoodSummaryByGroup_shouldAggregateCorrectly() {
@@ -170,7 +179,6 @@ class SharedFoodServiceTest {
     Long foodId = 10L;
     Long missingTypeId = 99L;
 
-    // SharedFood links foodId to groupHouseholdId
     SharedFood shared = new SharedFood(new SharedFoodKey(foodId, groupHouseholdId), 2.0f);
     when(repository.findByGroupHouseholdId(groupHouseholdId))
         .thenReturn(List.of(shared));
