@@ -11,6 +11,7 @@ import no.ntnu.stud.idatt2106.backend.model.request.HouseholdKitRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.MoveHouseholdKitRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.HouseholdKitResponse;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdKitService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,16 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/household-kits")
 public class HouseholdKitController {
 
-  private final HouseholdKitService service;
-
-  /**
-   * Constructs a HouseholdKitController with the given service.
-   *
-   * @param service the household kit service
-   */
-  public HouseholdKitController(HouseholdKitService service) {
-    this.service = service;
-  }
+  @Autowired
+  private HouseholdKitService service;
 
   /**
    * Creates a new household-kit relation.
@@ -52,7 +45,7 @@ public class HouseholdKitController {
       @ApiResponse(responseCode = "201", description = "Relation created successfully"),
       @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
   })
-  @PostMapping
+  @PostMapping //Require auth? admin?
   public ResponseEntity<Void> create(@RequestBody HouseholdKitRequest request) {
     service.create(request);
     return ResponseEntity.status(201).build();
@@ -113,7 +106,7 @@ public class HouseholdKitController {
       @ApiResponse(responseCode = "204", description = "Relation deleted successfully"),
       @ApiResponse(responseCode = "404", description = "Relation not found", content = @Content)
   })
-  @DeleteMapping
+  @DeleteMapping //TODO Auth?
   public ResponseEntity<Void> delete(@RequestBody HouseholdKitRequest request) {
     boolean deleted = service.delete(request);
     if (deleted) {

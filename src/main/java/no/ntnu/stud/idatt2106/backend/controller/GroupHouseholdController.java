@@ -3,7 +3,6 @@ package no.ntnu.stud.idatt2106.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import no.ntnu.stud.idatt2106.backend.model.request.GroupHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.GroupHouseholdResponse;
 import no.ntnu.stud.idatt2106.backend.service.GroupHouseholdService;
