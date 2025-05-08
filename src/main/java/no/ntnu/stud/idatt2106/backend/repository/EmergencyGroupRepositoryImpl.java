@@ -90,7 +90,7 @@ public class EmergencyGroupRepositoryImpl implements EmergencyGroupRepository {
         +
         "  SELECT household_id, COUNT(*) AS count "
         +
-        "  FROM user "
+        "  FROM `user` "
         +
         "  GROUP BY household_id "
         +
