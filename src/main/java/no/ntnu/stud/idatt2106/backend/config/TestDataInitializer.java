@@ -66,7 +66,7 @@ public class TestDataInitializer implements CommandLineRunner {
   private final ExtraResidentTypeRepositoryImpl extraResidentTypeRepository;
   private final GroupHouseholdRepositoryImpl groupHouseholdRepository;
   private final KitRepositoryImpl kitRepository;
-  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+  private static final Logger logger = LoggerFactory.getLogger(TestDataInitializer.class);
 
   /**
    * Constructs a TestDataInitializer with the required services and repositories.

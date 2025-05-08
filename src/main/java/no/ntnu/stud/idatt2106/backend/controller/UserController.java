@@ -172,12 +172,12 @@ public class UserController {
           """
   )
   @PostMapping("/send-email-verification")
-  public ResponseEntity<String> sendEmailVerification(
+  public ResponseEntity<Void> sendEmailVerification(
         @RequestHeader("Authorization") String token) {
     logger.info("Sending email verification link to user");
     userService.sendEmailVerification(token);
     logger.info("Email verification link sent successfully");
-    return ResponseEntity.ok("Email verification link sent successfully");
+    return ResponseEntity.ok().build();
   }
 
   /**
@@ -193,10 +193,10 @@ public class UserController {
           """
   )
   @PostMapping("/confirm-email/{key}")
-  public ResponseEntity<String> confirmEmail(@PathVariable String key) {
+  public ResponseEntity<Void> confirmEmail(@PathVariable String key) {
     logger.info("Confirming email address with key = {}", key);
     userService.confirmEmail(key);
     logger.info("Email address confirmed successfully");
-    return ResponseEntity.ok("Email address confirmed successfully");
+    return ResponseEntity.ok().build();
   }
 }
