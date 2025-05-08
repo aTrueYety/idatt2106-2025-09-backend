@@ -19,6 +19,7 @@ public class UserMapper {
     response.setId(user.getId());
     response.setHouseholdId(user.getHouseholdId());
     response.setEmail(user.getEmail());
+    response.setEmailConfirmed(user.isEmailConfirmed());
     response.setUsername(user.getUsername());
     response.setFirstName(user.getFirstName());
     response.setLastName(user.getLastName());
