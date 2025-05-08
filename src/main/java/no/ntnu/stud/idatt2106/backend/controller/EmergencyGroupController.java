@@ -5,9 +5,7 @@ import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupSummaryResponse;
-import no.ntnu.stud.idatt2106.backend.repository.EmergencyGroupRepository;
 import no.ntnu.stud.idatt2106.backend.service.EmergencyGroupService;
-import no.ntnu.stud.idatt2106.backend.service.mapper.EmergencyGroupMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +30,6 @@ public class EmergencyGroupController {
 
   @Autowired
   private EmergencyGroupService service;
-
-  @Autowired
-  private EmergencyGroupRepository repository;
 
   /**
    * Handles requests to create new EmergencyGroup.
@@ -123,10 +118,10 @@ public class EmergencyGroupController {
           """)
   @GetMapping("/{id}")
   public ResponseEntity<EmergencyGroupResponse> getById(@PathVariable Long id) {
-    return repository.findById(id)
-        .map(EmergencyGroupMapper::toResponse)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+    logger.info("Retrieving emergency group with ID = {}", id);
+    EmergencyGroupResponse response = service.getById(id);
+    logger.info("Emergency group retrieved successfully");
+    return ResponseEntity.ok(response);
   }
 
   /**

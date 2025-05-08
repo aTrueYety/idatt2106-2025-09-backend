@@ -1,10 +1,10 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResident;
 import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
@@ -23,14 +23,22 @@ import org.springframework.stereotype.Service;
  * Service for managing emergency groups.
  */
 @Service
-@RequiredArgsConstructor
 public class EmergencyGroupService {
 
-  private final EmergencyGroupRepository repository;
-  private final GroupHouseholdRepository groupHouseholdRepository;
-  private final UserService userService;
-  private final ExtraResidentService extraResidentService;
-  private final JwtService jwtService;
+  @Autowired
+  private EmergencyGroupRepository repository;
+
+  @Autowired
+  private GroupHouseholdRepository groupHouseholdRepository;
+
+  @Autowired
+  private UserService userService;
+
+  @Autowired
+  private ExtraResidentService extraResidentService;
+
+  @Autowired
+  private JwtService jwtService;
 
   /**
    * Creates a new emergency group from the provided request.
@@ -90,7 +98,9 @@ public class EmergencyGroupService {
   public EmergencyGroupResponse getById(Long id) {
     return repository.findById(id)
         .map(EmergencyGroupMapper::toResponse)
-        .orElse(null);
+        .orElseThrow(() -> 
+          new NoSuchElementException("Emergency group with ID = " + id + " not found")
+        );
   }
 
   /**

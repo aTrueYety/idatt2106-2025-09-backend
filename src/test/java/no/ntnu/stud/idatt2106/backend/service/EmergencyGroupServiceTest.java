@@ -2,13 +2,14 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
@@ -185,15 +186,16 @@ public class EmergencyGroupServiceTest {
     }
 
     @Test
-    void shouldReturnNullIfGroupDoesNotExist() {
+    void shouldThrowIfGroupDoesNotExist() {
       Long groupId = 1L;
 
       when(repository.findById(groupId)).thenReturn(Optional.empty());
 
-      EmergencyGroupResponse response = emergencyGroupService.getById(groupId);
+      Exception exception = assertThrows(NoSuchElementException.class, () -> {
+        emergencyGroupService.getById(groupId);
+      });
 
-      assertNull(response);
-      verify(repository).findById(groupId);
+      assertTrue(exception.getMessage().contains("Emergency group with ID = 1 not found"));
     }
   }
 
