@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
+import no.ntnu.stud.idatt2106.backend.config.JwtAuthFilter;
 import no.ntnu.stud.idatt2106.backend.config.SecurityConfigTest;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
@@ -21,6 +22,8 @@ import no.ntnu.stud.idatt2106.backend.service.ExtraResidentTypeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -29,7 +32,9 @@ import org.springframework.test.web.servlet.MockMvc;
 /**
  * Tests for ExtraResidentType.
  */
-@WebMvcTest(ExtraResidentTypeController.class)
+@WebMvcTest(controllers = ExtraResidentTypeController.class, 
+    excludeFilters = @ComponentScan.Filter(type 
+    = FilterType.ASSIGNABLE_TYPE, value = JwtAuthFilter.class))
 @Import(SecurityConfigTest.class)
 public class ExtraResidentTypeControllerTest {
 
