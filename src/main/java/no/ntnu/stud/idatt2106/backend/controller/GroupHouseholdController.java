@@ -128,10 +128,10 @@ public class GroupHouseholdController {
           Retrieves all group-household relations associated with the household that
           the currently authenticated user belongs to.
           """
-  )
+  )//TODO remove token in param
   @GetMapping("/my-groups")
   public ResponseEntity<List<GroupHouseholdResponse>> getGroupsForCurrentUserHousehold(
-      @RequestHeader("Authorization") String token) {//TODO remove token in param
+      @RequestHeader("Authorization") String token) {
     logger.info("Fetching group-households for authenticated user's household");
     Long userId = jwtService.extractUserId(token.substring(7));
     List<GroupHouseholdResponse> responses = service.getByUserId(userId);

@@ -62,7 +62,7 @@ public class SecurityConfig {
 
             //-- EVENT CONTROLLER --//
             //Admin
-            .requestMatchers(HttpMethod.POST, "/api/events").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.POST, "/api/events").hasRole("ROLE_ADMIN")
             .requestMatchers(HttpMethod.POST, "/api/events/update").hasRole("ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/api/events/*").hasRole("ADMIN")
 
