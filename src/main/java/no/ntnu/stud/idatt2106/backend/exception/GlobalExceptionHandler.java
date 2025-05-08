@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.exception;
 
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +33,22 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<String> handleIllegalArgumentException(
       IllegalArgumentException ex, WebRequest request) {
-    logger.error("Illegal argument: {}", ex.getMessage(), ex);
+    logger.error("Illegal argument: {}", ex.getMessage());
     return new ResponseEntity<>(
         "Invalid token or request: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Handles NoSuchElementException.
+   *
+   * @param ex the NoSuchElementException
+   * @return the ResponseEntity with a 404 status and error message
+   */
+  @ExceptionHandler(NoSuchElementException.class)
+  public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException ex) {
+    logger.error("Not found: {}", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body("Resource not found: " + ex.getMessage());
   }
 
   /**
@@ -46,7 +60,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MissingServletRequestPartException.class)
   public ResponseEntity<String> handleMissingServletRequestPartException(
       MissingServletRequestPartException ex) {
-    logger.error("Missing request part: {}", ex.getRequestPartName(), ex);
+    logger.error("Missing request part: {}", ex.getRequestPartName());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body("Required part is missing: " + ex.getRequestPartName());
   }
@@ -60,7 +74,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   public ResponseEntity<String> handleMethodArgumentTypeMismatchException(
       MethodArgumentTypeMismatchException ex) {
-    logger.error("Method argument type mismatch: {}", ex.getMessage(), ex);
+    logger.error("Method argument type mismatch: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body("Invalid parameter type: " + ex.getName());
   }
@@ -74,7 +88,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public ResponseEntity<String> handleMissingServletRequestParameterException(
       MissingServletRequestParameterException ex) {
-    logger.error("Missing request parameter: {}", ex.getParameterName(), ex);
+    logger.error("Missing request parameter: {}", ex.getParameterName());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body("Required request parameter '" + ex.getParameterName() + "' is missing.");
   }
@@ -88,7 +102,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(NoHandlerFoundException.class)
   public ResponseEntity<String> handleNoHandlerFoundException(
       NoHandlerFoundException ex) {
-    logger.error("No handler found for request: {}", ex.getRequestURL(), ex);
+    logger.error("No handler found for request: {}", ex.getRequestURL());
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body("Endpoint not found: " + ex.getRequestURL());
   }
@@ -102,7 +116,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   public ResponseEntity<String> handleHttpRequestMethodNotSupportedException(
       HttpRequestMethodNotSupportedException ex) {
-    logger.error("Request method not supported: {}", ex.getMethod(), ex);
+    logger.error("Request method not supported: {}", ex.getMethod());
     return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
         .body("Request method " + ex.getMethod() + " not supported for this endpoint.");
   }
@@ -145,7 +159,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MissingRequestHeaderException.class)
   public ResponseEntity<String> handleMissingRequestHeaderException(
       MissingRequestHeaderException ex, WebRequest request) {
-    logger.error("Missing request header: {}", ex.getHeaderName(), ex);
+    logger.error("Missing request header: {}", ex.getHeaderName());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .body("Required request header '" + ex.getHeaderName() + "' is missing.");
   }
