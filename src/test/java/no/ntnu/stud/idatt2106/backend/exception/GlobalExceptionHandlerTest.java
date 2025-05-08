@@ -3,6 +3,7 @@ package no.ntnu.stud.idatt2106.backend.exception;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.jsonwebtoken.security.SignatureException;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
@@ -36,6 +37,13 @@ public class GlobalExceptionHandlerTest {
     ResponseEntity<String> response = handler.handleIllegalArgumentException(exception, null);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     assertEquals("Invalid token or request: Invalid argument", response.getBody());
+  }
+
+  @Test
+  void shouldHandleNoSuchElementException() {
+    NoSuchElementException exception = new NoSuchElementException("Not found");
+    ResponseEntity<String> response = handler.handleNoSuchElementException(exception);
+    assertEquals("Resource not found: Not found", response.getBody());
   }
 
   @Test
