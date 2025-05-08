@@ -51,13 +51,108 @@ public class SecurityConfig {
             //-- WHITELISTED ENDPOINTS --//
             .requestMatchers(AUTH_WHITELIST).permitAll()
 
-            //-- EMERGENCY GROUP --//
+            //-- EMERGENCY GROUP CONTROLLER--//
+            //Public access
             .requestMatchers(HttpMethod.GET, "/api/emergency-groups").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/emergency-groups/*").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/emergency-groups/summary").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/emergency-groups/summary/*").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/emergency-groups/summary/summary/group/*")
                 .permitAll()
+
+            //-- EVENT CONTROLLER --//
+            //Admin
+            .requestMatchers(HttpMethod.POST, "/api/events").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.POST, "/api/events/update").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/events/*").hasRole("ADMIN")
+
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/events/*").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/events/bounds").permitAll()
+
+            //-- EXTRA RESIDENT CONTROLLER --//
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/extra-residents").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/extra-residents/*").permitAll()
+
+            //-- EXTRA RESIDENT TYPE CONTROLLER --//
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/extra-resident-types").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/extra-resident-types/*").permitAll()
+
+            //-- FOOD CONTROLLER --//
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/food").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/food/*").permitAll()
+
+            //-- FOOD TYPE CONTROLLER --//
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/food-types").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/food-types/*").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/food-types/search").permitAll()
+
+            //-- HOUSEHOLD KIT CONTROLLER --//
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/household-kits/kit/*").permitAll()
+
+            //--INFO PAGE CONTROLLER --//
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/info-page/**").permitAll()
+
+            //Admin
+            .requestMatchers(HttpMethod.POST, "/api/info-page").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/info-page").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/info-page/*").hasRole("ADMIN")
+
+            //-- KIT CONTROLLER --//
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/kits").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/kits/*").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/kits/search").permitAll()
+
+            //Admin
+            .requestMatchers(HttpMethod.POST, "/api/kits").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/kits/*").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/kits/*").hasRole("ADMIN")
+
+            //-- MAP OBJECT CONTROLLER --//
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/map-object/*").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/map-object/bounds").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/map-object/closest").permitAll()
+
+            //ADMIN
+            .requestMatchers(HttpMethod.POST, "/api/map-object").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/map-object").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/map-object/*").hasRole("ADMIN")
+
+            //-- MAP OBJECT TYPE CONTROLLER --//
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/map-object-type").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/map-object-type/*").permitAll()
+
+            //Admin
+            .requestMatchers(HttpMethod.POST, "/api/map-object-type").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/map-object-type").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/map-object-type/*").hasRole("ADMIN")
+
+            //-- SEVERITY CONTROLLER --//
+            //Public
+            .requestMatchers(HttpMethod.GET, "/api/severity").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/severity/*").permitAll()
+
+            //Admin
+            .requestMatchers(HttpMethod.POST, "/api/severity").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.POST, "/api/severity/update").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/severity/*").hasRole("ADMIN")
+
+            //-- USER CONTROLLER --//
+            //Super admin
+            .requestMatchers(HttpMethod.GET, "/api/user/admins").hasRole("SUPERADMIN")
+            .requestMatchers(HttpMethod.GET, "/api/user/pending-admins").hasRole("SUPERADMIN")
+
+            //Public
+            .requestMatchers(HttpMethod.POST, "/api/user/confirm-email/*").permitAll()
 
             .anyRequest().authenticated()
         )

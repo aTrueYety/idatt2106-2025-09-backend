@@ -45,7 +45,7 @@ public class HouseholdKitController {
       @ApiResponse(responseCode = "201", description = "Relation created successfully"),
       @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
   })
-  @PostMapping //Require auth? admin?
+  @PostMapping
   public ResponseEntity<Void> create(@RequestBody HouseholdKitRequest request) {
     service.create(request);
     return ResponseEntity.status(201).build();
@@ -106,7 +106,7 @@ public class HouseholdKitController {
       @ApiResponse(responseCode = "204", description = "Relation deleted successfully"),
       @ApiResponse(responseCode = "404", description = "Relation not found", content = @Content)
   })
-  @DeleteMapping //TODO Auth?
+  @DeleteMapping
   public ResponseEntity<Void> delete(@RequestBody HouseholdKitRequest request) {
     boolean deleted = service.delete(request);
     if (deleted) {

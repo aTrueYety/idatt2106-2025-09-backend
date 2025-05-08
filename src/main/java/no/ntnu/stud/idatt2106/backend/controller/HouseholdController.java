@@ -80,7 +80,7 @@ public class HouseholdController {
       with the given ID a BAD_REQUEST response code is returned. If values in the request
       body are null they will not be updated.
       """)
-  @PutMapping("/{id}") //TODO AUTH, check if user is in household
+  @PutMapping("/{id}") //TODO check if user is in household
   public ResponseEntity<HouseholdResponse> updateHousehold(@PathVariable Long id,
       @RequestBody UpdateHouseholdRequest request) {
     logger.info("Updating household with ID = {}", id);
@@ -101,7 +101,7 @@ public class HouseholdController {
       Invites a user to a household. The user will be added to the household
       if they accept the invitation, sent by email.
       """)
-  @PostMapping("invite-user")
+  @PostMapping("invite-user")//TODO remove token from param
   public ResponseEntity<Void> inviteUserToHousehold(
       @RequestBody InviteUserHouseholdRequest request,
       @RequestHeader("Authorization") String token) {
@@ -122,7 +122,7 @@ public class HouseholdController {
       summary = "Accepts a invite to a household",
       description = "Updates the household of the user accepting the invite."
   )
-  @PostMapping("accept")
+  @PostMapping("accept")//TODO remove token from param
   public ResponseEntity<Void> acceptHouseholdInvite(
       @RequestBody HouseHoldInviteAcceptRequest request,
       @RequestHeader("Authorization") String token) {
@@ -142,7 +142,7 @@ public class HouseholdController {
   @Operation(summary = "Rejects a household invite", description = """
       Rejects a household invite. The user will not be added to the household.
       """)
-  @PostMapping("reject")
+  @PostMapping("reject")//TODO Remove token from param
   public ResponseEntity<Void> rejectHouseholdInvite(
       @RequestBody HouseHoldInviteAcceptRequest request,
       @RequestHeader("Authorization") String token) {
@@ -160,7 +160,7 @@ public class HouseholdController {
       description = """
           Removes the currently logged in user from their household.
           """)
-  @PostMapping("leave")
+  @PostMapping("leave")//TODO remove token from param
   public ResponseEntity<Void> leaveHousehold(
       @RequestHeader("Authorization") String token) {
     householdService.leaveHousehold(token);
@@ -215,7 +215,7 @@ public class HouseholdController {
           Retrieves information about the household the current user is a part of.
           """
   )
-  @GetMapping("/my-household")
+  @GetMapping("/my-household")//TODO remove token from param
   public ResponseEntity<HouseholdResponse> getCurrentUserHousehold(
       @RequestHeader("Authorization") String token) {
     logger.info("Fetching household of authenticated user");

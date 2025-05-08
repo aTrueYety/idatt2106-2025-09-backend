@@ -62,7 +62,7 @@ public class UserController {
    * @param request the request containing the new position sharing setting
    * @return a response indicating whether the update was successful or not
    */
-  @PatchMapping("/{id}/position-sharing") //TODO auth
+  @PatchMapping("/{id}/position-sharing")
   public ResponseEntity<String> updatePositionSharing(@PathVariable Long id,
       @RequestBody UpdatePositionSharingRequest request) {
     boolean updated = userService.updateSharePositionHouseholdOrGroup(id,
@@ -88,7 +88,7 @@ public class UserController {
           Updates a user's profile info, such as the user's user username, name, email, etc.
           """
   )
-  @PutMapping("/{id}") //TODO auth
+  @PutMapping("/{id}") //TODO check if current user has same id as request
   public ResponseEntity<UserResponse> updateProfile(@PathVariable Long id,
       @RequestBody UserUpdate update) {
     logger.info("Updating user with ID = {}", id);
@@ -192,7 +192,7 @@ public class UserController {
           Confirms the user's email address using the provided confirmation key.
           """
   )
-  @PostMapping("/confirm-email/{key}") //AUTH?
+  @PostMapping("/confirm-email/{key}")
   public ResponseEntity<String> confirmEmail(@PathVariable String key) {
     logger.info("Confirming email address with key = {}", key);
     userService.confirmEmail(key);
