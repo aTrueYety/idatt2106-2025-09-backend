@@ -1,12 +1,13 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import no.ntnu.stud.idatt2106.backend.model.request.SharedFoodRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodDetailedResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.SharedFoodResponse;
 import no.ntnu.stud.idatt2106.backend.service.SharedFoodService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * REST controller for managing shared food entries between group households.
  */
+@Tag(name = "Shared Food", description = "Endpoints for operations related to managing shared food")
 @RestController
 @RequestMapping("/api/shared-food")
-@RequiredArgsConstructor
 public class SharedFoodController {
 
-  private final SharedFoodService service;
+  @Autowired
+  private SharedFoodService service;
 
   /**
    * Creates a new shared food entry.
