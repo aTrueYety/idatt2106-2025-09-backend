@@ -43,6 +43,8 @@ public class AuthService {
   private PasswordResetService passwordResetKeyService;
   @Autowired
   private AdminRegistrationKeyService adminRegistrationKeyService;
+  @Autowired
+  private CloudflareTurnstileService turnstileService;
 
   private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -68,6 +70,11 @@ public class AuthService {
         Validate.isTrue(), "Email is not valid");
     Validate.that(userService.getUserByEmail(registerRequest.getEmail()),
         Validate.isNull(), "Email is already in use");
+
+    Validate.that(registerRequest.getCaptchaToken(),
+        Validate.isNotBlankOrNull(), "Captcha cannot be blank or null");
+    Validate.isValid(turnstileService.verifyCaptcha(registerRequest.getCaptchaToken()),
+        "Captcha is not valid");
 
     User user = new User();
 
