@@ -15,6 +15,7 @@ public class UserResponse {
   private Long id;
   private Long householdId;
   private String email;
+  private boolean emailConfirmed;
   private String username;
   private String firstName;
   private String lastName;
