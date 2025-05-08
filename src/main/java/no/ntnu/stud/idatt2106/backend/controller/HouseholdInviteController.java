@@ -1,6 +1,8 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.HouseholdInvite;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdInviteService;
@@ -16,13 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * REST controller for managing household invites.
  */
+@Tag(name = "Household Invites", 
+    description = "Endpoints for operations related to household invites.")
 @RestController
 @RequestMapping("/api/household-invites")
 public class HouseholdInviteController {
+  private static final Logger logger = LoggerFactory.getLogger(HouseholdInviteController.class);
+
   @Autowired
   private HouseholdInviteService householdInviteService;
-
-  private static final Logger logger = LoggerFactory.getLogger(HouseholdInviteController.class);
 
   /**
    * Retrieves all household invites for a user.
