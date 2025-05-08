@@ -1,6 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.UpdatePositionSharingRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller for user-related operations.
  */
+@Tag(name = "User", description = "Endpoints for operations related to users.")
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -60,7 +62,7 @@ public class UserController {
    * @param request the request containing the new position sharing setting
    * @return a response indicating whether the update was successful or not
    */
-  @PatchMapping("/{id}/position-sharing")
+  @PatchMapping("/{id}/position-sharing") //TODO auth
   public ResponseEntity<String> updatePositionSharing(@PathVariable Long id,
       @RequestBody UpdatePositionSharingRequest request) {
     boolean updated = userService.updateSharePositionHouseholdOrGroup(id,
@@ -86,7 +88,7 @@ public class UserController {
           Updates a user's profile info, such as the user's user username, name, email, etc.
           """
   )
-  @PutMapping("/{id}")
+  @PutMapping("/{id}") //TODO auth
   public ResponseEntity<UserResponse> updateProfile(@PathVariable Long id,
       @RequestBody UserUpdate update) {
     logger.info("Updating user with ID = {}", id);
@@ -190,7 +192,7 @@ public class UserController {
           Confirms the user's email address using the provided confirmation key.
           """
   )
-  @PostMapping("/confirm-email/{key}")
+  @PostMapping("/confirm-email/{key}") //AUTH?
   public ResponseEntity<String> confirmEmail(@PathVariable String key) {
     logger.info("Confirming email address with key = {}", key);
     userService.confirmEmail(key);
