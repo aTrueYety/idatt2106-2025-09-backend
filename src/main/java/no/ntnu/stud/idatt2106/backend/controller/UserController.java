@@ -193,10 +193,10 @@ public class UserController {
           """
   )
   @PostMapping("/confirm-email/{key}") //AUTH?
-  public ResponseEntity<String> confirmEmail(@PathVariable String key) {
+  public ResponseEntity<Void> confirmEmail(@PathVariable String key) {
     logger.info("Confirming email address with key = {}", key);
     userService.confirmEmail(key);
     logger.info("Email address confirmed successfully");
-    return ResponseEntity.ok("Email address confirmed successfully");
+    return ResponseEntity.ok().build();
   }
 }
