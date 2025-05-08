@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-
 import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResident;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResidentType;
@@ -235,11 +234,15 @@ public class TestDataInitializer implements CommandLineRunner {
 
   /**
    * Initializes test severities and informational pages for the application.
+   * This includes setting up severity levels and creating informational pages
+   * for various scenarios like nuclear explosions, terror actions, and more.
    */
   public void initializeTestSeveritiesAndInfoPages() {
     // Initialize severities:
+    // - Critical severity: Represents the most severe events that require
     // - High severity: Represents critical events requiring immediate attention.
     // - Medium severity: Represents significant events with moderate urgency.
+    // - Low severity: Represents minor events with low urgency.
 
     // Initialize informational pages:
     // - Nuclear reactor explosion: Detailed description of nuclear incidents and
@@ -248,6 +251,7 @@ public class TestDataInitializer implements CommandLineRunner {
     // measures.
     // - Forest fire: Information about forest fires, their consequences, and safety
     // precautions.
+    // - Storm warning: Description of storm warnings, their effects, and safety
 
     // Severity levels
     // severity0 - Critical
@@ -515,7 +519,10 @@ public class TestDataInitializer implements CommandLineRunner {
         "Prøv å hold deg ilivet og søk ly!");
     eventRepository.save(stormEventCritical);
   }
-
+  
+  /**
+   * Initializes test kit types for the application.
+   */
   public void initializeFoodTypes() {
     FoodType cannedTomatoes = new FoodType();
     cannedTomatoes.setName("Hermetiske tomater");
@@ -620,6 +627,11 @@ public class TestDataInitializer implements CommandLineRunner {
     foodTypeRepository.save(nuts);
   }
 
+  /**
+   * Initializes the extra resident types for the application.
+   * This includes various types of residents such as adults, children, and pets,
+   * along with their respective water and food consumption rates.
+   */
   public void initializeExtraResidentTypes() {
     ExtraResidentType adult = new ExtraResidentType();
     adult.setName("Voksen");
@@ -669,52 +681,66 @@ public class TestDataInitializer implements CommandLineRunner {
     extraResidentTypeRepository.save(cat);
   }
 
+  /**
+   * Initializes the kit types for the application.
+   * This includes various emergency kits such as flashlights, water purification tools,
+   * and first aid supplies, along with their descriptions.
+   */
   public void initializeKitTypes() {
     Kit kitType1 = new Kit();
     kitType1.setName("Lommelykt og batterier");
     kitType1.setDescription(
-        "Et solid lyssett som inkluderer lommelykt (helst LED) og ekstra batterier - viktig ved strømbrudd.");
+        "Et solid lyssett som inkluderer lommelykt (helst LED) og ekstra batterier - "
+        + "viktig ved strømbrudd.");
     kitRepository.save(kitType1);
 
     Kit kitType2 = new Kit();
     kitType2.setName("Vannrenseutstyr");
     kitType2.setDescription(
-        "Inkluderer vannfilter eller rensetabletter. Gjør det mulig å gjøre tilgjengelig vann drikkbart ved forurensning.");
+        "Inkluderer vannfilter eller rensetabletter. Gjør det mulig å gjøre tilgjengelig vann " 
+        + "drikkbart ved forurensning.");
     kitRepository.save(kitType2);
 
     Kit kitType3 = new Kit();
     kitType3.setName("Førstehjelpsutstyr");
     kitType3.setDescription(
-        "Inkluderer plaster, bandasjer, antiseptiske midler og smertestillende. Viktig for å håndtere mindre skader og sykdommer.");
+        "Inkluderer plaster, bandasjer, antiseptiske midler og smertestillende. "
+        + "Viktig for å håndtere mindre skader og sykdommer.");
     kitRepository.save(kitType3);
 
     Kit kitType4 = new Kit();
     kitType4.setName("Nødradio");
     kitType4.setDescription(
-        "En radio som kan drives med batterier eller håndsveiv. Viktig for å holde seg oppdatert på nyheter og varsler.");
+        "En radio som kan drives med batterier eller håndsveiv. " 
+        + "Viktig for å holde seg oppdatert på nyheter og varsler.");
     kitRepository.save(kitType4);
 
     Kit kitType5 = new Kit();
     kitType5.setName("Varme- og kokeutstyr");
     kitType5.setDescription(
-        "Utstyr som stormkjøkken, gassbrenner eller rødspritbrenner – viktig for å kunne tilberede mat og varme vann ved strømbrudd.");
+        "Utstyr som stormkjøkken, gassbrenner eller rødspritbrenner" 
+        + " - viktig for å kunne tilberede mat "
+        + "og varme vann ved strømbrudd.");
     kitRepository.save(kitType5);
 
     Kit kitType6 = new Kit();
     kitType6.setName("Varme og ly kit");
-    kitType6.setDescription("Tepper, stearinlys og tennutstyr som holder deg varm og gir lys i tilfelle strømmen går.");
+    kitType6.setDescription("Tepper, stearinlys og tennutstyr som holder" 
+        + " deg varm og gir lys i tilfelle strømmen går.");
     kitRepository.save(kitType6);
 
     Kit kitType7 = new Kit();
     kitType7.setName("Hygienesett");
     kitType7.setDescription(
-        "Inneholder toalettpapir, såpe, våtservietter og hånddesinfeksjon for å opprettholde hygiene ved lengre isolasjon.");
+        "Inneholder toalettpapir, såpe, våtservietter og hånddesinfeksjon" 
+        + " for å opprettholde hygiene ved lengre isolasjon.");
     kitRepository.save(kitType7);
 
     Kit kitType8 = new Kit();
     kitType8.setName("Verktøysett");
     kitType8.setDescription(
-        "Inneholder nødvendige manuelle verktøy som multiverktøy, kniv, tape og tau til bruk i nødreparasjoner.");
+        "Inneholder nødvendige manuelle verktøy som multiverktøy, kniv," 
+        + " tape og tau til bruk i nødreparasjoner.");
     kitRepository.save(kitType8);
 
   }
