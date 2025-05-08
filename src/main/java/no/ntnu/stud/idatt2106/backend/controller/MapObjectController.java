@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/map-object")
 public class MapObjectController {
+  
   @Autowired
   private MapObjectService mapObjectService;
 

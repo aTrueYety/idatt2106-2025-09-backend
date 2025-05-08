@@ -16,12 +16,17 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * Controller for handling severity-related requests.
  */
+@Tag(name = "Severity", description = "Endpoints for handling severity related operations.")
 @RestController
 @RequestMapping("/api/severity")
 public class SeverityController {
+
   @Autowired
   private SeverityService severityService;
 
@@ -32,6 +37,7 @@ public class SeverityController {
    * @param token The authentication token of the user making the request.
    * @return A ResponseEntity indicating the success or failure of the operation.
    */
+  @Operation(summary = "Adds a new severity level")
   @PostMapping
   public ResponseEntity<Void> addSeverity(
       @RequestBody SeverityRequest severity,
@@ -46,6 +52,7 @@ public class SeverityController {
    * @param severityId The ID of the severity level to be retrieved.
    * @return a ResponseEntity containing the severity level details if found.
    */
+  @Operation(summary = "Retrieves a severity level by its ID")
   @GetMapping("/{severityId}")
   public ResponseEntity<Severity> getSeverityById(@PathVariable Long severityId) {
     Severity severity = severityService.findSeverityById(severityId);
@@ -61,6 +68,7 @@ public class SeverityController {
    *
    * @return a ResponseEntity containing a list of all severity levels.
    */
+  @Operation(summary = "Retrieves all severity levels")
   @GetMapping
   public ResponseEntity<List<Severity>> getAllSeverities() {
     List<Severity> severities = severityService.findAllSeverities();
@@ -78,6 +86,7 @@ public class SeverityController {
    * @param token The authentication token of the user making the request.
    * @return A ResponseEntity indicating the success or failure of the operation.
    */
+  @Operation(summary = "Updates an existing severity level")
   @PostMapping("/update")
   public ResponseEntity<?> updateSeverity(
       @RequestBody Severity severity,
@@ -93,8 +102,12 @@ public class SeverityController {
    * @param token The authentication token of the user making the request.
    * @return A ResponseEntity indicating the success or failure of the operation.
    */
+  @Operation(
+      summary = "Deletes a severity level",
+      description = "Deletes the severity level with the given ID. The user must be an admin."
+  )
   @DeleteMapping("/{severityId}")
-  public ResponseEntity<?> deleteSeverity(
+  public ResponseEntity<String> deleteSeverity(
       @PathVariable Long severityId,
       @RequestHeader("Authorization") String token) {
     severityService.deleteSeverity(severityId, token);
