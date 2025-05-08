@@ -4,6 +4,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import java.util.NoSuchElementException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -22,7 +23,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
-  Logger logger = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
+  Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
   /**
    * Handles IllegalArgumentException.
