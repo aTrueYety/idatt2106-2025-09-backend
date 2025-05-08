@@ -172,12 +172,12 @@ public class UserController {
           """
   )
   @PostMapping("/send-email-verification")
-  public ResponseEntity<String> sendEmailVerification(
+  public ResponseEntity<Void> sendEmailVerification(
         @RequestHeader("Authorization") String token) {
     logger.info("Sending email verification link to user");
     userService.sendEmailVerification(token);
     logger.info("Email verification link sent successfully");
-    return ResponseEntity.ok("Email verification link sent successfully");
+    return ResponseEntity.ok().build();
   }
 
   /**
