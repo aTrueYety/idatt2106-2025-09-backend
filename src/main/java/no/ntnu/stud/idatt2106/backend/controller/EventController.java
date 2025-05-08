@@ -1,5 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
@@ -23,9 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
  * This class is responsible for processing incoming requests related to events
  * and returning appropriate responses.
  */
+@Tag(name = "Events", description = "Endpoints for operations related to events.")
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
+
   @Autowired
   private EventService eventService;
 
@@ -36,6 +40,10 @@ public class EventController {
    * @param token The authentication token of the user making the request.
    * @return A ResponseEntity indicating the success or failure of the operation.
    */
+  @Operation(
+      summary = "Registers a new event",
+      description = "Regusters a new event. Requires the user to be an admin."
+  )
   @PostMapping
   public ResponseEntity<String> addEvent(
       @RequestBody EventRequest event,
@@ -50,6 +58,9 @@ public class EventController {
    * @param eventId The ID of the event to be retrieved.
    * @return a ResponseEntity containing the event details if found.
    */
+  @Operation(
+      summary = "Retrieves the event with the given ID"
+  )
   @GetMapping("/{eventId}")
   public ResponseEntity<EventResponse> getEventById(@PathVariable Long eventId) {
     EventResponse event = eventService.findEventWithSeverityById(eventId);
@@ -67,6 +78,10 @@ public class EventController {
    * @param token The authentication token of the user making the request.
    * @return A ResponseEntity indicating the success or failure of the operation.
    */
+  @Operation(
+      summary = "Updates an existing event",
+      description = "Updates an existing event. Requires the user to be an admin."
+  )
   @PostMapping("/update")
   public ResponseEntity<String> updateEvent(
       @RequestBody Event event,
@@ -82,6 +97,10 @@ public class EventController {
    * @param token   The authentication token of the user making the request.
    * @return A ResponseEntity indicating the success or failure of the operation.
    */
+  @Operation(
+      summary = "Deletes an existing event",
+      description = "Deletes an existing event. Requires the user to be an admin."
+  )
   @DeleteMapping("/{eventId}")
   public ResponseEntity<String> deleteEvent(
       @PathVariable Long eventId,
@@ -100,6 +119,9 @@ public class EventController {
    * @return A ResponseEntity containing a list of events within the specified
    *         bounds.
    */
+  @Operation(
+      summary = "Retrieves all of the events in the specified bounds"
+  )
   @GetMapping("/bounds")
   public ResponseEntity<List<EventResponse>> getEventsInBounds(
       @RequestParam double minLat, 

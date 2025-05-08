@@ -1,6 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * REST controller for managing emergency groups.
  */
+@Tag(name = "Emergency Groups", 
+    description = "Endpoints for operations relating to Emergency Groups")
 @RestController
 @RequestMapping("/api/emergency-groups")
 public class EmergencyGroupController {
