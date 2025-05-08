@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/extra-residents")
 public class ExtraResidentController {
+
   @Autowired
   private ExtraResidentService service;
 
@@ -48,7 +49,7 @@ public class ExtraResidentController {
 
   /** Create a new extra resident. */
   @Operation(summary = "Creates a new extra resident")
-  @PostMapping //TODO Should require auth
+  @PostMapping //TODO refactor service class remove household id from request get it from user
   public ResponseEntity<Void> create(@RequestBody ExtraResidentRequest request) {
     service.create(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -56,7 +57,7 @@ public class ExtraResidentController {
 
   /** Update an existing extra resident. */
   @Operation(summary = "Updates an existing extra resident")
-  @PutMapping("/{id}") //TODO Should require auth
+  @PutMapping("/{id}") //TODO User should not be able to set extraresident to another household
   public ResponseEntity<Void> update(
       @PathVariable Long id, @RequestBody ExtraResidentUpdate request) {
     boolean success = service.update(id, request);
@@ -65,7 +66,7 @@ public class ExtraResidentController {
 
   /** Delete a resident by ID. */
   @Operation(summary = "Deletes the extra resident with the given ID")
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/{id}") //TODO add check if the resident is in same household as user.
   public ResponseEntity<Void> delete(@PathVariable long id) {
     return service.delete(id)
         ? ResponseEntity.noContent().build()

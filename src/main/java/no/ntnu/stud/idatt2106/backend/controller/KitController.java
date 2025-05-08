@@ -73,7 +73,7 @@ public class KitController {
       summary = "Creates a new kit",
       description = "Creates a new kit with the given name and description."
   )
-  @PostMapping //TODO auth
+  @PostMapping
   public ResponseEntity<Void> create(@RequestBody KitRequest request) {
     service.create(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -90,7 +90,7 @@ public class KitController {
       summary = "Updates a kit",
       description = "Updates the kit with the given ID."
   )
-  @PutMapping("/{id}") //TODO Auth
+  @PutMapping("/{id}")
   public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody KitRequest request) {
     boolean updated = service.update(id, request);
     if (!updated) {

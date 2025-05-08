@@ -35,7 +35,7 @@ public class HouseholdInviteController {
    */
   @Operation(summary = "Get household invites for a user", 
       description = "Retrieves all household invites for a user based on the user token.")
-  @GetMapping("/user")
+  @GetMapping("/user")//TODO remove token from param
   public ResponseEntity<List<HouseholdInvite>> getHouseholdInvitesForUser(
       @RequestHeader("Authorization") String token) {
     List<HouseholdInvite> householdInvites = 
@@ -56,7 +56,7 @@ public class HouseholdInviteController {
    */
   @Operation(summary = "Get household invites for a household", 
       description = "Retrieves all household invites for a household based on the user token.")
-  @GetMapping("/household")
+  @GetMapping("/household")//TODO remove token from param
   public ResponseEntity<List<HouseholdInvite>> getHouseholdInvitesForHousehold(
       @RequestHeader("Authorization") String token) {
     List<HouseholdInvite> householdInvites = 

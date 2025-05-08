@@ -70,7 +70,7 @@ public class FoodController {
   @Operation(
       summary = "Registers a new food item"
   )
-  @PostMapping //TODO auth?
+  @PostMapping 
   public ResponseEntity<Void> create(@RequestBody FoodRequest request) {
     service.create(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -87,7 +87,7 @@ public class FoodController {
       summary = "Updates an existing food item",
       description = "Updates the food item with the given ID."
   )
-  @PutMapping("/{id}") //TODO auth
+  @PutMapping("/{id}")
   public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody FoodUpdate update) {
     boolean success = service.update(id, update);
     if (!success) {
@@ -106,7 +106,7 @@ public class FoodController {
       summary = "Deletes an existing food item",
       description = "Deletes the food item with the given ID."
   )
-  @DeleteMapping("/{id}") //TODO Auth
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     boolean success = service.delete(id);
     if (!success) {
