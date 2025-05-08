@@ -47,7 +47,7 @@ public class EmergencyGroupController {
           Creates a new emergency group that households can be a part of
           in order to share resources.
           """)
-  @PostMapping
+  @PostMapping //TODO Remove token param after fixing filter
   public ResponseEntity<Void> create(
       @RequestBody EmergencyGroupRequest request,
       @RequestHeader("Authorization") String token) {
@@ -88,7 +88,7 @@ public class EmergencyGroupController {
           """)
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
-    return service.delete(id) ? ResponseEntity.noContent().build() //TODO Should require auth
+    return service.delete(id) ? ResponseEntity.noContent().build() //TODO Should check if user is a part of group
         : ResponseEntity.notFound().build();
   }
 
@@ -102,7 +102,7 @@ public class EmergencyGroupController {
   @Operation(summary = "Update an emergency group by ID")
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(@PathVariable Long id,
-      @RequestBody EmergencyGroupRequest request) { //TODO Should require auth
+      @RequestBody EmergencyGroupRequest request) { //TODO Should check if user is a part of group
     return service.update(id, request)
         ? ResponseEntity.ok().build()
         : ResponseEntity.notFound().build();
