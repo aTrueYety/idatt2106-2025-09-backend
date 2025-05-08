@@ -29,13 +29,8 @@ public class EventRepositoryTest {
   private JdbcTemplate jdbc;
 
   private void insertRequiredForeignKeys() {
-    jdbc.update("INSERT INTO severity (id, colour, name, description) VALUES (?, ?, ?, ?)",
-        1, "Test", "Test", "Test");
     jdbc.update("INSERT INTO info_page (id, title, short_description, content) VALUES (?, ?, ?, ?)",
         1, "Test", "Test", "Test");
-
-    jdbc.update("INSERT INTO severity (id, colour, name, description) VALUES (?, ?, ?, ?)",
-        2, "AnotherTest", "AnotherTest", "AnotherTest");
     jdbc.update("INSERT INTO info_page (id, title, short_description, content) VALUES (?, ?, ?, ?)",
         2, "AnotherTest", "AnotherTest", "AnotherTest");
   }
