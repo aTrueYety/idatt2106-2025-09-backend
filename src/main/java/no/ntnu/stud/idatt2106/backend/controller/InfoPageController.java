@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.InfoPage;
 import no.ntnu.stud.idatt2106.backend.model.request.InfoPageRequest;
@@ -25,9 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller class for managing information pages.
  */
+@Tag(name = "Info Page", description = "Endpoints for operation related to information pages.")
 @RestController
 @RequestMapping("/api/info-page")
 public class InfoPageController {
+
   @Autowired
   private InfoPageService infoPageService;
 

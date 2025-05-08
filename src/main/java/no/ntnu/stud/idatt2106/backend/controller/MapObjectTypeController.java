@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/map-object-type")
 public class MapObjectTypeController {
+  
   @Autowired
   private MapObjectTypeService mapObjectTypeService;
 

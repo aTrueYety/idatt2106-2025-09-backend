@@ -36,11 +36,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   @Autowired
   private AuthService service;
-
-  Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   /**
    * This method handles user registration requests. It creates a new user in the

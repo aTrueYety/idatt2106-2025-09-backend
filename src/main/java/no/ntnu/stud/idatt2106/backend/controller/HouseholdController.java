@@ -80,7 +80,7 @@ public class HouseholdController {
       with the given ID a BAD_REQUEST response code is returned. If values in the request
       body are null they will not be updated.
       """)
-  @PutMapping("/{id}")
+  @PutMapping("/{id}") //TODO AUTH, check if user is in household
   public ResponseEntity<HouseholdResponse> updateHousehold(@PathVariable Long id,
       @RequestBody UpdateHouseholdRequest request) {
     logger.info("Updating household with ID = {}", id);
@@ -118,6 +118,10 @@ public class HouseholdController {
    * @return a ResponseEntity with the response to the operation or an error
    *         message
    */
+  @Operation(
+      summary = "Accepts a invite to a household",
+      description = "Updates the household of the user accepting the invite."
+  )
   @PostMapping("accept")
   public ResponseEntity<Void> acceptHouseholdInvite(
       @RequestBody HouseHoldInviteAcceptRequest request,
