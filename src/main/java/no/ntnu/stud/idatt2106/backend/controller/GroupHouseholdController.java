@@ -10,6 +10,7 @@ import no.ntnu.stud.idatt2106.backend.service.GroupHouseholdService;
 import no.ntnu.stud.idatt2106.backend.service.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,14 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/group-households")
-@RequiredArgsConstructor
 @Tag(name = "GroupHouseholds", description = "Endpoints for group-household operations")
 public class GroupHouseholdController {
-
   private static final Logger logger = LoggerFactory.getLogger(GroupHouseholdController.class);
 
-  private final GroupHouseholdService service;
-  private final JwtService jwtService;
+  @Autowired
+  private GroupHouseholdService service;
+
+  @Autowired
+  private JwtService jwtService;
 
   /**
    * Invites a household to a group.
@@ -95,7 +97,7 @@ public class GroupHouseholdController {
    * @return a list of households in the group
    */
   @Operation(summary = "Get all households in a specific group")
-  @GetMapping("/group/{groupId}")
+  @GetMapping("/group/{groupId}") //TODO user needs to be part of group?
   public ResponseEntity<List<GroupHouseholdResponse>> getByGroupId(@PathVariable Long groupId) {
     return ResponseEntity.ok(service.getByGroupId(groupId));
   }

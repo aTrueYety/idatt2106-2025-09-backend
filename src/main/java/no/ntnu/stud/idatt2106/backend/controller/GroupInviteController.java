@@ -26,10 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/group-invite")
 public class GroupInviteController {
+  private static final Logger logger = LoggerFactory.getLogger(GroupInviteController.class);
+
   @Autowired
   private GroupInviteService groupInviteService;
-
-  private static final Logger logger = LoggerFactory.getLogger(GroupInviteController.class);
 
   /**
    * Retrieves all group invites for a user.
