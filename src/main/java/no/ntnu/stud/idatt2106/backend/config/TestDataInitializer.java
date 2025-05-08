@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import no.ntnu.stud.idatt2106.backend.controller.AuthController;
 import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResident;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResidentType;
@@ -33,6 +34,8 @@ import no.ntnu.stud.idatt2106.backend.repository.UserRepositoryImpl;
 import no.ntnu.stud.idatt2106.backend.service.AuthService;
 import no.ntnu.stud.idatt2106.backend.service.HouseholdService;
 import no.ntnu.stud.idatt2106.backend.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -63,6 +66,7 @@ public class TestDataInitializer implements CommandLineRunner {
   private final ExtraResidentTypeRepositoryImpl extraResidentTypeRepository;
   private final GroupHouseholdRepositoryImpl groupHouseholdRepository;
   private final KitRepositoryImpl kitRepository;
+  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   /**
    * Constructs a TestDataInitializer with the required services and repositories.
@@ -107,6 +111,7 @@ public class TestDataInitializer implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
+    logger.info("Initializing test data...");
     initializeTestData();
   }
 
