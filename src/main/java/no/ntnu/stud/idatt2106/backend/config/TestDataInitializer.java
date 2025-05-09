@@ -142,6 +142,8 @@ public class TestDataInitializer implements CommandLineRunner {
     // kariNordmann - test user with no special privileges
     // adminJunior - test user with admin privileges
     // adminAdminsen - test user with super admin privileges
+    // nordmannJunior - test user with no special privileges
+    // ensomNordmann - test user with no special privileges
 
     RegisterRequest adminUserRequest = new RegisterRequest("adminJunior",
         "Password12345", "admin@tgmail.com", "captha");
@@ -153,12 +155,15 @@ public class TestDataInitializer implements CommandLineRunner {
         "Password12345", "testhim@gmail.com", "captha");
     RegisterRequest testUserRequest3 = new RegisterRequest("nordmannJunior",
         "Password12345", "junior@gmail.com", "captha");
+    RegisterRequest testUserRequest4 = new RegisterRequest("ensomNordmann",
+        "Password12345", "loneUser@gmail.com", "captha");
 
     authService.register(adminUserRequest);
     authService.register(superAdminUserRequest);
     authService.register(testUserRequest);
     authService.register(testUserRequest2);
     authService.register(testUserRequest3);
+    authService.register(testUserRequest4);
 
     User adminUser = userService.getUserByUsername("adminAdminsen");
 
@@ -196,12 +201,24 @@ public class TestDataInitializer implements CommandLineRunner {
         sixMonthsAgo);
     householdRepository.save(household2);
 
+    Household household3 = new Household(
+        null,
+        "Søpla",
+        "Ensom mann",
+        63.6158,
+        10.6053,
+        15.0,
+        sixMonthsAgo);
+    householdRepository.save(household3);
+
     long household1Id = householdService.getAll().get(0).getId();
     long household2Id = householdService.getAll().get(1).getId();
+    long household3Id = householdService.getAll().get(2).getId();
     householdService.addUserToHousehold("adminJunior", household2Id);
     householdService.addUserToHousehold("adminAdminsen", household2Id);
     householdService.addUserToHousehold("olaNordmann", household1Id);
     householdService.addUserToHousehold("kariNordmann", household1Id);
+    householdService.addUserToHousehold("ensomNordmann", household3Id);
 
     Food food1 = new Food();
     food1.setTypeId(1L);
