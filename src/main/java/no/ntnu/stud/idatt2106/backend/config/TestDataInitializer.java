@@ -179,12 +179,6 @@ public class TestDataInitializer implements CommandLineRunner {
         Date.from(Instant.now()));
     householdRepository.save(household1);
 
-    GroupHousehold groupHousehold = new GroupHousehold(
-        null,
-        household1.getId(),
-        null);
-    groupHouseholdRepository.save(groupHousehold);
-
     LocalDateTime sixMonthsAgoLdt = LocalDateTime.now().minusMonths(6);
     Date sixMonthsAgo = Date.from(
         sixMonthsAgoLdt
