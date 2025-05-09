@@ -431,7 +431,7 @@ public class AuthServiceTest {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
       authService.validateToken(null);
     });
-    assertEquals("Token cannot be null or empty", exception.getMessage());
+    assertEquals("Token cannot be blank or null", exception.getMessage());
   }
 
   @Test

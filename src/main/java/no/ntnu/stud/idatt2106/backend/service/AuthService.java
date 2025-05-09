@@ -209,9 +209,9 @@ public class AuthService {
    * @param token the JWT token to validate
    */
   public void validateToken(String token) {
-    if (token == null) {
-      throw new IllegalArgumentException("Token cannot be null or empty");
-    }
+    Validate.that(token, Validate.isNotBlankOrNull(), "Token cannot be blank or null");
+    Validate.that(
+        token.startsWith("Bearer "), Validate.isTrue(), "Token must start with 'Bearer '");
     jwtService.extractUserName(token.substring(7));
   }
 
