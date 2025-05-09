@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -455,7 +456,7 @@ public class TestDataInitializer implements CommandLineRunner {
     Event eventTerrorTrondheim = new Event(
         3L,
         "Trondheim terrorangrep",
-        1L,
+        2L,
         63.4305,
         10.3951,
         0.5,
@@ -707,8 +708,8 @@ public class TestDataInitializer implements CommandLineRunner {
     heartStarterGlos.setTypeId(1L);
     heartStarterGlos.setLatitude(63.4194f);
     heartStarterGlos.setLongitude(10.4019f);
-    heartStarterGlos.setOpening(Timestamp.valueOf(LocalDate.now().atStartOfDay()));
-    heartStarterGlos.setClosing(Timestamp.valueOf(LocalDate.now().atTime(23, 59)));
+    heartStarterGlos.setOpening(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
+    heartStarterGlos.setClosing(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
     heartStarterGlos.setContactPhone("23026212");
     heartStarterGlos.setContactEmail("hjertestarterregister@ous-hf.no");
     heartStarterGlos.setContactName("Hjertestarterregisteret");
@@ -720,8 +721,8 @@ public class TestDataInitializer implements CommandLineRunner {
     escapeRoom.setTypeId(4L);
     escapeRoom.setLatitude(63.4264f);
     escapeRoom.setLongitude(10.4053f);
-    escapeRoom.setOpening(Timestamp.valueOf(LocalDate.now().atStartOfDay()));
-    escapeRoom.setClosing(Timestamp.valueOf(LocalDate.now().atTime(23, 59)));
+    escapeRoom.setOpening(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
+    escapeRoom.setClosing(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
     escapeRoom.setContactPhone("33412500");
     escapeRoom.setContactEmail("postmottak@dsb.no");
     escapeRoom.setContactName("Direktoratet for samfunnssikkerhet og beredskap");
@@ -744,8 +745,8 @@ public class TestDataInitializer implements CommandLineRunner {
     hospital.setTypeId(2L);
     hospital.setLatitude(63.4205f);
     hospital.setLongitude(10.3877f);
-    hospital.setOpening(Timestamp.valueOf(LocalDate.now().atStartOfDay()));
-    hospital.setClosing(Timestamp.valueOf(LocalDate.now().atTime(23, 59)));
+    hospital.setOpening(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
+    hospital.setClosing(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
     hospital.setContactPhone("72547260");
     hospital.setContactEmail("trondheim.kommune@gmail.com");
     hospital.setContactName("St. Olavs Hospital");
