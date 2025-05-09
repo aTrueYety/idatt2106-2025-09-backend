@@ -18,7 +18,6 @@ import no.ntnu.stud.idatt2106.backend.model.update.CredentialsUpdate;
 import no.ntnu.stud.idatt2106.backend.util.EmailTemplates;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,9 +46,6 @@ public class AuthService {
   @Autowired
   private CloudflareTurnstileService turnstileService;
 
-  @Value("${cloudflare.turnstile.secret-key}")
-  private String turnstileSecretKey;
-
   private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
   /**
@@ -75,14 +71,10 @@ public class AuthService {
     Validate.that(userService.getUserByEmail(registerRequest.getEmail()),
         Validate.isNull(), "Email is already in use");
 
-    // validerer ikke captcha-token hvis det ikke er definert en hemmelig nøkkel i .env
-    // (slik at e2e tester skal fungere)
-    if (turnstileSecretKey != null && !turnstileSecretKey.isEmpty()) {
-      Validate.that(registerRequest.getCaptchaToken(),
-          Validate.isNotBlankOrNull(), "Captcha cannot be blank or null");
-      Validate.isValid(turnstileService.verifyCaptcha(registerRequest.getCaptchaToken()),
-          "Captcha is not valid");
-    }
+    Validate.that(registerRequest.getCaptchaToken(),
+        Validate.isNotBlankOrNull(), "Captcha cannot be blank or null");
+    Validate.isValid(turnstileService.verifyCaptcha(registerRequest.getCaptchaToken()),
+        "Captcha is not valid");
 
     User user = new User();
 
