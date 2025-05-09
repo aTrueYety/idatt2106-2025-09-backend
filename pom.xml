@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.4</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>no.ntnu.stud.idatt2106_2025_9</groupId>
 	<artifactId>backend</artifactId>
@@ -31,18 +32,25 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-    
-    <dependency>
+
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
 
+		<!-- webSocket -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+
+
 		<!-- DotEnv -->
 		<dependency>
-    		<groupId>io.github.cdimascio</groupId>
-   			<artifactId>java-dotenv</artifactId>
-    		<version>5.2.2</version>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>java-dotenv</artifactId>
+			<version>5.2.2</version>
 		</dependency>
 
 		<!-- Auth -->
@@ -111,9 +119,9 @@
 
 		<!-- H2 testing -->
 		<dependency>
-				<groupId>com.h2database</groupId>
-				<artifactId>h2</artifactId>
-				<scope>runtime</scope>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- Email -->
@@ -122,7 +130,15 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
-
+		<!-- Flyaway -->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-mysql</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -136,24 +152,24 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-				<annotationProcessorPaths>
-					<path>
-					<groupId>org.projectlombok</groupId>
-					<artifactId>lombok</artifactId>
-					</path>
-				</annotationProcessorPaths>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-				<excludes>
-					<exclude>
-					<groupId>org.projectlombok</groupId>
-					<artifactId>lombok</artifactId>
-					</exclude>
-				</excludes>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -176,7 +192,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<!-- JaCoCo for test coverage -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -206,5 +222,22 @@
 		</plugins>
 
 	</build>
-
+	<profiles>
+		<profile>
+			<id>test-e2e</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+				</dependency>
+			</dependencies>
+			<properties>
+				<spring.autoconfigure.exclude>
+					org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration</spring.autoconfigure.exclude>
+			</properties>
+		</profile>
+	</profiles>
 </project>

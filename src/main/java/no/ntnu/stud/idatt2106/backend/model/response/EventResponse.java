@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EventResponse {
   private long id;
+  private String name;
   private Long infoPageId;
   private double latitude;
   private double longitude;

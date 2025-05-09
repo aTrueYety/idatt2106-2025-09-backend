@@ -1,5 +1,8 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
 import no.ntnu.stud.idatt2106.backend.repository.ExtraResidentTypeRepositoryImpl;
@@ -9,13 +12,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+/**
+ * Integration tests for ExtraResidentTypeService.
+ */
 @JdbcTest
 @ActiveProfiles("test")
-@Import({ExtraResidentTypeService.class, ExtraResidentTypeRepositoryImpl.class})
+@Import({ ExtraResidentTypeService.class, ExtraResidentTypeRepositoryImpl.class })
 public class ExtraResidentTypeServiceIntegrationTest {
 
   @Autowired
@@ -45,7 +47,7 @@ public class ExtraResidentTypeServiceIntegrationTest {
     request.setConsumptionFood(1.4f);
     service.create(request);
 
-    int id = service.getAll().get(0).getId();
+    long id = service.getAll().get(0).getId();
     var result = service.getById(id);
 
     assertThat(result).isPresent();
@@ -60,7 +62,7 @@ public class ExtraResidentTypeServiceIntegrationTest {
     request.setConsumptionFood(1.0f);
     service.create(request);
 
-    int id = service.getAll().get(0).getId();
+    long id = service.getAll().get(0).getId();
 
     ExtraResidentTypeRequest update = new ExtraResidentTypeRequest();
     update.setName("Updated Child");
@@ -83,7 +85,7 @@ public class ExtraResidentTypeServiceIntegrationTest {
     request.setConsumptionFood(1.1f);
     service.create(request);
 
-    int id = service.getAll().get(0).getId();
+    long id = service.getAll().get(0).getId();
 
     boolean deleted = service.delete(id);
     assertThat(deleted).isTrue();

@@ -7,6 +7,6 @@ import lombok.Data;
  */
 @Data
 public class FoodSummaryResponse {
-  private int typeId;
-  private int totalAmount;
+  private Long typeId;
+  private double totalAmount;
 }

@@ -1,0 +1,2 @@
+ALTER TABLE email_confirmaiation_key
+RENAME TO email_confirmation_key;

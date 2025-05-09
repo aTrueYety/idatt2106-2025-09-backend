@@ -24,7 +24,7 @@ public class ExtraResidentTypeRepositoryImpl implements ExtraResidentTypeReposit
 
   private final RowMapper<ExtraResidentType> rowMapper = (rs, rowNum) -> {
     ExtraResidentType type = new ExtraResidentType();
-    type.setId(rs.getInt("id"));
+    type.setId(rs.getLong("id"));
     type.setName(rs.getString("name"));
     type.setConsumptionWater(rs.getFloat("consumption_water"));
     type.setConsumptionFood(rs.getFloat("consumption_food"));
@@ -32,7 +32,7 @@ public class ExtraResidentTypeRepositoryImpl implements ExtraResidentTypeReposit
   };
 
   @Override
-  public Optional<ExtraResidentType> findById(int id) {
+  public Optional<ExtraResidentType> findById(long id) {
     String sql = "SELECT * FROM extra_resident_type WHERE id = ?";
     return jdbc.query(sql, rowMapper, id).stream().findFirst();
   }
@@ -45,7 +45,7 @@ public class ExtraResidentTypeRepositoryImpl implements ExtraResidentTypeReposit
 
   @Override
   public void save(ExtraResidentType type) {
-    String sql = "INSERT INTO extra_resident_type (name, consumption_water, consumption_food) " 
+    String sql = "INSERT INTO extra_resident_type (name, consumption_water, consumption_food) "
         + "VALUES (?, ?, ?)";
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -58,24 +58,24 @@ public class ExtraResidentTypeRepositoryImpl implements ExtraResidentTypeReposit
     }, keyHolder);
 
     if (keyHolder.getKey() != null) {
-      type.setId(keyHolder.getKey().intValue());
+      type.setId(keyHolder.getKey().longValue());
     }
   }
 
   @Override
   public void update(ExtraResidentType type) {
-    String sql = "UPDATE extra_resident_type SET name = ?, consumption_water = ?, " 
+    String sql = "UPDATE extra_resident_type SET name = ?, consumption_water = ?, "
         + "consumption_food = ? WHERE id = ?";
     jdbc.update(
-        sql, 
-        type.getName(), 
-        type.getConsumptionWater(), 
-        type.getConsumptionFood(), 
+        sql,
+        type.getName(),
+        type.getConsumptionWater(),
+        type.getConsumptionFood(),
         type.getId());
   }
 
   @Override
-  public void deleteById(int id) {
+  public void deleteById(long id) {
     jdbc.update("DELETE FROM extra_resident_type WHERE id = ?", id);
   }
 }

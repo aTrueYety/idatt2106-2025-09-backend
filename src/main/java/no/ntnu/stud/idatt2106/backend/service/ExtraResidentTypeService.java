@@ -2,11 +2,11 @@ package no.ntnu.stud.idatt2106.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-import no.ntnu.stud.idatt2106.backend.mapper.ExtraResidentTypeMapper;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResidentType;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
 import no.ntnu.stud.idatt2106.backend.repository.ExtraResidentTypeRepository;
+import no.ntnu.stud.idatt2106.backend.service.mapper.ExtraResidentTypeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +48,7 @@ public class ExtraResidentTypeService {
    * @return an Optional containing the ExtraResidentTypeResponse if found, empty
    *         otherwise
    */
-  public Optional<ExtraResidentTypeResponse> getById(int id) {
+  public Optional<ExtraResidentTypeResponse> getById(long id) {
     return repository.findById(id).map(ExtraResidentTypeMapper::toResponse);
   }
 
@@ -60,7 +60,7 @@ public class ExtraResidentTypeService {
    *                resident type
    * @return true if updated, false if not found
    */
-  public boolean update(int id, ExtraResidentTypeRequest request) {
+  public boolean update(long id, ExtraResidentTypeRequest request) {
     if (repository.findById(id).isEmpty()) {
       return false;
     }
@@ -76,7 +76,7 @@ public class ExtraResidentTypeService {
    * @param id the ID of the extra resident type to delete
    * @return true if deleted, false if not found
    */
-  public boolean delete(int id) {
+  public boolean delete(long id) {
     if (repository.findById(id).isEmpty()) {
       return false;
     }

@@ -1,6 +1,20 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Optional;
+import no.ntnu.stud.idatt2106.backend.config.JwtAuthFilter;
 import no.ntnu.stud.idatt2106.backend.config.SecurityConfigTest;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentResponse;
@@ -9,20 +23,19 @@ import no.ntnu.stud.idatt2106.backend.service.ExtraResidentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@WebMvcTest(ExtraResidentController.class)
+/**
+ * Tests for ExtraResidentController.
+ */
+@WebMvcTest(controllers = ExtraResidentController.class, 
+    excludeFilters = @ComponentScan.Filter(type 
+    = FilterType.ASSIGNABLE_TYPE, value = JwtAuthFilter.class))
 @Import(SecurityConfigTest.class)
 public class ExtraResidentControllerTest {
 
@@ -32,7 +45,7 @@ public class ExtraResidentControllerTest {
   @Autowired
   private ObjectMapper objectMapper;
 
-  @MockBean
+  @MockitoBean
   private ExtraResidentService service;
 
   @Test
@@ -45,9 +58,9 @@ public class ExtraResidentControllerTest {
     when(service.getAll()).thenReturn(List.of(response));
 
     mockMvc.perform(get("/api/extra-residents"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$[0].id").value(1))
-      .andExpect(jsonPath("$[0].typeId").value(2));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].typeId").value(2));
   }
 
   @Test
@@ -57,19 +70,19 @@ public class ExtraResidentControllerTest {
     response.setHouseholdId(10);
     response.setTypeId(2);
 
-    when(service.getById(1)).thenReturn(Optional.of(response));
+    when(service.getById(1L)).thenReturn(Optional.of(response));
 
     mockMvc.perform(get("/api/extra-residents/1"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.id").value(1));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1));
   }
 
   @Test
   void shouldReturnNotFoundIfExtraResidentMissing() throws Exception {
-    when(service.getById(999)).thenReturn(Optional.empty());
+    when(service.getById(999L)).thenReturn(Optional.empty());
 
     mockMvc.perform(get("/api/extra-residents/999"))
-      .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -78,28 +91,35 @@ public class ExtraResidentControllerTest {
     request.setHouseholdId(10);
     request.setTypeId(2);
 
+    String token = "Bearer jwt.token";
+
     mockMvc.perform(post("/api/extra-residents")
         .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", token)
         .content(objectMapper.writeValueAsString(request)))
-      .andExpect(status().isCreated());
+        .andExpect(status().isCreated());
 
-    verify(service).create(any(ExtraResidentRequest.class));
+    verify(service).create(any(ExtraResidentRequest.class), eq(token));
   }
 
   @Test
   void shouldUpdateExtraResident() throws Exception {
     ExtraResidentUpdate update = new ExtraResidentUpdate();
-    update.setHouseholdId(12);
+    update.setHouseholdId(1);
     update.setTypeId(3);
+    update.setName("Updated Name");
 
-    when(service.update(eq(1), any(ExtraResidentUpdate.class))).thenReturn(true);
+    String token = "Bearer token";
+
+    when(service.update(eq(1L), any(ExtraResidentUpdate.class), eq(token))).thenReturn(true);
 
     mockMvc.perform(put("/api/extra-residents/1")
         .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", token)
         .content(objectMapper.writeValueAsString(update)))
-      .andExpect(status().isOk());
+        .andExpect(status().isOk());
 
-    verify(service).update(eq(1), any(ExtraResidentUpdate.class));
+    verify(service).update(eq(1L), any(ExtraResidentUpdate.class), eq(token));
   }
 
   @Test
@@ -107,30 +127,32 @@ public class ExtraResidentControllerTest {
     ExtraResidentUpdate update = new ExtraResidentUpdate();
     update.setHouseholdId(12);
     update.setTypeId(3);
+    String token = "Bearer token";
 
-    when(service.update(eq(999), any())).thenReturn(false);
+    when(service.update(eq(999L), any(), eq(token))).thenReturn(false);
 
     mockMvc.perform(put("/api/extra-residents/999")
         .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", token)
         .content(objectMapper.writeValueAsString(update)))
-      .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound());
   }
 
   @Test
   void shouldDeleteExtraResident() throws Exception {
-    when(service.delete(1)).thenReturn(true);
+    when(service.delete(1L)).thenReturn(true);
 
     mockMvc.perform(delete("/api/extra-residents/1"))
-      .andExpect(status().isNoContent());
+        .andExpect(status().isNoContent());
 
-    verify(service).delete(1);
+    verify(service).delete(1L);
   }
 
   @Test
   void shouldReturnNotFoundWhenDeletingMissing() throws Exception {
-    when(service.delete(999)).thenReturn(false);
+    when(service.delete(999L)).thenReturn(false);
 
     mockMvc.perform(delete("/api/extra-residents/999"))
-      .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound());
   }
 }

@@ -21,6 +21,9 @@ public class EmailService {
   @Value("${spring.mail.username}")
   private String fromEmail;
 
+  @Value("${frontend.url}")
+  private String frontendUrl;
+
   /**
    * Send a simple email.
    *
@@ -29,6 +32,8 @@ public class EmailService {
    * @param text text of the email
    */
   public void sendSimpleEmail(String to, String subject, String text) {
+    text = text.replace("{frontendUrl}", frontendUrl);
+
     SimpleMailMessage message = new SimpleMailMessage();
     message.setFrom(fromEmail);
     message.setTo(to);
@@ -48,6 +53,8 @@ public class EmailService {
    */
   public void sendHtmlEmail(String to, String subject, String htmlContent) 
       throws MessagingException {
+    htmlContent = htmlContent.replace("{frontendUrl}", frontendUrl);
+
     MimeMessage message = mailSender.createMimeMessage();
     MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 

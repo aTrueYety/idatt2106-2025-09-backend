@@ -1,26 +1,21 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
-import no.ntnu.stud.idatt2106.backend.model.base.MapObject;
-import no.ntnu.stud.idatt2106.backend.model.response.MapObjectResponse;
-import no.ntnu.stud.idatt2106.backend.repository.MapObjectRepositoryImpl;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Date;
-import java.util.List;
 import java.time.LocalTime;
-
+import java.util.List;
+import no.ntnu.stud.idatt2106.backend.model.base.MapObject;
+import no.ntnu.stud.idatt2106.backend.model.response.MapObjectResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.relational.core.sql.Into;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.mysql.cj.x.protobuf.MysqlxCrud.Insert;
-
+/**
+ * Contains tests for mapObjectRepository.
+ */
 @JdbcTest
 @ActiveProfiles("test")
 @Import(MapObjectRepositoryImpl.class)
@@ -42,7 +37,11 @@ public class MapObjectRepositoryTest {
         2L, "Shelter", "test-icon.png");
 
     jdbc.update(
-        "INSERT INTO map_object(id, type_id, latitude, longitude, opening, closing, contact_phone, contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO map_object(id, type_id, latitude, longitude, opening, 
+            closing, contact_phone, contact_email, contact_name, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
         1L, 2L, 10.0, 20.0, opening, closing, "97631412",
         "jacoblein2010@gmail.com", "Jacob", "Groveste shelter");
 
@@ -63,7 +62,10 @@ public class MapObjectRepositoryTest {
         3L, "Shelter", "test-icon.png");
 
     jdbc.update(
-        "INSERT INTO map_object(id, type_id, latitude, longitude, contact_phone, contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO map_object(id, type_id, latitude, longitude, contact_phone, 
+            contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
         2L, 3L, 10.0, 20.0, "97631412", "test@gmail.com", "Jacob", "Groveste shelter");
   }
 
@@ -81,7 +83,11 @@ public class MapObjectRepositoryTest {
         3L, "Matlager", "test-icon.png");
 
     jdbc.update(
-        "INSERT INTO map_object(id, type_id, latitude, longitude, opening, closing, contact_phone, contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO map_object(id, type_id, latitude, longitude, opening, 
+            closing, contact_phone, contact_email, contact_name, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
         2L,
         2L,
         63.414455,
@@ -94,15 +100,24 @@ public class MapObjectRepositoryTest {
         "Groveste shelter");
 
     jdbc.update(
-        "INSERT INTO map_object(id, type_id, latitude, longitude, opening, closing, contact_phone, contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO map_object(id, type_id, latitude, longitude, opening, 
+            closing, contact_phone, contact_email, contact_name, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
         3L, 3L, 63.421057, 10.393674, opening, closing, "97631412",
         "jacoblein2010@gmail.com", "Henrik", "Groveste shelter");
 
     jdbc.update(
-        "INSERT INTO map_object(id, type_id, latitude, longitude, opening, closing, contact_phone, contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO map_object(id, type_id, latitude, longitude, opening, 
+            closing, contact_phone, contact_email, contact_name, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
         4L, 3L, 63.359789, 10.387397, opening, closing, "97631412",
         "jacoblein2010@gmail.com", "Erik", "Groveste shelter");
-    List<MapObjectResponse> response = repository.findAllInBoundsWithDetail(63.410475, 63.429806, 10.346577, 10.411068);
+    List<MapObjectResponse> response = repository
+        .findAllInBoundsWithDetail(63.410475, 63.429806, 10.346577, 10.411068);
     assertThat(response.size()).isEqualTo(2);
     assertThat(response.get(0).getContactName()).isEqualTo("Jacob");
     assertThat(response.get(1).getContactName()).isEqualTo("Henrik");
@@ -110,7 +125,8 @@ public class MapObjectRepositoryTest {
 
   @Test
   void findAllInBoundsWithDetailEmpty() {
-    List<MapObjectResponse> response = repository.findAllInBoundsWithDetail(63.410475, 63.429806, 10.346577, 10.411068);
+    List<MapObjectResponse> response = repository
+        .findAllInBoundsWithDetail(63.410475, 63.429806, 10.346577, 10.411068);
     assertThat(response.size()).isEqualTo(0);
   }
 
@@ -128,7 +144,11 @@ public class MapObjectRepositoryTest {
         3L, "Matlager", "test-icon.png");
 
     jdbc.update(
-        "INSERT INTO map_object(id, type_id, latitude, longitude, opening, closing, contact_phone, contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO map_object(id, type_id, latitude, longitude, opening, 
+            closing, contact_phone, contact_email, contact_name, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
         2L,
         2L,
         63.414455,
@@ -141,12 +161,20 @@ public class MapObjectRepositoryTest {
         "Groveste shelter");
 
     jdbc.update(
-        "INSERT INTO map_object(id, type_id, latitude, longitude, opening, closing, contact_phone, contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO map_object(id, type_id, latitude, longitude, opening, 
+            closing, contact_phone, contact_email, contact_name, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
         3L, 3L, 63.421057, 10.393674, opening, closing, "97631412",
         "jacoblein2010@gmail.com", "Henrik", "Henriks shelter");
 
     jdbc.update(
-        "INSERT INTO map_object(id, type_id, latitude, longitude, opening, closing, contact_phone, contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO map_object(id, type_id, latitude, longitude, opening, 
+            closing, contact_phone, contact_email, contact_name, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
         4L, 3L, 63.359789, 10.387397, opening, closing, "9761412",
         "jacoblein2010@gmail.com", "Erik", "Eriks shelter");
 
@@ -173,11 +201,16 @@ public class MapObjectRepositoryTest {
         2L, "Shelter", "test-icon.png");
 
     jdbc.update(
-        "INSERT INTO map_object(id, type_id, latitude, longitude, opening, closing, contact_phone, contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO map_object(id, type_id, latitude, longitude, opening, 
+            closing, contact_phone, contact_email, contact_name, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
         5L, 2L, 64.000000, 11.000000, opening, closing, "12345678",
         "test@example.com", "OutOfBounds", "Out of bounds object");
 
-    List<MapObjectResponse> response = repository.findAllInBoundsWithDetail(63.410475, 63.429806, 10.346577, 10.411068);
+    List<MapObjectResponse> response = repository
+        .findAllInBoundsWithDetail(63.410475, 63.429806, 10.346577, 10.411068);
     assertThat(response.size()).isEqualTo(0);
   }
 
@@ -191,7 +224,11 @@ public class MapObjectRepositoryTest {
         2L, "Shelter", "test-icon.png");
 
     jdbc.update(
-        "INSERT INTO map_object(id, type_id, latitude, longitude, opening, closing, contact_phone, contact_email, contact_name, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        """
+            INSERT INTO map_object(id, type_id, latitude, longitude, opening, closing, 
+            contact_phone, contact_email, contact_name, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
         6L, 2L, 63.414455, 10.353135, opening, closing, "12345678",
         "test@example.com", "ValidObject", "Valid object");
 

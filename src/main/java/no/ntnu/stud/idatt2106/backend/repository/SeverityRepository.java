@@ -19,7 +19,7 @@ public class SeverityRepository {
 
   private final RowMapper<Severity> severityRowMapper = (rs, rowNum) -> {
     return new Severity(
-        rs.getLong("id"),
+        rs.getObject("id", Long.class),
         rs.getString("colour"),
         rs.getString("name"),
         rs.getString("description"));
@@ -49,7 +49,8 @@ public class SeverityRepository {
    */
   public Severity findSeverityById(long id) {
     String sql = "SELECT * FROM severity WHERE id = ?";
-    return jdbcTemplate.queryForObject(sql, severityRowMapper, id);
+    List<Severity> severities = jdbcTemplate.query(sql, severityRowMapper, id);
+    return severities.isEmpty() ? null : severities.get(0);
   }
 
   /**

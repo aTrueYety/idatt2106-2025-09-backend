@@ -5,7 +5,7 @@ import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EventResponse;
 import no.ntnu.stud.idatt2106.backend.repository.EventRepository;
-import no.ntnu.stud.idatt2106.backend.service.factory.EventFactory;
+import no.ntnu.stud.idatt2106.backend.service.mapper.EventMapper;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,10 @@ public class EventService {
   private EventRepository eventRepository;
   @Autowired
   private JwtService jwtService;
+
+  @Autowired
+  private EventWebSocketService eventWebSocketService;
+
 
   private static void validateEvent(Event event) {
     // severity exists
@@ -34,8 +38,11 @@ public class EventService {
   public int saveEvent(EventRequest request, String token) {
     Validate.that(jwtService.extractIsAdmin(token.substring(7)), 
         Validate.isTrue(), "User is not an admin");
-    Event event = EventFactory.requestToEvent(request);
+    Event event = EventMapper.requestToEvent(request);
     validateEvent(event);
+
+    EventResponse response = eventRepository.findWithSeverityById(event.getId());
+    eventWebSocketService.broadcastCreated(request);
     return eventRepository.save(event);
   }
 
@@ -115,6 +122,10 @@ public class EventService {
     Validate.that(jwtService.extractIsAdmin(token.substring(7)), 
         Validate.isTrue(), "User is not an admin");
     validateEvent(event);
+
+    EventResponse response = eventRepository.findWithSeverityById(event.getId());
+    eventWebSocketService.broadcastUpdated(response);
+
     return eventRepository.update(event);
   }
 
@@ -128,6 +139,9 @@ public class EventService {
   public int deleteEvent(long id, String token) {
     Validate.that(jwtService.extractIsAdmin(token.substring(7)), 
         Validate.isTrue(), "User is not an admin");
+
+    eventWebSocketService.broadcastDeleted(id);
+
     return eventRepository.delete(id);
   }
 }

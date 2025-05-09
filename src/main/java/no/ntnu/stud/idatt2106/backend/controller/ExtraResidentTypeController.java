@@ -1,5 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
@@ -20,12 +22,23 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller for managing extra resident types.
  */
+@Tag(name = "Extra Resident Types", 
+    description = "Endpoints for operations related to Extra Resident Types.")
 @RestController
 @RequestMapping("/api/extra-resident-types")
 public class ExtraResidentTypeController {
+
   @Autowired
   private ExtraResidentTypeService service;
 
+  /**
+   * Handles requests to get all extra resident types.
+   *
+   * @return ResponseEntity with status code OK with a list of all extra resident types
+   */
+  @Operation(
+      summary = "Retrieves all extra resident types"
+  )
   @GetMapping
   public ResponseEntity<List<ExtraResidentTypeResponse>> getAll() {
     return ResponseEntity.ok(service.getAll());
@@ -37,6 +50,9 @@ public class ExtraResidentTypeController {
    * @param id the ID of the extra resident type to retrieve
    * @return an Optional containing the ExtraResidentTypeResponse if found, empty otherwise
    */
+  @Operation(
+      summary = "Retrieves the extra resident type with the given ID"
+  )
   @GetMapping("/{id}")
   public ResponseEntity<ExtraResidentTypeResponse> getById(@PathVariable int id) {
     return service.getById(id)
@@ -49,6 +65,12 @@ public class ExtraResidentTypeController {
    *
    * @param request the request containing the details of the extra resident type to create
    */
+  @Operation(
+      summary = "Creates a new extra resident type",
+      description = """
+          Creates a new extra resident type with the specified name, food- and water constumption.
+          """
+  )
   @PostMapping
   public ResponseEntity<Void> create(@RequestBody ExtraResidentTypeRequest request) {
     service.create(request);
@@ -62,6 +84,10 @@ public class ExtraResidentTypeController {
    * @param request the request containing the updated details of the extra resident type
    * @return true if updated, false if not found
    */
+  @Operation(
+      summary = "Updates an existing extra resident type",
+      description = "Updates the extra resident type with the specified ID."
+  )
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(
       @PathVariable int id, @RequestBody ExtraResidentTypeRequest request) {
@@ -76,6 +102,10 @@ public class ExtraResidentTypeController {
    * @param id the ID of the extra resident type to delete
    * @return true if deleted, false if not found
    */
+  @Operation(
+      summary = "Deletes an existing extra resident type",
+      description = "Deletes the extra resident type with the given ID."
+  )
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable int id) {
     return service.delete(id) ? ResponseEntity.noContent().build() :

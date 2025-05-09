@@ -20,17 +20,59 @@ public class EmailTemplates {
   }
 
   /**
-   * Generates a password reset email template.
+   * Generates an email template for inviting a user to a household.
    *
-   * @param resetLink the link to reset the password
+   * @param householdName the name of the household
+   * @return the invitation email template as a String
+   */
+  public static String getHouseholdInviteTemplate(String householdName) {
+    return "<html><body>"
+        + "<h1>Du er invitert!</h1>"
+        + "<p>Du har blitt invitert til å bli med i hustanden: " + householdName + "</p>"
+        + "</body></html>";
+  }
+
+  /**
+   * Generates an email template for resetting a password.
+   *
+   * @param resetKey the link to reset the password
    * @return the password reset email template as a String
    */
-  public static String getPasswordResetTemplate(String resetLink) {
+  public static String getPasswordResetTemplate(String resetKey) {
     return "<html><body>"
-        + "<h1>Password Reset Request</h1>"
-        + "<p>Please click the link below to reset your password:</p>"
-        + "<p><a href='" + resetLink + "'>Reset Password</a></p>"
-        + "<p>If you didn't request this, please ignore this email.</p>"
-        + "</body></html>";
+      + "<h1>Tilbakestill passord</h1>"
+      + "<p>Vennligst klikk på lenken nedenfor for å tilbakestille passordet ditt:</p>"
+      + "<p><a href='{frontendUrl}/reset-password/" + resetKey + "'>Tilbakestill passord</a></p>"
+      + "<p>Hvis du ikke ba om dette, vennligst ignorer denne e-posten.</p>"
+      + "</body></html>";
+  }
+
+  /**
+   * Generates an email template for upgrading a user to admin.
+   *
+   * @param username the username of the recipient
+   * @param registrationKey the registration key for admin access
+   * @return the admin upgrade email template as a String
+   */
+  public static String getAdminUpgradeTemplate(String username, String registrationKey) {
+    return "<html><body>"
+      + "<h1>Gratulerer, " + username + "!</h1>"
+      + "<p>Du har blitt oppgradert til admin.</p>"
+      + "<p>Bruk lenken nedenfor for å registrere deg som admin:</p>"
+      + "<p><a href='{frontendUrl}/register-admin/" + registrationKey + "'>Registrer deg som admin</a></p>"
+      + "</body></html>";
+  }
+
+  /**
+   * Generates an email template for confirming an email address.
+   *
+   * @param confirmationKey the confirmation key for email verification
+   */
+  public static String getEmailConfirmationTemplate(String confirmationKey) {
+    return "<html><body>"
+      + "<h1>Bekreft e-postadresse</h1>"
+      + "<p>Vennligst klikk på lenken nedenfor for å bekrefte e-postadressen din:</p>"
+      + "<p><a href='{frontendUrl}/confirm-email/" + confirmationKey + "'>Bekreft e-post</a></p>"
+      + "</body></html>";
   }
 }

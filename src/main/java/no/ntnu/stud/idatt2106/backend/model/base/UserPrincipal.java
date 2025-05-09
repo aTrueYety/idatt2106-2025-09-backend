@@ -24,11 +24,19 @@ public class UserPrincipal implements UserDetails {
     this.username = user.getUsername();
     this.password = user.getPassword();
 
-    if (user.isAdmin()) {
-      this.authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    SimpleGrantedAuthority userAuth = new SimpleGrantedAuthority("ROLE_USER");
+    SimpleGrantedAuthority adminAuth = new SimpleGrantedAuthority("ROLE_ADMIN");
+    SimpleGrantedAuthority superadminAuth = new SimpleGrantedAuthority("ROLE_SUPERADMIN");
+
+
+    if (user.isSuperAdmin()) {
+      this.authorities = List.of(userAuth, adminAuth, superadminAuth);
+    } else if (user.isAdmin()) {
+      this.authorities = List.of(userAuth, adminAuth);
     } else {
-      this.authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+      this.authorities = List.of(userAuth);
     }
+
   }
 
   /**

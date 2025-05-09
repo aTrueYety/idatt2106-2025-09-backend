@@ -24,8 +24,8 @@ public class HouseholdKitRepositoryImpl implements HouseholdKitRepository {
     @Override
     public HouseholdKit mapRow(ResultSet rs, int rowNum) throws SQLException {
       return new HouseholdKit(
-          rs.getLong("household_id"),
-          rs.getLong("kit_id")
+          rs.getObject("household_id", Long.class),
+          rs.getObject("kit_id", Long.class)
       );
     }
   };

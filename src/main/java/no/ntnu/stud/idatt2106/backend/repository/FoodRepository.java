@@ -1,5 +1,6 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
@@ -15,7 +16,7 @@ public interface FoodRepository {
    * @param id the ID of the food item
    * @return an Optional containing the found food item, or empty if not found
    */
-  Optional<Food> findById(int id);
+  Optional<Food> findById(Long id);
 
   /**
    * Find all food items.
@@ -29,7 +30,7 @@ public interface FoodRepository {
    *
    * @param food the food item to save
    */
-  void save(Food food);
+  Long save(Food food);
 
   /**
    * Update an existing food item.
@@ -43,7 +44,7 @@ public interface FoodRepository {
    *
    * @param id the ID of the food item to delete
    */
-  void deleteById(int id);
+  void deleteById(Long id);
 
   /**
    * Find all food items belonging to a specific household.
@@ -51,5 +52,9 @@ public interface FoodRepository {
    * @param householdId the household ID
    * @return a list of food items belonging to the given household
    */
-  List<Food> findByHouseholdId(int householdId);
+  List<Food> findByHouseholdId(long householdId);
+  
+  Optional<Food> findByTypeIdAndExpirationDateAndHouseholdId(Long typeId, 
+      LocalDate expirationDate, Long householdId);
+
 }

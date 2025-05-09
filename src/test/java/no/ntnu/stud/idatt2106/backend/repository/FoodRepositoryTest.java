@@ -1,5 +1,9 @@
 package no.ntnu.stud.idatt2106.backend.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.LocalDate;
+import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.Food;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +12,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+/**
+ * Contains tests for FoodRepository.
+ */
 @JdbcTest
 @ActiveProfiles("test")
 @Import(FoodRepositoryImpl.class)
@@ -26,12 +28,16 @@ public class FoodRepositoryTest {
 
   @Test
   void shouldSaveAndRetrieveFood() {
-    jdbc.update("INSERT INTO food_type (name, unit, calories_per_unit, picture) VALUES (?, ?, ?, ?)",
+    jdbc.update(
+        "INSERT INTO food_type (name, unit, calories_per_unit, picture) VALUES (?, ?, ?, ?)",
         "Rice", "kg", 350.0f, null);
+    jdbc.update(
+        "Insert into household (id, name, address, latitude, longitude) values (?, ?, ?, ?, ?)",
+        42, "Test Household", "Test Address", 0.0, 0.0);
 
     Food food = new Food();
-    food.setTypeId(1);
-    food.setHouseholdId(42);
+    food.setTypeId(1L);
+    food.setHouseholdId(42L);
     food.setExpirationDate(LocalDate.of(2025, 5, 20));
     food.setAmount(3);
 
@@ -42,7 +48,5 @@ public class FoodRepositoryTest {
     Food result = all.get(0);
     assertThat(result.getHouseholdId()).isEqualTo(42);
     assertThat(result.getAmount()).isEqualTo(3);
-
-    System.out.println("Saved food to household : " + result);
   }
 }

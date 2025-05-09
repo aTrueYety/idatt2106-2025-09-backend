@@ -15,7 +15,7 @@ public interface ExtraResidentTypeRepository {
    * @return an Optional containing the ExtraResidentType if found, empty
    *         otherwise
    */
-  Optional<ExtraResidentType> findById(int id);
+  Optional<ExtraResidentType> findById(long id);
 
   /**
    * Find all extra resident types.
@@ -43,5 +43,5 @@ public interface ExtraResidentTypeRepository {
    *
    * @param id the ID of the extra resident type to delete
    */
-  void deleteById(int id);
+  void deleteById(long id);
 }

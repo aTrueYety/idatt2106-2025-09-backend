@@ -13,12 +13,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Event {
   private Long id;
+  private String name;
   private Long infoPageId;
   private double latitude;
   private double longitude;
   private double radius;
   private Timestamp startTime;
   private Timestamp endTime;
-  private long severityId;
+  private Long severityId;
   private String recomendation;
 }

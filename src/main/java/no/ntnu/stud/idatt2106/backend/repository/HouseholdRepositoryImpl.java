@@ -23,11 +23,12 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
 
   private RowMapper<Household> householdRowMapper = (rs, rowNum) -> {
     return new Household(
-        rs.getLong("id"),
-        rs.getString("adress"),
-        rs.getDouble("longitude"),
-        rs.getDouble("latitude"),
-        rs.getDouble("amount_water"),
+        rs.getObject("id", Long.class),
+        rs.getString("address"),
+        rs.getString("name"),
+        rs.getObject("longitude", Double.class),
+        rs.getObject("latitude", Double.class),
+        rs.getObject("amount_water", Double.class),
         rs.getTimestamp("last_water_change")
     );
   };
@@ -41,19 +42,19 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   @Override
   public Household save(Household household) {
     String sql = "INSERT INTO household "
-        + "(adress, latitude, longitude, amount_water, last_water_change) "
-        + "VALUES (?, ?, ?, ?, ?)";
-    
+        + "(address, name, latitude, longitude, amount_water, last_water_change) "
+        + "VALUES (?, ?, ?, ?, ?, ?)";
     
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-      ps.setString(1, household.getAdress());
-      ps.setDouble(2, household.getLatitude());
-      ps.setDouble(3, household.getLongitude());
-      ps.setDouble(4, household.getWaterAmountLiters());
-      ps.setDate(5, new java.sql.Date(household
+      ps.setString(1, household.getAddress());
+      ps.setString(2, household.getName());
+      ps.setDouble(3, household.getLatitude());
+      ps.setDouble(4, household.getLongitude());
+      ps.setDouble(5, household.getWaterAmountLiters());
+      ps.setDate(6, new java.sql.Date(household
           .getLastWaterChangeDate().getTime()));
       return ps;
     }, keyHolder);
@@ -77,8 +78,8 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   @Override
   public Optional<Household> findById(Long id) {
     String sql = "SELECT * FROM household WHERE id = ?";
-    Household household = jdbcTemplate.queryForObject(sql, householdRowMapper, id);
-    return Optional.ofNullable(household);
+    List<Household> households = jdbcTemplate.query(sql, householdRowMapper, id);
+    return Optional.ofNullable(households.isEmpty() ? null : households.get(0));
   }
 
   /**
@@ -101,17 +102,43 @@ public class HouseholdRepositoryImpl implements HouseholdRepository {
   public void update(Household household) {
     String sql = """
         UPDATE household
-        SET adress = ?, latitude = ?, longitude = ?, amount_water = ?, last_water_change = ?
-        WHERE id = ?
+        SET address = ?, name = ?, latitude = ?, longitude = ?, amount_water = ?, 
+        last_water_change = ? WHERE id = ?
         """;
 
     jdbcTemplate.update(sql,
-        household.getAdress(),
+        household.getAddress(),
+        household.getName(),
         household.getLatitude(),
         household.getLongitude(),
         household.getWaterAmountLiters(),
         household.getLastWaterChangeDate(),
         household.getId()
     );
+  }
+
+  /**
+   * Deletes the registered household with the specified ID.
+   *
+   * @param id the ID of the household t be deleted
+   */
+  @Override
+  public void deleteById(Long id) {
+    String sql = "DELETE FROM household WHERE id = ?";
+    jdbcTemplate.update(sql, id);
+  }
+
+  /**
+   * Retrieves the household of the user with the specified ID.
+   *
+   * @param userId the ID of the user
+   * @return an Optional containing the household of the user, or an empty Optional if not found
+   */
+  @Override
+  public Optional<Household> findByUserId(Long userId) {
+    String sql = "SELECT h.* FROM household h "
+        + "JOIN `user` u ON h.id = u.household_id WHERE u.id = ?";
+    List<Household> households = jdbcTemplate.query(sql, householdRowMapper, userId);
+    return Optional.ofNullable(households.isEmpty() ? null : households.get(0));
   }
 }

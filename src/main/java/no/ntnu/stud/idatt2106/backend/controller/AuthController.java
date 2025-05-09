@@ -2,7 +2,12 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import no.ntnu.stud.idatt2106.backend.model.request.AdminInviteRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.AdminRemoveRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.AdminUpgradeRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.LoginRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetKeyRequest;
+import no.ntnu.stud.idatt2106.backend.model.request.PasswordResetRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.RegisterRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ChangeCredentialsResponse;
 import no.ntnu.stud.idatt2106.backend.model.response.LoginResponse;
@@ -12,7 +17,9 @@ import no.ntnu.stud.idatt2106.backend.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -29,11 +36,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   @Autowired
   private AuthService service;
-
-  Logger logger = LoggerFactory.getLogger(AuthController.class);
 
   /**
    * This method handles user registration requests. It creates a new user in the
@@ -99,4 +105,109 @@ public class AuthController {
     service.validateToken(token);
     return ResponseEntity.ok().build();
   }
+
+  /**
+   * Requests a password reset link to be sent to the user's email address.
+   * It generates a unique key and sends an email with the reset link.
+   *
+   * @param email the email address of the user requesting the password reset
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Request password reset", 
+      description = "Sends a password reset link to the user's email address")
+  @PostMapping("/request-password-reset")
+  public ResponseEntity<Void> requestPasswordReset(@RequestBody PasswordResetKeyRequest email) {
+    service.requestPasswordReset(email);
+    logger.info("Password reset requested for email: {}", email);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  /**
+   * Handles password reset requests. It verifies the provided key, and password
+   * and updates the password.
+   *
+   * @param passwordChangeRequest the request containing the key and new password
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Reset password", 
+      description = "Updates the user's password after verifying the provided key and password")
+  @PostMapping("/reset-password")
+  public ResponseEntity<Void> resetPassword(
+      @RequestBody PasswordResetRequest passwordChangeRequest) {
+    service.resetPassword(passwordChangeRequest);
+    logger.info("Password reset successfully");
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  /**
+   * Invites a user to become an admin by sending a registration key to their email address.
+   * It generates a unique key and sends an email with the registration link.
+   *
+   * @param request the request containing the email address of the user to invite
+   * @param token the JWT token of the user sending the invite
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Invite user to become admin", 
+      description = "Sends a registration key to the user's email address")
+  @PostMapping("/invite-admin")
+  public ResponseEntity<Void> inviteAdmin(
+      @RequestBody AdminInviteRequest request,
+      @RequestHeader("Authorization") String token) {
+    service.inviteAdmin(request, token);
+    logger.info("Admin invite sent to email: {}", request.getUsername());
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  /**
+   * Handles the request to accept an admin invitation.
+   *
+   * @param request the registration key provided in the invitation
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Accept admin invitation", 
+      description = "Accepts the admin invitation using the provided registration key and loges in "
+                  + "the user again")
+  @PostMapping("/accept-admin-invite")
+  public ResponseEntity<LoginResponse> acceptAdminInvite(
+      @RequestBody AdminUpgradeRequest request, 
+      @RequestHeader("Authorization") String token) {
+    LoginResponse response = service.acceptAdminInvite(request, token);
+    logger.info("Admin invite accepted with key: {}", request.getKey());
+    return ResponseEntity.ok().body(response);
+  }
+
+  /**
+   * Deletes a user's admin registration key.
+   *
+   * @param request the request containing the registration key to delete
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Delete admin registration key", 
+      description = "Deletes the admin registration key for the user")
+  @DeleteMapping("/admin-invite")
+  public ResponseEntity<Void> deleteAdminRegistrationKey(
+      @RequestBody AdminRemoveRequest request) {
+    service.deleteAdminRegistrationKey(request);
+    logger.info("Admin registration key deleted for user: {}", request);
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Handels the request to remove a user's admin status.
+   *
+   * @param request the ID of the user whose admin status is to be removed
+   * @param token the JWT token of the user sending the request
+   * @return a ResponseEntity indicating success or failure
+   */
+  @Operation(summary = "Remove admin status", 
+      description = "Removes the admin status of the user with the provided ID")
+  @DeleteMapping("/admin")
+  public ResponseEntity<Void> removeAdmin(
+      @RequestBody AdminRemoveRequest request,
+      @RequestHeader("Authorization") String token) {
+    service.removeAdmin(request, token);
+    logger.info("Admin status removed for " + request.getUsername());
+    return ResponseEntity.ok().build();
+  }
+
 }

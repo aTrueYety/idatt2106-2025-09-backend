@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InfoPageRequest {
   private String title;
+  private String shortDescription;
   private String content;
 }

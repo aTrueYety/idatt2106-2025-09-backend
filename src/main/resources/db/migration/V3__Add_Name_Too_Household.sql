@@ -1,0 +1,2 @@
+ALTER TABLE household
+ADD COLUMN name VARCHAR(100) AFTER id;

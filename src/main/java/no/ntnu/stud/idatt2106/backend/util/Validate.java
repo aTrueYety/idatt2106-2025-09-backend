@@ -7,6 +7,10 @@ import java.util.function.Predicate;
  * Utility class for validating objects.
  */
 public class Validate {
+  private Validate() {
+    // Prevent instantiation
+  }
+
   /**
    * Validates that a given value is null.
    *
@@ -36,6 +40,17 @@ public class Validate {
    */
   public static <U, T extends Collection<U>> Predicate<T> isNotEmptyCollection() {
     return value -> value != null && !value.isEmpty();
+  }
+
+  /**
+   * Validates that a given value is an empty collection or null.
+   *
+   * @param <U> the type of the elements in the collection
+   * @param <T> the type of the collection
+   * @return a predicate that checks if the collection is empty or null
+   */
+  public static <U, T extends Collection<U>> Predicate<T> isEmptyCollection() {
+    return value -> value == null || value.isEmpty();
   }
 
   public static Predicate<String> isNotEmpty() {

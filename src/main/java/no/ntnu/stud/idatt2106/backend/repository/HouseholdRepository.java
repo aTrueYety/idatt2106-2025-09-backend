@@ -41,4 +41,14 @@ public interface HouseholdRepository {
    * @param household household with the new information
    */
   void update(Household household);
+
+  /**
+   * Deletes the household with the given ID.
+   *
+   * @param id the ID of the household to be deleted
+   */
+  void deleteById(Long id);
+  
+  Optional<Household> findByUserId(Long userId);
+
 }

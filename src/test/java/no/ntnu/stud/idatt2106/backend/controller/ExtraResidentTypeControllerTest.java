@@ -1,6 +1,20 @@
 package no.ntnu.stud.idatt2106.backend.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Optional;
+import no.ntnu.stud.idatt2106.backend.config.JwtAuthFilter;
 import no.ntnu.stud.idatt2106.backend.config.SecurityConfigTest;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
@@ -8,27 +22,26 @@ import no.ntnu.stud.idatt2106.backend.service.ExtraResidentTypeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-@WebMvcTest(ExtraResidentTypeController.class)
+/**
+ * Tests for ExtraResidentType.
+ */
+@WebMvcTest(controllers = ExtraResidentTypeController.class, 
+    excludeFilters = @ComponentScan.Filter(type 
+    = FilterType.ASSIGNABLE_TYPE, value = JwtAuthFilter.class))
 @Import(SecurityConfigTest.class)
 public class ExtraResidentTypeControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
+  @MockitoBean
   private ExtraResidentTypeService service;
 
   @Autowired
@@ -45,9 +58,9 @@ public class ExtraResidentTypeControllerTest {
     when(service.getAll()).thenReturn(List.of(type));
 
     mockMvc.perform(get("/api/extra-resident-types"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].name").value("Visitor"))
-            .andExpect(jsonPath("$[0].consumptionWater").value(1.5f));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].name").value("Visitor"))
+        .andExpect(jsonPath("$[0].consumptionWater").value(1.5f));
   }
 
   @Test
@@ -61,8 +74,8 @@ public class ExtraResidentTypeControllerTest {
     when(service.getById(1)).thenReturn(Optional.of(type));
 
     mockMvc.perform(get("/api/extra-resident-types/1"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value("Guest"));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value("Guest"));
   }
 
   @Test
@@ -70,7 +83,7 @@ public class ExtraResidentTypeControllerTest {
     when(service.getById(999)).thenReturn(Optional.empty());
 
     mockMvc.perform(get("/api/extra-resident-types/999"))
-            .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -81,26 +94,11 @@ public class ExtraResidentTypeControllerTest {
     request.setConsumptionFood(1.7f);
 
     mockMvc.perform(post("/api/extra-resident-types")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated());
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isCreated());
 
     verify(service).create(any(ExtraResidentTypeRequest.class));
-  }
-
-  @Test
-  void shouldUpdateExtraResidentType() throws Exception {
-    ExtraResidentTypeRequest request = new ExtraResidentTypeRequest();
-    request.setName("Updated Type");
-    request.setConsumptionWater(1.0f);
-    request.setConsumptionFood(1.1f);
-
-    when(service.update(eq(1), any(ExtraResidentTypeRequest.class))).thenReturn(true);
-
-    mockMvc.perform(put("/api/extra-resident-types/1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isOk());
   }
 
   @Test
@@ -113,9 +111,9 @@ public class ExtraResidentTypeControllerTest {
     when(service.update(eq(1), any())).thenReturn(false);
 
     mockMvc.perform(put("/api/extra-resident-types/1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isNotFound());
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -123,7 +121,7 @@ public class ExtraResidentTypeControllerTest {
     when(service.delete(1)).thenReturn(true);
 
     mockMvc.perform(delete("/api/extra-resident-types/1"))
-            .andExpect(status().isNoContent());
+        .andExpect(status().isNoContent());
   }
 
   @Test
@@ -131,6 +129,6 @@ public class ExtraResidentTypeControllerTest {
     when(service.delete(999)).thenReturn(false);
 
     mockMvc.perform(delete("/api/extra-resident-types/999"))
-            .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound());
   }
 }

@@ -1,5 +1,7 @@
 package no.ntnu.stud.idatt2106.backend.model.base;
 
+import java.util.List;
+
 /**
  * Represents a user in the system.
  */
@@ -16,6 +18,8 @@ public class User {
   private String lastName;
   private boolean sharePositionHousehold = false;
   private boolean sharePositionGroup = false;
+  private float lastLatitude;
+  private float lastLongitude;
   private byte[] picture;
 
   /**
@@ -120,6 +124,23 @@ public class User {
     this.sharePositionGroup = sharePositionGroup;
   }
 
+  public float getLastLatitude() {
+    return lastLatitude;
+  }
+
+  public void setLastLatitude(float lastLatitude) {
+    this.lastLatitude = lastLatitude;
+  }
+
+  public float getLastLongitude() {
+    return lastLongitude;
+  }
+
+  public void setLastLongitude(float lastLongitude) {
+    this.lastLongitude = lastLongitude;
+  }
+
+
   public byte[] getPicture() {
     return picture;
   }
@@ -127,4 +148,8 @@ public class User {
   public void setPicture(byte[] picture) {
     this.picture = picture;
   }
+
+
+  
+  
 }
