@@ -71,8 +71,6 @@ public class AuthService {
     Validate.that(userService.getUserByEmail(registerRequest.getEmail()),
         Validate.isNull(), "Email is already in use");
 
-    Validate.that(registerRequest.getCaptchaToken(),
-        Validate.isNotBlankOrNull(), "Captcha cannot be blank or null");
     Validate.isValid(turnstileService.verifyCaptcha(registerRequest.getCaptchaToken()),
         "Captcha is not valid");
 
