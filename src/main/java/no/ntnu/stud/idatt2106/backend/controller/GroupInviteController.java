@@ -47,7 +47,7 @@ public class GroupInviteController {
                    schema = @Schema(implementation = GroupInvite.class))),
       @ApiResponse(responseCode = "204", description = "No group invites found"),
       @ApiResponse(responseCode = "401", description = "Unauthorized access")
-  })//TODO remove token from param
+  })
   @GetMapping("/group/{groupId}")
   public ResponseEntity<List<GroupInvite>> getGroupInvitesForUser(
       @PathVariable Long groupId,
@@ -76,7 +76,7 @@ public class GroupInviteController {
                    schema = @Schema(implementation = GroupInvite.class))),
       @ApiResponse(responseCode = "204", description = "No group invites found"),
       @ApiResponse(responseCode = "401", description = "Unauthorized access")
-  })//TODO remove token from param
+  })
   @GetMapping("/household")
   public ResponseEntity<List<GroupInvite>> getGroupInvitesForHousehold(
       @RequestHeader("Authorization") String token) {

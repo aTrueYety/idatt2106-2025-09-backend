@@ -129,7 +129,10 @@ public class UserService {
    * @return Repsonse object with the updated user
    * @throws NoSuchElementException if no user with the given ID exists
    */
-  public UserResponse updateUserProfile(Long id, UserUpdate update) {
+  public UserResponse updateUserProfile(Long id, UserUpdate update, String token) {
+    Long authId = jwtService.extractUserId(token.substring(7));
+    Validate.that(id.equals(authId), Validate.isTrue(),
+        "User id must be the your own");
     Validate.that(update.getFirstName(), Validate.isNotBlankOrNull());
     Validate.that(update.getLastName(), Validate.isNotBlankOrNull());
     Validate.that(update.getEmail(), Validate.isNotBlankOrNull());

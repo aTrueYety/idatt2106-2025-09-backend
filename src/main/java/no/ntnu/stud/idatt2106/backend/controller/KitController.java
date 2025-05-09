@@ -108,7 +108,7 @@ public class KitController {
       summary = "Deletes a kit",
       description = "Deletes the kit with the given ID"
   )
-  @DeleteMapping("/{id}") //TODO auth
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     boolean deleted = service.delete(id);
     if (!deleted) {

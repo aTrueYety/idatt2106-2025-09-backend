@@ -282,6 +282,19 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldUpdateHouseholdWhenValid() {
+      Long householdId = 1L;
+      Household household = new Household();
+      household.setId(householdId);
+      Long userId = 1L;
+      User user = new User();
+      user.setId(userId);
+      user.setHouseholdId(householdId);
+
+      String token = "Bearer token";
+
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+      when(userService.getUserById(userId)).thenReturn(user);
+
       UpdateHouseholdRequest request = new UpdateHouseholdRequest();
       request.setAddress("New Address");
       request.setLatitude(30.0);
@@ -291,7 +304,7 @@ public class HouseholdServiceTest {
 
       when(householdRepository.findById(1L)).thenReturn(Optional.of(existingHousehold));
 
-      HouseholdResponse response = householdService.updateHousehold(1L, request);
+      HouseholdResponse response = householdService.updateHousehold(1L, request, token);
 
       assertEquals("New Address", response.getAddress());
       assertEquals(30.0, response.getLatitude());
@@ -304,12 +317,24 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldThrowExceptionWhenHouseholdNotFound() {
-      when(householdRepository.findById(2L)).thenReturn(Optional.empty());
+      Long householdId = 2L;
+      Household household = new Household();
+      household.setId(householdId);
+      Long userId = 1L;
+      User user = new User();
+      user.setId(userId);
+      user.setHouseholdId(householdId);
+
+      String token = "Bearer token";
+
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+      when(userService.getUserById(userId)).thenReturn(user);
+      when(householdRepository.findById(householdId)).thenReturn(Optional.empty());
 
       UpdateHouseholdRequest request = new UpdateHouseholdRequest();
 
       Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-        householdService.updateHousehold(2L, request);
+        householdService.updateHousehold(2L, request, token);
       });
 
       assertTrue(exception.getMessage().contains("Household with ID = 2 not found"));
@@ -317,11 +342,24 @@ public class HouseholdServiceTest {
 
     @Test
     void shouldNotUpdateWhenFieldsAreNull() {
+      Long householdId = 1L;
+      Household household = new Household();
+      household.setId(householdId);
+      Long userId = 1L;
+      User user = new User();
+      user.setId(userId);
+      user.setHouseholdId(householdId);
+
+      String token = "Bearer token";
+
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+      when(userService.getUserById(userId)).thenReturn(user);
+
       UpdateHouseholdRequest request = new UpdateHouseholdRequest();
 
       when(householdRepository.findById(1L)).thenReturn(Optional.of(existingHousehold));
 
-      HouseholdResponse response = householdService.updateHousehold(1L, request);
+      HouseholdResponse response = householdService.updateHousehold(1L, request, token);
 
       assertEquals("Test address", response.getAddress());
       assertEquals(10.0, response.getLatitude());

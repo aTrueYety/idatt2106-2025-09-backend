@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,24 +50,26 @@ public class ExtraResidentController {
 
   /** Create a new extra resident. */
   @Operation(summary = "Creates a new extra resident")
-  @PostMapping //TODO refactor service class remove household id from request get it from user
-  public ResponseEntity<Void> create(@RequestBody ExtraResidentRequest request) {
-    service.create(request);
+  @PostMapping
+  public ResponseEntity<Void> create(@RequestBody ExtraResidentRequest request,
+      @RequestHeader("Authorization") String token) {
+    service.create(request, token);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   /** Update an existing extra resident. */
   @Operation(summary = "Updates an existing extra resident")
-  @PutMapping("/{id}") //TODO User should not be able to set extraresident to another household
+  @PutMapping("/{id}")
   public ResponseEntity<Void> update(
-      @PathVariable Long id, @RequestBody ExtraResidentUpdate request) {
-    boolean success = service.update(id, request);
+      @PathVariable Long id, @RequestBody ExtraResidentUpdate request,
+      @RequestHeader("Authorization") String token) {
+    boolean success = service.update(id, request, token);
     return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
   }
 
   /** Delete a resident by ID. */
   @Operation(summary = "Deletes the extra resident with the given ID")
-  @DeleteMapping("/{id}") //TODO add check if the resident is in same household as user.
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable long id) {
     return service.delete(id)
         ? ResponseEntity.noContent().build()

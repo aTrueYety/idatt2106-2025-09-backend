@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import no.ntnu.stud.idatt2106.backend.model.base.EmergencyGroup;
+import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
@@ -45,6 +46,9 @@ public class EmergencyGroupServiceTest {
 
   @Mock
   private GroupHouseholdRepository groupHouseholdRepository;
+
+  @Mock
+  private GroupHouseholdService groupHouseholdService;
 
   @Mock
   private ExtraResidentService extraResidentService;
@@ -112,8 +116,25 @@ public class EmergencyGroupServiceTest {
     void shouldDeleteAndReturnTrueIfGroupWithIdExists() {
       Long id = 2L;
       when(repository.deleteById(id)).thenReturn(true);
+
+      User user = new User();
+      Long userId = 1L;
+      Long householdId = 2L;
+      user.setId(userId);
+      user.setHouseholdId(householdId);
       
-      boolean response = emergencyGroupService.delete(id);
+      GroupHousehold groupHousehold = new GroupHousehold();
+      groupHousehold.setHouseholdId(householdId);
+      groupHousehold.setGroupId(id);
+
+      when(groupHouseholdRepository.findByHouseholdIdAndGroupId(householdId, id))
+            .thenReturn(groupHousehold);
+
+      String token = "Bearer token";
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+      when(userService.getUserById(userId)).thenReturn(user);
+      
+      boolean response = emergencyGroupService.delete(id, token);
 
       assertTrue(response);
       verify(repository).deleteById(id);
@@ -124,7 +145,24 @@ public class EmergencyGroupServiceTest {
       Long id = 1L;
       when(repository.deleteById(id)).thenReturn(false);
 
-      boolean response = emergencyGroupService.delete(id);
+      User user = new User();
+      Long userId = 1L;
+      Long householdId = 2L;
+      user.setId(userId);
+      user.setHouseholdId(householdId);
+
+      GroupHousehold groupHousehold = new GroupHousehold();
+      groupHousehold.setHouseholdId(householdId);
+      groupHousehold.setGroupId(id);
+
+      when(groupHouseholdRepository.findByHouseholdIdAndGroupId(householdId, id))
+            .thenReturn(groupHousehold);
+
+      String token = "Bearer token";
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+      when(userService.getUserById(userId)).thenReturn(user);
+      
+      boolean response = emergencyGroupService.delete(id, token);
 
       assertFalse(response);
       verify(repository).deleteById(id);
@@ -153,9 +191,26 @@ public class EmergencyGroupServiceTest {
       updatedGroup.setName(updatedName);
       updatedGroup.setDescription(updatedDescription);
 
+      User user = new User();
+      Long userId = 1L;
+      Long householdId = 2L;
+      user.setId(userId);
+      user.setHouseholdId(householdId);
+
+      GroupHousehold groupHousehold = new GroupHousehold();
+      groupHousehold.setHouseholdId(householdId);
+      groupHousehold.setGroupId(groupId);
+
+      when(groupHouseholdRepository.findByHouseholdIdAndGroupId(householdId, groupId))
+          .thenReturn(groupHousehold);
+
       when(repository.update(groupId, updatedGroup)).thenReturn(true);
+
+      String token = "Bearer token";
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+      when(userService.getUserById(userId)).thenReturn(user);
     
-      boolean result = emergencyGroupService.update(groupId, request);
+      boolean result = emergencyGroupService.update(groupId, request, token);
       
       assertTrue(result);
       verify(repository).update(groupId, updatedGroup);

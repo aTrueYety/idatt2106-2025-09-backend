@@ -291,7 +291,11 @@ public class HouseholdService {
    * @param request the new household values, request null values are not changed
    * @return response object with the updated values
    */
-  public HouseholdResponse updateHousehold(Long id, UpdateHouseholdRequest request) {
+  public HouseholdResponse updateHousehold(Long id, UpdateHouseholdRequest request, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    User user = userService.getUserById(userId);
+    Validate.that(user.getHouseholdId() == id, Validate.isTrue(),
+        "Users household must be same as household being updated");
     Optional<Household> existingHousehold = householdRepository.findById(id);
 
     Validate.that(existingHousehold.isPresent(),

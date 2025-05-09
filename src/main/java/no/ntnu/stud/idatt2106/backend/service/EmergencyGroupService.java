@@ -72,7 +72,12 @@ public class EmergencyGroupService {
    * @param id the ID of the emergency group
    * @return true if deleted successfully, false otherwise
    */
-  public boolean delete(Long id) {
+  public boolean delete(Long id, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    User user = userService.getUserById(userId);
+    Long householdId = user.getHouseholdId();
+    Validate.that(isHouseholdInGroup(householdId, id), Validate.isTrue(),
+        "Household with ID = " + householdId + " is not in group with ID = " + id);
     return repository.deleteById(id);
   }
 
@@ -83,7 +88,12 @@ public class EmergencyGroupService {
    * @param request the updated values
    * @return true if updated successfully, false otherwise
    */
-  public boolean update(Long id, EmergencyGroupRequest request) {
+  public boolean update(Long id, EmergencyGroupRequest request, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    User user = userService.getUserById(userId);
+    Long householdId = user.getHouseholdId();
+    Validate.that(isHouseholdInGroup(householdId, id), Validate.isTrue(),
+        "Household with ID = " + householdId + " is not in group with ID = " + id);
     EmergencyGroup group = new EmergencyGroup(id, request.getName(),
         request.getDescription());
     return repository.update(id, group);
@@ -201,4 +211,14 @@ public class EmergencyGroupService {
         totalExtraResidents);
   }
 
+  /**
+   * Checks if a household is in the specified group.
+   *
+   * @param householdId the id of the household that might be in the group
+   * @param groupId the group to check if the household is in
+   * @return true if the household is in the group, otherwise false
+   */
+  public boolean isHouseholdInGroup(Long householdId, Long groupId) {
+    return groupHouseholdRepository.findByHouseholdIdAndGroupId(householdId, groupId) != null;
+  }
 }

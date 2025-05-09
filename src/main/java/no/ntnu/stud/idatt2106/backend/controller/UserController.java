@@ -80,6 +80,7 @@ public class UserController {
    *
    * @param id the id of the user
    * @param update the new profile info
+   * @param token the users jwt token
    * @return a ResponseEntity with the updated user
    */
   @Operation(
@@ -88,11 +89,12 @@ public class UserController {
           Updates a user's profile info, such as the user's user username, name, email, etc.
           """
   )
-  @PutMapping("/{id}") //TODO check if current user has same id as request
+  @PutMapping("/{id}")
   public ResponseEntity<UserResponse> updateProfile(@PathVariable Long id,
-      @RequestBody UserUpdate update) {
+      @RequestBody UserUpdate update,
+      @RequestHeader("Authorization") String token) {
     logger.info("Updating user with ID = {}", id);
-    UserResponse response = userService.updateUserProfile(id, update);
+    UserResponse response = userService.updateUserProfile(id, update, token);
     logger.info("Updated user successfully");
     return ResponseEntity.ok(response);
   }

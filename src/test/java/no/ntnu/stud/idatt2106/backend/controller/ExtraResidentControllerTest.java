@@ -91,12 +91,15 @@ public class ExtraResidentControllerTest {
     request.setHouseholdId(10);
     request.setTypeId(2);
 
+    String token = "Bearer jwt.token";
+
     mockMvc.perform(post("/api/extra-residents")
         .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", token)
         .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated());
 
-    verify(service).create(any(ExtraResidentRequest.class));
+    verify(service).create(any(ExtraResidentRequest.class), eq(token));
   }
 
   @Test
@@ -106,14 +109,17 @@ public class ExtraResidentControllerTest {
     update.setTypeId(3);
     update.setName("Updated Name");
 
-    when(service.update(eq(1L), any(ExtraResidentUpdate.class))).thenReturn(true);
+    String token = "Bearer token";
+
+    when(service.update(eq(1L), any(ExtraResidentUpdate.class), eq(token))).thenReturn(true);
 
     mockMvc.perform(put("/api/extra-residents/1")
         .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", token)
         .content(objectMapper.writeValueAsString(update)))
         .andExpect(status().isOk());
 
-    verify(service).update(eq(1L), any(ExtraResidentUpdate.class));
+    verify(service).update(eq(1L), any(ExtraResidentUpdate.class), eq(token));
   }
 
   @Test
@@ -121,11 +127,13 @@ public class ExtraResidentControllerTest {
     ExtraResidentUpdate update = new ExtraResidentUpdate();
     update.setHouseholdId(12);
     update.setTypeId(3);
+    String token = "Bearer token";
 
-    when(service.update(eq(999L), any())).thenReturn(false);
+    when(service.update(eq(999L), any(), eq(token))).thenReturn(false);
 
     mockMvc.perform(put("/api/extra-residents/999")
         .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", token)
         .content(objectMapper.writeValueAsString(update)))
         .andExpect(status().isNotFound());
   }
