@@ -15,7 +15,6 @@ import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.InfoPage;
-import no.ntnu.stud.idatt2106.backend.model.base.Kit;
 import no.ntnu.stud.idatt2106.backend.model.base.MapObject;
 import no.ntnu.stud.idatt2106.backend.model.base.MapObjectType;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
@@ -126,7 +125,6 @@ public class TestDataInitializer implements CommandLineRunner {
    * Initializes test data for the application
    */
   public void initializeTestData() {
-    initializeKitTypes();
     initializeExtraResidentTypes();
     initializeFoodTypes();
     initializeTestUsers();
@@ -679,70 +677,6 @@ public class TestDataInitializer implements CommandLineRunner {
     cat.setConsumptionWater(0.35f);
     cat.setConsumptionFood(75.0f);
     extraResidentTypeRepository.save(cat);
-  }
-
-  /**
-   * Initializes the kit types for the application.
-   * This includes various emergency kits such as flashlights, water purification
-   * tools,
-   * and first aid supplies, along with their descriptions.
-   */
-  public void initializeKitTypes() {
-    Kit kitType1 = new Kit();
-    kitType1.setName("Lommelykt og batterier");
-    kitType1.setDescription(
-        "Et solid lyssett som inkluderer lommelykt (helst LED) og ekstra batterier - "
-            + "viktig ved strømbrudd.");
-    kitRepository.save(kitType1);
-
-    Kit kitType2 = new Kit();
-    kitType2.setName("Vannrenseutstyr");
-    kitType2.setDescription(
-        "Inkluderer vannfilter eller rensetabletter. Gjør det mulig å gjøre tilgjengelig vann "
-            + "drikkbart ved forurensning.");
-    kitRepository.save(kitType2);
-
-    Kit kitType3 = new Kit();
-    kitType3.setName("Førstehjelpsutstyr");
-    kitType3.setDescription(
-        "Inkluderer plaster, bandasjer, antiseptiske midler og smertestillende. "
-            + "Viktig for å håndtere mindre skader og sykdommer.");
-    kitRepository.save(kitType3);
-
-    Kit kitType4 = new Kit();
-    kitType4.setName("Nødradio");
-    kitType4.setDescription(
-        "En radio som kan drives med batterier eller håndsveiv. "
-            + "Viktig for å holde seg oppdatert på nyheter og varsler.");
-    kitRepository.save(kitType4);
-
-    Kit kitType5 = new Kit();
-    kitType5.setName("Varme- og kokeutstyr");
-    kitType5.setDescription(
-        "Utstyr som stormkjøkken, gassbrenner eller rødspritbrenner"
-            + " - viktig for å kunne tilberede mat "
-            + "og varme vann ved strømbrudd.");
-    kitRepository.save(kitType5);
-
-    Kit kitType6 = new Kit();
-    kitType6.setName("Varme og ly kit");
-    kitType6.setDescription("Tepper, stearinlys og tennutstyr som holder"
-        + " deg varm og gir lys i tilfelle strømmen går.");
-    kitRepository.save(kitType6);
-
-    Kit kitType7 = new Kit();
-    kitType7.setName("Hygienesett");
-    kitType7.setDescription(
-        "Inneholder toalettpapir, såpe, våtservietter og hånddesinfeksjon"
-            + " for å opprettholde hygiene ved lengre isolasjon.");
-    kitRepository.save(kitType7);
-
-    Kit kitType8 = new Kit();
-    kitType8.setName("Verktøysett");
-    kitType8.setDescription(
-        "Inneholder nødvendige manuelle verktøy som multiverktøy, kniv,"
-            + " tape og tau til bruk i nødreparasjoner.");
-    kitRepository.save(kitType8);
   }
 
   /**
