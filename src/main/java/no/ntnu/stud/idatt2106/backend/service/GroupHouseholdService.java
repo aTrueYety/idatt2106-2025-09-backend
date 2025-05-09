@@ -101,7 +101,7 @@ public class GroupHouseholdService {
     boolean success = repository.deleteById(id);
     List<GroupHousehold> groupHouseholds = repository.findByGroupId(groupHousehold.getGroupId());
     if (groupHouseholds.isEmpty()) {
-      emergencyGroupService.delete(groupHousehold.getGroupId());
+      emergencyGroupService.delete(groupHousehold.getGroupId(), token);
     }
     return success;
   }
@@ -186,5 +186,4 @@ public class GroupHouseholdService {
         .map(GroupHouseholdMapper::toResponse)
         .collect(Collectors.toList());
   }
-
 }

@@ -73,7 +73,6 @@ public class EmergencyGroupController {
     return ResponseEntity.ok(service.getAll());
   }
 
-  //TODO Should check if user is a part of group
   /**
    * Handles requests to delete emergency groups.
    *
@@ -87,8 +86,8 @@ public class EmergencyGroupController {
           Deletes the emergency group with the given ID.
           """)
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
-    return service.delete(id) ? ResponseEntity.noContent().build()
+  public ResponseEntity<Void> delete(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+    return service.delete(id, token) ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();
   }
 
