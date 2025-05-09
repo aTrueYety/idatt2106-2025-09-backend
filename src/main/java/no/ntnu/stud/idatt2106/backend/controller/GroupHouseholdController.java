@@ -43,7 +43,7 @@ public class GroupHouseholdController {
    * @return a ResponseEntity indicating the result of the operation
    */
   @Operation(summary = "Invite a household to a group")
-  @PostMapping("/invite") //TODO remove token param
+  @PostMapping("/invite")
   public ResponseEntity<Void> create(
       @RequestBody GroupHouseholdRequest request,
       @RequestHeader("Authorization") String token) {
@@ -59,7 +59,7 @@ public class GroupHouseholdController {
    * @return a ResponseEntity indicating the result of the operation
    */
   @Operation(summary = "Accept an invitation for a household to join a group")
-  @PostMapping("/accept") //TODO remove token param
+  @PostMapping("/accept")
   public ResponseEntity<Void> accept(
       @RequestBody Long groupId,
       @RequestHeader("Authorization") String token) {
@@ -77,7 +77,7 @@ public class GroupHouseholdController {
   @Operation(summary = "Reject an invitation for a household to join a group")
   @PostMapping("/reject")
   public ResponseEntity<Void> reject(
-      @RequestBody Long groupId, //TODO remove token param
+      @RequestBody Long groupId,
       @RequestHeader("Authorization") String token) {
     service.rejectInvite(groupId, token);
     return ResponseEntity.status(201).build();
@@ -96,7 +96,7 @@ public class GroupHouseholdController {
    * @return a list of households in the group
    */
   @Operation(summary = "Get all households in a specific group")
-  @GetMapping("/group/{groupId}") //TODO user needs to be part of group?
+  @GetMapping("/group/{groupId}")
   public ResponseEntity<List<GroupHouseholdResponse>> getByGroupId(@PathVariable Long groupId) {
     return ResponseEntity.ok(service.getByGroupId(groupId));
   }
@@ -110,7 +110,7 @@ public class GroupHouseholdController {
   @Operation(summary = "Delete a group-household relation by ID")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(
-      @PathVariable Long id, //TODO remove token in param
+      @PathVariable Long id, //TODO check if user is in group
       @RequestHeader("Authorization") String token) {
     return service.delete(id, token) ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();
@@ -128,7 +128,7 @@ public class GroupHouseholdController {
           Retrieves all group-household relations associated with the household that
           the currently authenticated user belongs to.
           """
-  )//TODO remove token in param
+  )
   @GetMapping("/my-groups")
   public ResponseEntity<List<GroupHouseholdResponse>> getGroupsForCurrentUserHousehold(
       @RequestHeader("Authorization") String token) {

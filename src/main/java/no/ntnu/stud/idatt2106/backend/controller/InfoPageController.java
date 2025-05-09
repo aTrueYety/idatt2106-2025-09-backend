@@ -92,7 +92,7 @@ public class InfoPageController {
       @ApiResponse(responseCode = "201", description = "Successfully created the information page"),
       @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
   })
-  @PostMapping() //TODO remove token from param
+  @PostMapping()
   public ResponseEntity<Void> createInfoPage(
       @RequestBody InfoPageRequest infoPage,
       @RequestHeader("Authorization") String token) {

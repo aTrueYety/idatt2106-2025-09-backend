@@ -47,7 +47,7 @@ public class EmergencyGroupController {
           Creates a new emergency group that households can be a part of
           in order to share resources.
           """)
-  @PostMapping //TODO Remove token param after fixing filter
+  @PostMapping
   public ResponseEntity<Void> create(
       @RequestBody EmergencyGroupRequest request,
       @RequestHeader("Authorization") String token) {

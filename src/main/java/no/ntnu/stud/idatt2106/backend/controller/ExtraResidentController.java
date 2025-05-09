@@ -49,7 +49,7 @@ public class ExtraResidentController {
 
   /** Create a new extra resident. */
   @Operation(summary = "Creates a new extra resident")
-  @PostMapping //TODO refactor service class remove household id from request get it from user
+  @PostMapping //TODO check if user is in household
   public ResponseEntity<Void> create(@RequestBody ExtraResidentRequest request) {
     service.create(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
