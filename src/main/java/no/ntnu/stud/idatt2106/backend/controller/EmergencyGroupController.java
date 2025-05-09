@@ -101,8 +101,9 @@ public class EmergencyGroupController {
   @Operation(summary = "Update an emergency group by ID")
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(@PathVariable Long id,
-      @RequestBody EmergencyGroupRequest request) { //TODO Should check if user is a part of group
-    return service.update(id, request)
+      @RequestBody EmergencyGroupRequest request,
+      @RequestHeader("Authorization") String token) {
+    return service.update(id, request, token)
         ? ResponseEntity.ok().build()
         : ResponseEntity.notFound().build();
   }

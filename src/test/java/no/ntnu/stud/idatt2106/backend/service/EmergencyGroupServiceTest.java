@@ -191,9 +191,26 @@ public class EmergencyGroupServiceTest {
       updatedGroup.setName(updatedName);
       updatedGroup.setDescription(updatedDescription);
 
+      User user = new User();
+      Long userId = 1L;
+      Long householdId = 2L;
+      user.setId(userId);
+      user.setHouseholdId(householdId);
+
+      GroupHousehold groupHousehold = new GroupHousehold();
+      groupHousehold.setHouseholdId(householdId);
+      groupHousehold.setGroupId(groupId);
+
+      when(groupHouseholdRepository.findByHouseholdIdAndGroupId(householdId, groupId))
+          .thenReturn(groupHousehold);
+
       when(repository.update(groupId, updatedGroup)).thenReturn(true);
+
+      String token = "Bearer token";
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+      when(userService.getUserById(userId)).thenReturn(user);
     
-      boolean result = emergencyGroupService.update(groupId, request);
+      boolean result = emergencyGroupService.update(groupId, request, token);
       
       assertTrue(result);
       verify(repository).update(groupId, updatedGroup);

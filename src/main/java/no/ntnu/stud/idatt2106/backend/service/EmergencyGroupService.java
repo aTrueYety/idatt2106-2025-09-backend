@@ -88,7 +88,12 @@ public class EmergencyGroupService {
    * @param request the updated values
    * @return true if updated successfully, false otherwise
    */
-  public boolean update(Long id, EmergencyGroupRequest request) {
+  public boolean update(Long id, EmergencyGroupRequest request, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    User user = userService.getUserById(userId);
+    Long householdId = user.getHouseholdId();
+    Validate.that(isHouseholdInGroup(householdId, id), Validate.isTrue(),
+        "Household with ID = " + householdId + " is not in group with ID = " + id);
     EmergencyGroup group = new EmergencyGroup(id, request.getName(),
         request.getDescription());
     return repository.update(id, group);
