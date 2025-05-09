@@ -92,12 +92,21 @@ public class ExtraResidentServiceTest {
   void shouldUpdateIfExists() {
     when(repository.findById(1L)).thenReturn(Optional.of(new ExtraResident()));
 
+    Long householdId = 5L;
     ExtraResidentUpdate update = new ExtraResidentUpdate();
     update.setHouseholdId(5L);
-    update.setTypeId(6L);
+    update.setTypeId(householdId);
     update.setName("Updated");
 
-    boolean success = service.update(1L, update);
+    Long userId = 1L;
+    User user = new User();
+    user.setId(userId);
+    user.setHouseholdId(householdId);
+
+    String token = "Bearer token";
+    when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+    when(userService.getUserById(userId)).thenReturn(user);
+    boolean success = service.update(1L, update, token);
 
     assertThat(success).isTrue();
     verify(repository).update(any(ExtraResident.class));
@@ -112,7 +121,17 @@ public class ExtraResidentServiceTest {
     update.setTypeId(1L);
     update.setName("Missing");
 
-    boolean success = service.update(999L, update);
+    Long userId = 1L;
+    Long householdId = 1L;
+    User user = new User();
+    user.setId(userId);
+    user.setHouseholdId(householdId);
+
+    String token = "Bearer token";
+    when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+    when(userService.getUserById(userId)).thenReturn(user);
+
+    boolean success = service.update(999L, update, token);
 
     assertThat(success).isFalse();
     verify(repository, never()).update(any());

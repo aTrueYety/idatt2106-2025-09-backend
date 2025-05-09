@@ -83,9 +83,16 @@ public class ExtraResidentService {
    *
    * @param id      the ID of the extra resident to update
    * @param request the request containing updated data
+   * @param token the user's jwt token
    * @return true if the resident was updated, false if the resident was not found
    */
-  public boolean update(Long id, ExtraResidentUpdate request) {
+  public boolean update(Long id, ExtraResidentUpdate request, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    User user = userService.getUserById(userId);
+    Long householdId = user.getHouseholdId();
+    Long requestId = request.getHouseholdId();
+    Validate.that(requestId == householdId, Validate.isTrue(),
+        "Users household is not the same as the household in the request");
     if (repository.findById(id).isEmpty()) {
       return false;
     }

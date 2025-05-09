@@ -50,7 +50,7 @@ public class ExtraResidentController {
 
   /** Create a new extra resident. */
   @Operation(summary = "Creates a new extra resident")
-  @PostMapping //TODO check if user is in household
+  @PostMapping
   public ResponseEntity<Void> create(@RequestBody ExtraResidentRequest request,
       @RequestHeader("Authorization") String token) {
     service.create(request, token);
@@ -59,10 +59,11 @@ public class ExtraResidentController {
 
   /** Update an existing extra resident. */
   @Operation(summary = "Updates an existing extra resident")
-  @PutMapping("/{id}") //TODO User should not be able to set extraresident to another household
+  @PutMapping("/{id}")
   public ResponseEntity<Void> update(
-      @PathVariable Long id, @RequestBody ExtraResidentUpdate request) {
-    boolean success = service.update(id, request);
+      @PathVariable Long id, @RequestBody ExtraResidentUpdate request,
+      @RequestHeader("Authorization") String token) {
+    boolean success = service.update(id, request, token);
     return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
   }
 
