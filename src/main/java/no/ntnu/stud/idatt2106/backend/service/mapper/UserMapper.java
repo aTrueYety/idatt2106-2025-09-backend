@@ -25,8 +25,6 @@ public class UserMapper {
     response.setLastName(user.getLastName());
     response.setSharePositionHousehold(user.isSharePositionHousehold());
     response.setSharePositionGroup(user.isSharePositionGroup());
-    response.setLastLatitude(user.getLastLatitude());
-    response.setLastLongitude(user.getLastLongitude());
     response.setAdmin(user.isAdmin());
     response.setSuperAdmin(user.isSuperAdmin());
     return response;
