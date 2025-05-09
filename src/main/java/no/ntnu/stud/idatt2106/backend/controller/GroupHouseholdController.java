@@ -110,7 +110,7 @@ public class GroupHouseholdController {
   @Operation(summary = "Delete a group-household relation by ID")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(
-      @PathVariable Long id, //TODO check if user is in group
+      @PathVariable Long id,
       @RequestHeader("Authorization") String token) {
     return service.delete(id, token) ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();

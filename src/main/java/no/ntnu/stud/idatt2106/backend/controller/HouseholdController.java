@@ -73,6 +73,7 @@ public class HouseholdController {
    *
    * @param id      the id of the household to be updated
    * @param request the new household info
+   * @param token the users jwt token
    * @return response object with the updated household
    */
   @Operation(summary = "Updates an existing household", description = """
@@ -80,11 +81,12 @@ public class HouseholdController {
       with the given ID a BAD_REQUEST response code is returned. If values in the request
       body are null they will not be updated.
       """)
-  @PutMapping("/{id}") //TODO check if user is in household
+  @PutMapping("/{id}")
   public ResponseEntity<HouseholdResponse> updateHousehold(@PathVariable Long id,
-      @RequestBody UpdateHouseholdRequest request) {
+      @RequestBody UpdateHouseholdRequest request,
+      @RequestHeader("Authorization") String token) {
     logger.info("Updating household with ID = {}", id);
-    HouseholdResponse response = householdService.updateHousehold(id, request);
+    HouseholdResponse response = householdService.updateHousehold(id, request, token);
     logger.info("Household with ID = {} updated", id);
     return ResponseEntity.ok(response);
   }

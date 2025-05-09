@@ -69,7 +69,7 @@ public class ExtraResidentController {
 
   /** Delete a resident by ID. */
   @Operation(summary = "Deletes the extra resident with the given ID")
-  @DeleteMapping("/{id}") //TODO add check if the resident is in same household as user.
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable long id) {
     return service.delete(id)
         ? ResponseEntity.noContent().build()
