@@ -12,13 +12,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.NoSuchElementException;
-
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.response.UserResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.UserUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.UserRepository;
 import no.ntnu.stud.idatt2106.backend.service.mapper.UserMapper;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -67,10 +65,13 @@ public class UserServiceTest {
       existingUser.setSharePositionHousehold(true);
       existingUser.setSharePositionGroup(false);
 
+      String token = "Bearer token";
+      when(jwtService.extractUserId(token.substring(7))).thenReturn(userId);
+
       when(repository.findById(userId)).thenReturn(existingUser);
       when(repository.findById(userId)).thenReturn(existingUser);
 
-      UserResponse result = userService.updateUserProfile(userId, update);
+      UserResponse result = userService.updateUserProfile(userId, update, token);
 
       assertEquals(update.getFirstName(), result.getFirstName());
       assertEquals(update.getEmail(), existingUser.getEmail());
@@ -88,8 +89,14 @@ public class UserServiceTest {
       update.setLastName("Last");
       update.setEmail("email@example.com");
 
-      assertThrows(NoSuchElementException.class, () -> {
-        userService.updateUserProfile(userId, update);
+      String token = "Bearer token";
+      User user = new User();
+
+      when(jwtService.extractUserId(token)).thenReturn(userId);
+      when(repository.findById(userId)).thenReturn(user);
+
+      assertThrows(IllegalArgumentException.class, () -> {
+        userService.updateUserProfile(userId, update, token);
       });
     }
   }
