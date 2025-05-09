@@ -16,6 +16,7 @@ import no.ntnu.stud.idatt2106.backend.model.response.FoodSummaryResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.FoodUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.FoodRepository;
 import no.ntnu.stud.idatt2106.backend.repository.FoodTypeRepository;
+import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepository;
 import no.ntnu.stud.idatt2106.backend.service.mapper.FoodMapper;
 import no.ntnu.stud.idatt2106.backend.util.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,15 +37,29 @@ public class FoodService {
   @Autowired
   private FoodTypeService foodTypeService;
 
+  @Autowired
+  private HouseholdRepository householdRepository;
+
+  @Autowired
+  private JwtService jwtService;
+
   /**
-   * Creates a new food item.
+   * Creates a new food item, only for the user's household.
    *
    * @param request the food request containing food details
+   * @param token   the JWT token from the logged-in user
    */
-  public void create(FoodRequest request) {
+  public void create(FoodRequest request, String token) {
     Validate.that(request.getAmount(), Validate.isPositive());
 
+    Long userId = jwtService.extractUserId(token.substring(7));
+    Long householdId = getHouseholdIdByUser(userId);
+
     Food food = FoodMapper.toModel(request);
+    if (!Objects.equals(food.getHouseholdId(), householdId)) {
+      throw new IllegalStateException("Cannot create food for another household.");
+    }
+
     repository.save(food);
   }
 
@@ -70,33 +85,54 @@ public class FoodService {
   }
 
   /**
-   * Updates an existing food item.
+   * Updates an existing food item, only if it belongs to user's household.
    *
    * @param id     the ID of the food item to update
    * @param update the update request
-   * @return true if updated, false if not found
+   * @param token  the JWT token from the logged-in user
+   * @return true if updated, false if not found or not allowed
    */
-  public boolean update(Long id, FoodUpdate update) {
+  public boolean update(Long id, FoodUpdate update, String token) {
     Validate.that(update.getAmount(), Validate.isPositive());
-    if (repository.findById(id).isEmpty()) {
+    Optional<Food> existing = repository.findById(id);
+    if (existing.isEmpty()) {
       return false;
     }
+
+    Long userId = jwtService.extractUserId(token.substring(7));
+    Long householdId = getHouseholdIdByUser(userId);
+
+    if (!Objects.equals(existing.get().getHouseholdId(), householdId)) {
+      return false;
+    }
+
     Food food = FoodMapper.toModel(update);
     food.setId(id);
+    food.setHouseholdId(householdId); // ensure correct household
     repository.update(food);
     return true;
   }
 
   /**
-   * Deletes a food item by its ID.
+   * Deletes a food item by its ID, only if it belongs to the user.
    *
-   * @param id the ID of the food item to delete
-   * @return true if deleted, false if not found
+   * @param id    the ID of the food item to delete
+   * @param token the JWT token from the logged-in user
+   * @return true if deleted, false if not found or not allowed
    */
-  public boolean delete(Long id) {
-    if (repository.findById(id).isEmpty()) {
+  public boolean delete(Long id, String token) {
+    Optional<Food> existing = repository.findById(id);
+    if (existing.isEmpty()) {
       return false;
     }
+
+    Long userId = jwtService.extractUserId(token.substring(7));
+    Long householdId = getHouseholdIdByUser(userId);
+
+    if (!Objects.equals(existing.get().getHouseholdId(), householdId)) {
+      return false;
+    }
+
     repository.deleteById(id);
     return true;
   }
@@ -137,16 +173,14 @@ public class FoodService {
 
     return foodList.stream()
         .collect(Collectors.groupingBy(Food::getTypeId,
-            Collectors.summingDouble(f -> f.getAmount())))
+            Collectors.summingDouble(Food::getAmount)))
         .entrySet().stream()
         .map(entry -> {
           FoodSummaryResponse response = new FoodSummaryResponse();
           response.setTypeId(entry.getKey());
-          response.setTotalAmount(((Double) entry.getValue()).floatValue()
-          );
+          response.setTotalAmount(((Double) entry.getValue()).floatValue());
           return response;
         })
-
         .toList();
   }
 
@@ -167,38 +201,39 @@ public class FoodService {
     return grouped.entrySet().stream()
         .map(entry -> {
           Long typeId = entry.getKey();
-          FoodType type = foodTypeRepository.findById(typeId).orElseThrow(() -> {
-            throw new NoSuchElementException("FoodType with ID = " + typeId + " not found");
-          });
+          FoodType type = foodTypeRepository.findById(typeId)
+              .orElseThrow(() -> new NoSuchElementException("FoodType with ID = " 
+              + typeId + " not found"));
+
           List<Food> foodList = entry.getValue();
+          float totalAmount = (float) foodList.stream().mapToDouble(Food::getAmount).sum();
+          float totalCalories = totalAmount * type.getCaloriesPerUnit();
+
+          List<FoodBatchResponse> batches = foodList.stream().map(f -> {
+            FoodBatchResponse b = new FoodBatchResponse();
+            b.setId(f.getId());
+            b.setAmount(f.getAmount());
+            b.setExpirationDate(f.getExpirationDate());
+            b.setHouseholdId(f.getHouseholdId());
+            return b;
+          }).toList();
+
           FoodDetailedResponse summary = new FoodDetailedResponse();
           summary.setTypeId(typeId);
           summary.setTypeName(type.getName());
           summary.setUnit(type.getUnit());
-
-          float totalAmount = (float) foodList.stream()
-              .mapToDouble(Food::getAmount)
-              .sum();
           summary.setTotalAmount(totalAmount);
-
-          float totalCalories = totalAmount * type.getCaloriesPerUnit();
           summary.setTotalCalories(totalCalories);
-
-          List<FoodBatchResponse> batches = foodList.stream()
-              .map(f -> {
-                FoodBatchResponse batch = new FoodBatchResponse();
-                batch.setId(f.getId());
-                batch.setAmount(f.getAmount());
-                batch.setExpirationDate(f.getExpirationDate());
-                batch.setHouseholdId(f.getHouseholdId());
-                return batch;
-              })
-              .toList();
-
           summary.setBatches(batches);
           return summary;
         })
         .filter(Objects::nonNull)
         .toList();
+  }
+
+  private Long getHouseholdIdByUser(Long userId) {
+    return householdRepository.findByUserId(userId)
+        .orElseThrow(() -> new IllegalArgumentException("Household not found for user"))
+        .getId();
   }
 }

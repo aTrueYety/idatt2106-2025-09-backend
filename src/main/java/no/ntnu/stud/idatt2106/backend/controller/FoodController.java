@@ -2,6 +2,8 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodDetailedResponse;
@@ -37,9 +39,7 @@ public class FoodController {
    *
    * @return list of all food items
    */
-  @Operation(
-      summary = "Retrieves all registered food items"
-  )
+  @Operation(summary = "Retrieves all registered food items")
   @GetMapping
   public ResponseEntity<List<FoodResponse>> getAll() {
     return ResponseEntity.ok(service.getAll());
@@ -51,9 +51,7 @@ public class FoodController {
    * @param id the ID of the food item
    * @return the food item if found, otherwise 404
    */
-  @Operation(
-      summary = "Retrieves a food item by its ID"
-  )
+  @Operation(summary = "Retrieves a food item by its ID")
   @GetMapping("/{id}")
   public ResponseEntity<FoodResponse> getById(@PathVariable Long id) {
     return service.getById(id)
@@ -67,29 +65,32 @@ public class FoodController {
    * @param request the food request containing item details
    * @return 201 Created if successful
    */
-  @Operation(
-      summary = "Registers a new food item"
-  )
-  @PostMapping //TODO auth?
-  public ResponseEntity<Void> create(@RequestBody FoodRequest request) {
-    service.create(request);
+  @Operation(summary = "Registers a new food item")
+  @PostMapping
+  public ResponseEntity<Void> create(
+      @Valid @RequestBody FoodRequest request,
+      HttpServletRequest httpRequest) {
+    String token = httpRequest.getHeader("Authorization");
+    service.create(request, token);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   /**
    * Update an existing food item.
    *
-   * @param id the ID of the food item
+   * @param id     the ID of the food item
    * @param update the update request
    * @return 200 OK if updated, 404 Not Found if item does not exist
    */
-  @Operation(
-      summary = "Updates an existing food item",
-      description = "Updates the food item with the given ID."
-  )
-  @PutMapping("/{id}") //TODO auth
-  public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody FoodUpdate update) {
-    boolean success = service.update(id, update);
+  @Operation(summary = "Updates an existing food item", 
+      description = "Updates the food item with the given ID.")
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> update(
+      @PathVariable Long id,
+      @RequestBody FoodUpdate update,
+      HttpServletRequest httpRequest) {
+    String token = httpRequest.getHeader("Authorization");
+    boolean success = service.update(id, update, token);
     if (!success) {
       return ResponseEntity.notFound().build();
     }
@@ -102,13 +103,15 @@ public class FoodController {
    * @param id the ID of the food item
    * @return 204 No Content if deleted, 404 Not Found if item does not exist
    */
-  @Operation(
-      summary = "Deletes an existing food item",
-      description = "Deletes the food item with the given ID."
-  )
-  @DeleteMapping("/{id}") //TODO Auth
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
-    boolean success = service.delete(id);
+  @Operation(summary = "Deletes an existing food item", 
+      description = "Deletes the food item with the given ID.")
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> delete(
+      @PathVariable Long id,
+      HttpServletRequest httpRequest
+  ) {
+    String token = httpRequest.getHeader("Authorization");
+    boolean success = service.delete(id, token);
     if (!success) {
       return ResponseEntity.notFound().build();
     }
@@ -121,9 +124,7 @@ public class FoodController {
    * @param householdId the ID of the household
    * @return list of food items
    */
-  @Operation(
-      summary = "Retrieves all food items belonging to a household"
-  )
+  @Operation(summary = "Retrieves all food items belonging to a household")
   @GetMapping("/household/{householdId}")
   public ResponseEntity<List<FoodResponse>> getByHouseholdId(@PathVariable Long householdId) {
     return ResponseEntity.ok(service.getByHouseholdId(householdId));
@@ -135,9 +136,7 @@ public class FoodController {
    * @param householdId the ID of the household
    * @return list of food summary responses
    */
-  @Operation(
-      summary = "Retrieves a summary of all food items in a household grouped by type"
-  )
+  @Operation(summary = "Retrieves a summary of all food items in a household grouped by type")
   @GetMapping("/household/summary/{householdId}")
   public ResponseEntity<List<FoodSummaryResponse>> getSummaryByHousehold(
       @PathVariable Long householdId) {
@@ -151,9 +150,7 @@ public class FoodController {
    * @param householdId the ID of the household
    * @return list of detailed food responses
    */
-  @Operation(
-      summary = "Retrieves a detailed summary of the food in a household"
-  )
+  @Operation(summary = "Retrieves a detailed summary of the food in a household")
   @GetMapping("/household/summary/detailed/{householdId}")
   public ResponseEntity<List<FoodDetailedResponse>> getSummaryDetailed(
       @PathVariable Long householdId) {

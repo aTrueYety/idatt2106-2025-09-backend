@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.GroupHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.GroupHouseholdResponse;
@@ -45,7 +46,7 @@ public class GroupHouseholdController {
   @Operation(summary = "Invite a household to a group")
   @PostMapping("/invite")
   public ResponseEntity<Void> create(
-      @RequestBody GroupHouseholdRequest request,
+      @Valid @RequestBody GroupHouseholdRequest request,
       @RequestHeader("Authorization") String token) {
     service.invite(request, token);
     return ResponseEntity.status(201).build();

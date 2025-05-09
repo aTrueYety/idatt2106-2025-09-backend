@@ -1,12 +1,15 @@
 package no.ntnu.stud.idatt2106.backend.exception;
 
+
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,6 +18,9 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+
+
 
 /**
  * Global exception handler for the application.
@@ -138,7 +144,7 @@ public class GlobalExceptionHandler {
   /**
    * Handles MissingRequestHeaderException.
    *
-   * @param ex the MissingRequestHeaderException
+   * @param ex      the MissingRequestHeaderException
    * @param request the WebRequest
    * @return the ResponseEntity with a 400 status and error message
    */
@@ -153,7 +159,7 @@ public class GlobalExceptionHandler {
   /**
    * Handles MalformedJwtException.
    *
-   * @param ex     the MalformedJwtException
+   * @param ex      the MalformedJwtException
    * @param request the WebRequest
    * @return the ResponseEntity with a 401 status and error message
    */
@@ -168,7 +174,7 @@ public class GlobalExceptionHandler {
   /**
    * Handles ExpiredJwtException.
    *
-   * @param ex the ExpiredJwtException
+   * @param ex      the ExpiredJwtException
    * @param request the WebRequest
    * @return the ResponseEntity with a 401 status and error message
    */
@@ -193,4 +199,20 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(
         "An unexpected error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
+
+  /**
+   * Handles MethodArgumentNotValidException.
+   *
+   * @param ex the MethodArgumentNotValidException
+   * @return the ResponseEntity with a 400 status and validation error messages
+   */
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+    String errors = ex.getBindingResult().getFieldErrors().stream()
+        .map(err -> err.getField() + ": " + err.getDefaultMessage())
+        .collect(Collectors.joining("; "));
+    logger.warn("Validation failed: {}", errors);
+    return ResponseEntity.badRequest().body("Validation error(s): " + errors);
+  }
+
 }

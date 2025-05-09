@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.CreateHouseholdRequest;
 import no.ntnu.stud.idatt2106.backend.model.request.HouseHoldInviteAcceptRequest;
@@ -41,8 +42,8 @@ public class HouseholdController {
    *
    * @return the registered households with a status code
    */
-  @Operation(summary = "Retrieve all registered households",
-       description = "Retrieves information about all of the registered households")
+  @Operation(summary = "Retrieve all registered households", 
+      description = "Retrieves information about all of the registered households")
   @GetMapping
   public ResponseEntity<List<HouseholdResponse>> getAll() {
     List<HouseholdResponse> households = householdService.getAll();
@@ -57,11 +58,11 @@ public class HouseholdController {
    * @return a ResponseEntity containing the registration response or an error
    *         message.
    */
-  @Operation(summary = "Creates a new household",
-         description = "Creates a new household with the user creating it as a member")
+  @Operation(summary = "Creates a new household", 
+      description = "Creates a new household with the user creating it as a member")
   @PostMapping("/register")
-  public ResponseEntity<Void> 
-      registerHousehold(@RequestBody CreateHouseholdRequest householdRequest,
+  public ResponseEntity<Void> registerHousehold(
+      @Valid @RequestBody CreateHouseholdRequest householdRequest,
       @RequestHeader("Authorization") String token) {
     householdService.registerHousehold(householdRequest, token);
     logger.info("Household created successfully");
@@ -75,12 +76,13 @@ public class HouseholdController {
    * @param request the new household info
    * @return response object with the updated household
    */
-  @Operation(summary = "Updates an existing household", description = """
+  @Operation(summary = "Updates an existing household", 
+      description = """
       Updates the household with the given ID. If no household is registered
       with the given ID a BAD_REQUEST response code is returned. If values in the request
       body are null they will not be updated.
       """)
-  @PutMapping("/{id}") //TODO AUTH, check if user is in household
+  @PutMapping("/{id}") // TODO AUTH, check if user is in household
   public ResponseEntity<HouseholdResponse> updateHousehold(@PathVariable Long id,
       @RequestBody UpdateHouseholdRequest request) {
     logger.info("Updating household with ID = {}", id);
@@ -97,7 +99,8 @@ public class HouseholdController {
    * @return a ResponseEntity with the response to the operation or an error
    *         message
    */
-  @Operation(summary = "Invites a user to a household", description = """
+  @Operation(summary = "Invites a user to a household", 
+      description = """
       Invites a user to a household. The user will be added to the household
       if they accept the invitation, sent by email.
       """)
@@ -118,10 +121,8 @@ public class HouseholdController {
    * @return a ResponseEntity with the response to the operation or an error
    *         message
    */
-  @Operation(
-      summary = "Accepts a invite to a household",
-      description = "Updates the household of the user accepting the invite."
-  )
+  @Operation(summary = "Accepts a invite to a household", 
+      description = "Updates the household of the user accepting the invite.")
   @PostMapping("accept")
   public ResponseEntity<Void> acceptHouseholdInvite(
       @RequestBody HouseHoldInviteAcceptRequest request,
@@ -134,7 +135,7 @@ public class HouseholdController {
   /**
    * Handles request to reject a household invite.
    *
-   * @param token the jwt token of the user
+   * @param token   the jwt token of the user
    * @param request object with the id of the household to be rejected
    * @return a ResponseEntity with the response to the operation or an error
    *         message
@@ -156,10 +157,9 @@ public class HouseholdController {
    *
    * @return a ResponseEntity with the response to the operation or an error
    */
-  @Operation(summary = "Leaves the household of the currently logged in user",
-      description = """
-          Removes the currently logged in user from their household.
-          """)
+  @Operation(summary = "Leaves the household of the currently logged in user", description = """
+      Removes the currently logged in user from their household.
+      """)
   @PostMapping("leave")
   public ResponseEntity<Void> leaveHousehold(
       @RequestHeader("Authorization") String token) {
@@ -209,12 +209,9 @@ public class HouseholdController {
    * @param token the jwt token of the user
    * @return a ResponseEntity with the retrieved household
    */
-  @Operation(
-      summary = "Retrieves the household of the currently logged in user",
-      description = """
-          Retrieves information about the household the current user is a part of.
-          """
-  )
+  @Operation(summary = "Retrieves the household of the currently logged in user", description = """
+      Retrieves information about the household the current user is a part of.
+      """)
   @GetMapping("/my-household")
   public ResponseEntity<HouseholdResponse> getCurrentUserHousehold(
       @RequestHeader("Authorization") String token) {

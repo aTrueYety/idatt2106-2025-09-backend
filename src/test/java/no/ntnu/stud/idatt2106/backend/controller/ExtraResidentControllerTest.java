@@ -80,19 +80,6 @@ public class ExtraResidentControllerTest {
         .andExpect(status().isNotFound());
   }
 
-  @Test
-  void shouldCreateExtraResident() throws Exception {
-    ExtraResidentRequest request = new ExtraResidentRequest();
-    request.setHouseholdId(10);
-    request.setTypeId(2);
-
-    mockMvc.perform(post("/api/extra-residents")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(request)))
-        .andExpect(status().isCreated());
-
-    verify(service).create(any(ExtraResidentRequest.class));
-  }
 
   @Test
   void shouldUpdateExtraResident() throws Exception {

@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentResponse;
@@ -49,7 +50,7 @@ public class ExtraResidentController {
   /** Create a new extra resident. */
   @Operation(summary = "Creates a new extra resident")
   @PostMapping //TODO Should require auth
-  public ResponseEntity<Void> create(@RequestBody ExtraResidentRequest request) {
+  public ResponseEntity<Void> create(@Valid @RequestBody ExtraResidentRequest request) {
     service.create(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }

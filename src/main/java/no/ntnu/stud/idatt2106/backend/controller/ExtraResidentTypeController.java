@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentTypeResponse;
@@ -71,7 +72,7 @@ public class ExtraResidentTypeController {
           """
   )
   @PostMapping //TODO Should require auth. Admin?
-  public ResponseEntity<Void> create(@RequestBody ExtraResidentTypeRequest request) {
+  public ResponseEntity<Void> create(@Valid @RequestBody ExtraResidentTypeRequest request) {
     service.create(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
@@ -89,7 +90,7 @@ public class ExtraResidentTypeController {
   )
   @PutMapping("/{id}") //TODO Require admin?
   public ResponseEntity<Void> update(
-      @PathVariable int id, @RequestBody ExtraResidentTypeRequest request) {
+      @Valid @PathVariable int id, @RequestBody ExtraResidentTypeRequest request) {
     boolean success = service.update(id, request);
     return success ? ResponseEntity.ok().build() : 
     ResponseEntity.notFound().build();

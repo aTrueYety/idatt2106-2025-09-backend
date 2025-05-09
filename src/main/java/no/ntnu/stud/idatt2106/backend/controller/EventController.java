@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.request.EventRequest;
@@ -46,7 +47,7 @@ public class EventController {
   )
   @PostMapping
   public ResponseEntity<String> addEvent(
-      @RequestBody EventRequest event,
+      @Valid @RequestBody EventRequest event,
       @RequestHeader("Authorization") String token) {
     eventService.saveEvent(event, token);
     return ResponseEntity.status(HttpStatus.CREATED).build();

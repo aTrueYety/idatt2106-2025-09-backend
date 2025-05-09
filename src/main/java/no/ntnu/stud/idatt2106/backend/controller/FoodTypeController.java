@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodTypeRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodTypeResponse;
@@ -63,7 +64,7 @@ public class FoodTypeController {
       description = "Creates a new food type with the given name, unit and calories per unit."
   )
   @PostMapping //TODO AUTH
-  public ResponseEntity<Void> create(@RequestBody FoodTypeRequest request) {
+  public ResponseEntity<Void> create(@Valid @RequestBody FoodTypeRequest request) {
     service.create(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
@@ -76,7 +77,8 @@ public class FoodTypeController {
       description = "Updates the food type with the specified ID."
   )
   @PutMapping("/{id}") //TODO AUTH
-  public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody FoodTypeRequest request) {
+  public ResponseEntity<Void> update(@Valid @PathVariable Long id,
+      @RequestBody FoodTypeRequest request) {
     boolean updated = service.update(id, request);
     if (!updated) {
       return ResponseEntity.notFound().build();

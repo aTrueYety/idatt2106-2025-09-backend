@@ -4,12 +4,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
@@ -43,6 +39,8 @@ public class FoodControllerTest {
 
   @MockitoBean
   private FoodService service;
+
+  private final String TOKEN = "Bearer test.jwt.token";
 
   @Test
   void shouldGetAllFood() throws Exception {
@@ -92,11 +90,12 @@ public class FoodControllerTest {
     request.setExpirationDate(LocalDate.of(2025, 6, 1));
 
     mockMvc.perform(post("/api/food")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(request)))
+            .header("Authorization", TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated());
 
-    verify(service).create(any(FoodRequest.class));
+    verify(service).create(any(FoodRequest.class), eq(TOKEN));
   }
 
   @Test
@@ -107,11 +106,12 @@ public class FoodControllerTest {
     update.setAmount(5);
     update.setExpirationDate(LocalDate.of(2025, 6, 30));
 
-    when(service.update(eq(1L), any(FoodUpdate.class))).thenReturn(true);
+    when(service.update(eq(1L), any(FoodUpdate.class), eq(TOKEN))).thenReturn(true);
 
     mockMvc.perform(put("/api/food/1")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(update)))
+            .header("Authorization", TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(update)))
         .andExpect(status().isOk());
   }
 
@@ -123,29 +123,32 @@ public class FoodControllerTest {
     update.setAmount(5);
     update.setExpirationDate(LocalDate.of(2025, 6, 30));
 
-    when(service.update(eq(1L), any())).thenReturn(false);
+    when(service.update(eq(1L), any(), eq(TOKEN))).thenReturn(false);
 
     mockMvc.perform(put("/api/food/1")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(update)))
+            .header("Authorization", TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(update)))
         .andExpect(status().isNotFound());
   }
 
   @Test
   void shouldDeleteFood() throws Exception {
-    when(service.delete(1L)).thenReturn(true);
+    when(service.delete(1L, TOKEN)).thenReturn(true);
 
-    mockMvc.perform(delete("/api/food/1"))
+    mockMvc.perform(delete("/api/food/1")
+            .header("Authorization", TOKEN))
         .andExpect(status().isNoContent());
 
-    verify(service).delete(1L);
+    verify(service).delete(1L, TOKEN);
   }
 
   @Test
   void shouldReturnNotFoundOnDeleteIfMissing() throws Exception {
-    when(service.delete(999L)).thenReturn(false);
+    when(service.delete(999L, TOKEN)).thenReturn(false);
 
-    mockMvc.perform(delete("/api/food/999"))
+    mockMvc.perform(delete("/api/food/999")
+            .header("Authorization", TOKEN))
         .andExpect(status().isNotFound());
   }
 }

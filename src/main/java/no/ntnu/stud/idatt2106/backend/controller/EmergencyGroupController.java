@@ -2,6 +2,7 @@ package no.ntnu.stud.idatt2106.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import no.ntnu.stud.idatt2106.backend.model.request.EmergencyGroupRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.EmergencyGroupResponse;
@@ -49,7 +50,7 @@ public class EmergencyGroupController {
           """)
   @PostMapping
   public ResponseEntity<Void> create(
-      @RequestBody EmergencyGroupRequest request,
+      @Valid @RequestBody EmergencyGroupRequest request,
       @RequestHeader("Authorization") String token) {
     logger.info("Creating group with name = {}", request.getName());
     service.create(request, token);
