@@ -205,10 +205,10 @@ public class TestDataInitializer implements CommandLineRunner {
 
     long household1Id = householdService.getAll().get(0).getId();
     long household2Id = householdService.getAll().get(1).getId();
-    householdService.addUserToHousehold("adminJunior", household1Id);
-    householdService.addUserToHousehold("adminAdminsen", household1Id);
-    householdService.addUserToHousehold("olaNordmann", household2Id);
-    householdService.addUserToHousehold("kariNordmann", household2Id);
+    householdService.addUserToHousehold("adminJunior", household2Id);
+    householdService.addUserToHousehold("adminAdminsen", household2Id);
+    householdService.addUserToHousehold("olaNordmann", household1Id);
+    householdService.addUserToHousehold("kariNordmann", household1Id);
 
     Food food1 = new Food();
     food1.setTypeId(1L);
