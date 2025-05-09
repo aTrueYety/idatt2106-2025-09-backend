@@ -235,7 +235,8 @@
 				</dependency>
 			</dependencies>
 			<properties>
-				<spring.autoconfigure.exclude>org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration</spring.autoconfigure.exclude>
+				<spring.autoconfigure.exclude>
+					org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration</spring.autoconfigure.exclude>
 			</properties>
 		</profile>
 	</profiles>

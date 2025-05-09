@@ -32,7 +32,9 @@ public class SecurityConfig {
       "/swagger-ui/**",
       "/v3/api-docs/**",
       "/api/auth/register",
-      "/api/auth/login"
+      "/api/auth/login",
+      "/ws",
+      "/ws/**"
   };
 
   @Autowired
@@ -55,10 +57,23 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
         .csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .headers(headers -> headers
+            .frameOptions(frameOptions -> frameOptions.sameOrigin()))
         .authorizeHttpRequests(auth -> auth
             // -- WHITELISTED ENDPOINTS --//
             .requestMatchers(AUTH_WHITELIST).permitAll()
+
+            // -- AUTHENTICATION ENDPOINTS --//
+            // Public access
+            .requestMatchers(HttpMethod.POST, "/api/auth/reset-password").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/auth/request-password-reset").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/auth/test").permitAll()
+
+            // Super admin
+            .requestMatchers(HttpMethod.POST, "/api/auth/invite-admin").hasRole("SUPERADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/auth/invite-admin").hasRole("SUPERADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/auth/invite").hasRole("SUPERADMIN")
 
             // -- EMERGENCY GROUP CONTROLLER--//
             // Public access
@@ -161,6 +176,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/user/pending-admins").hasRole("SUPERADMIN")
 
             // Public
+            .requestMatchers(HttpMethod.GET, "/api/user/*").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/user/confirm-email/*").permitAll()
 
             .anyRequest().authenticated())
@@ -172,7 +188,7 @@ public class SecurityConfig {
   }
 
   /**
-   * Exposes the CORS configuration source from CorsConfig.
+   * Exposes the CORS configuration source for the application.
    */
   @Bean
   public UrlBasedCorsConfigurationSource corsConfigurationSource() {
@@ -180,7 +196,25 @@ public class SecurityConfig {
     config.setAllowCredentials(true);
     config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-    config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+    
+    // Add necessary headers for WebSocket support
+    config.setAllowedHeaders(List.of(
+        "Authorization", 
+        "Content-Type",
+        "Sec-WebSocket-Protocol",
+        "Sec-WebSocket-Key", 
+        "Sec-WebSocket-Version", 
+        "Sec-WebSocket-Extensions",
+        "Upgrade",
+        "Connection"
+    ));
+    
+    // Allow the headers to be exposed to the client
+    config.setExposedHeaders(List.of(
+        "Sec-WebSocket-Accept",
+        "Upgrade",
+        "Connection"
+    ));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);

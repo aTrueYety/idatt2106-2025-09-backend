@@ -4,10 +4,10 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import no.ntnu.stud.idatt2106.backend.controller.AuthController;
 import no.ntnu.stud.idatt2106.backend.model.base.Event;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResident;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResidentType;
@@ -16,8 +16,8 @@ import no.ntnu.stud.idatt2106.backend.model.base.FoodType;
 import no.ntnu.stud.idatt2106.backend.model.base.GroupHousehold;
 import no.ntnu.stud.idatt2106.backend.model.base.Household;
 import no.ntnu.stud.idatt2106.backend.model.base.InfoPage;
-import no.ntnu.stud.idatt2106.backend.model.base.Kit;
-import no.ntnu.stud.idatt2106.backend.model.base.Severity;
+import no.ntnu.stud.idatt2106.backend.model.base.MapObject;
+import no.ntnu.stud.idatt2106.backend.model.base.MapObjectType;
 import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.RegisterRequest;
 import no.ntnu.stud.idatt2106.backend.repository.EventRepositoryImpl;
@@ -29,6 +29,8 @@ import no.ntnu.stud.idatt2106.backend.repository.GroupHouseholdRepositoryImpl;
 import no.ntnu.stud.idatt2106.backend.repository.HouseholdRepositoryImpl;
 import no.ntnu.stud.idatt2106.backend.repository.InfoPageRepositoryImpl;
 import no.ntnu.stud.idatt2106.backend.repository.KitRepositoryImpl;
+import no.ntnu.stud.idatt2106.backend.repository.MapObjectRepositoryImpl;
+import no.ntnu.stud.idatt2106.backend.repository.MapObjectTypeRepositoryImpl;
 import no.ntnu.stud.idatt2106.backend.repository.SeverityRepository;
 import no.ntnu.stud.idatt2106.backend.repository.UserRepositoryImpl;
 import no.ntnu.stud.idatt2106.backend.service.AuthService;
@@ -55,7 +57,6 @@ public class TestDataInitializer implements CommandLineRunner {
   private final AuthService authService;
   private final EventRepositoryImpl eventRepository;
   private final InfoPageRepositoryImpl infoPageRepository;
-  private final SeverityRepository severityRepository;
   private final UserRepositoryImpl userRepositoryImpl;
   private final UserService userService;
   private final HouseholdService householdService;
@@ -66,6 +67,8 @@ public class TestDataInitializer implements CommandLineRunner {
   private final ExtraResidentTypeRepositoryImpl extraResidentTypeRepository;
   private final GroupHouseholdRepositoryImpl groupHouseholdRepository;
   private final KitRepositoryImpl kitRepository;
+  private final MapObjectTypeRepositoryImpl mapObjectTypeRepository;
+  private final MapObjectRepositoryImpl mapObjectRepository;
   private static final Logger logger = LoggerFactory.getLogger(TestDataInitializer.class);
 
   /**
@@ -92,12 +95,13 @@ public class TestDataInitializer implements CommandLineRunner {
       ExtraResidentRepositoryImpl extraResidentRepository,
       ExtraResidentTypeRepositoryImpl extraResidentTypeRepository,
       GroupHouseholdRepositoryImpl groupHouseholdRepository,
-      KitRepositoryImpl kitRepository) {
+      KitRepositoryImpl kitRepository,
+      MapObjectTypeRepositoryImpl mapObjectTypeRepository,
+      MapObjectRepositoryImpl mapObjectRepository) {
     this.extraResidentTypeRepository = extraResidentTypeRepository;
     this.extraResidentRepository = extraResidentRepository;
     this.authService = authService;
     this.eventRepository = eventRepository;
-    this.severityRepository = severityRepository;
     this.infoPageRepository = infoPageRepository;
     this.userRepositoryImpl = userRepositoryImpl;
     this.userService = userService;
@@ -107,6 +111,8 @@ public class TestDataInitializer implements CommandLineRunner {
     this.foodTypeRepository = foodTypeRepository;
     this.groupHouseholdRepository = groupHouseholdRepository;
     this.kitRepository = kitRepository;
+    this.mapObjectTypeRepository = mapObjectTypeRepository;
+    this.mapObjectRepository = mapObjectRepository;
   }
 
   @Override
@@ -120,11 +126,11 @@ public class TestDataInitializer implements CommandLineRunner {
    * Initializes test data for the application
    */
   public void initializeTestData() {
-    initializeKitTypes();
     initializeExtraResidentTypes();
     initializeFoodTypes();
     initializeTestUsers();
     initializeTestSeveritiesAndInfoPages();
+    initializeMapObjectsAndMapObjectTypes();
     initializeTestEvents();
   }
 
@@ -138,15 +144,15 @@ public class TestDataInitializer implements CommandLineRunner {
     // adminAdminsen - test user with super admin privileges
 
     RegisterRequest adminUserRequest = new RegisterRequest("adminJunior",
-        "Password12345", "admin@tgmail.com");
+        "Password12345", "admin@tgmail.com", "captha");
     RegisterRequest superAdminUserRequest = new RegisterRequest("adminAdminsen",
-        "Password12345", "superadmin@gmail.com");
+        "Password12345", "superadmin@gmail.com", "captha");
     RegisterRequest testUserRequest = new RegisterRequest("olaNordmann",
-        "Password12345", "testme@gmail.com");
+        "Password12345", "testme@gmail.com", "captha");
     RegisterRequest testUserRequest2 = new RegisterRequest("kariNordmann",
-        "Password12345", "testhim@gmail.com");
+        "Password12345", "testhim@gmail.com", "captha");
     RegisterRequest testUserRequest3 = new RegisterRequest("nordmannJunior",
-        "Password12345", "junior@gmail.com");
+        "Password12345", "junior@gmail.com", "captha");
 
     authService.register(adminUserRequest);
     authService.register(superAdminUserRequest);
@@ -174,12 +180,6 @@ public class TestDataInitializer implements CommandLineRunner {
         Date.from(Instant.now()));
     householdRepository.save(household1);
 
-    GroupHousehold groupHousehold = new GroupHousehold(
-        null,
-        household1.getId(),
-        null);
-    groupHouseholdRepository.save(groupHousehold);
-
     LocalDateTime sixMonthsAgoLdt = LocalDateTime.now().minusMonths(6);
     Date sixMonthsAgo = Date.from(
         sixMonthsAgoLdt
@@ -198,10 +198,10 @@ public class TestDataInitializer implements CommandLineRunner {
 
     long household1Id = householdService.getAll().get(0).getId();
     long household2Id = householdService.getAll().get(1).getId();
-    householdService.addUserToHousehold("adminJunior", household1Id);
-    householdService.addUserToHousehold("adminAdminsen", household1Id);
-    householdService.addUserToHousehold("olaNordmann", household2Id);
-    householdService.addUserToHousehold("kariNordmann", household2Id);
+    householdService.addUserToHousehold("adminJunior", household2Id);
+    householdService.addUserToHousehold("adminAdminsen", household2Id);
+    householdService.addUserToHousehold("olaNordmann", household1Id);
+    householdService.addUserToHousehold("kariNordmann", household1Id);
 
     Food food1 = new Food();
     food1.setTypeId(1L);
@@ -263,18 +263,6 @@ public class TestDataInitializer implements CommandLineRunner {
     // severity1 - High
     // severity2 - Medium
     // severity3 - Low
-
-    Severity severityCritical = new Severity(0L, "#FF0000", "Critical",
-        "This is a critical severity event.");
-    Severity severityHigh = new Severity(1L, "", "High", "This is a high severity event.");
-    Severity severityMedium = new Severity(2L, "#FFFF00", "Medium",
-        "This is a medium severity event.");
-    Severity severityLow = new Severity(3L, "#00FF00", "Low", "This is a low severity event.");
-
-    severityRepository.save(severityCritical);
-    severityRepository.save(severityHigh);
-    severityRepository.save(severityMedium);
-    severityRepository.save(severityLow);
 
     // Nuclear explosion warning
     final String nuclearExplosionDesc = """
@@ -460,20 +448,20 @@ public class TestDataInitializer implements CommandLineRunner {
     // event5 - Trondheim storm warning critical
 
     Event eventTerrorTrondheim = new Event(
-        1L,
+        3L,
         "Trondheim terrorangrep",
-        1L,
+        2L,
         63.4305,
         10.3951,
         0.5,
         Timestamp.valueOf(LocalDateTime.now().plusDays(1)),
         Timestamp.valueOf(LocalDateTime.now().plusDays(2)),
-        1L,
+        4L,
         "Stay safe!");
     eventRepository.save(eventTerrorTrondheim);
 
     Event eventNuclearBergen = new Event(
-        1L,
+        3L,
         "Bergen atomreaktorekslplosjonen",
         1L,
         60.3913,
@@ -481,17 +469,17 @@ public class TestDataInitializer implements CommandLineRunner {
         200.0,
         Timestamp.valueOf(LocalDateTime.now().plusDays(3)),
         Timestamp.valueOf(LocalDateTime.now().plusDays(4)),
-        1L,
+        4L,
         "Evakuer umiddelbart!");
     eventRepository.save(eventNuclearBergen);
 
     Event skogbrannEvent = new Event(
-        3L,
+        2L,
         "Brann i Baklidammen",
         3L,
         63.4240,
         10.3274,
-        3.0,
+        1.0,
         Timestamp.valueOf(LocalDateTime.now().plusHours(2)),
         Timestamp.valueOf(LocalDateTime.now().plusDays(1)),
         2L,
@@ -499,20 +487,20 @@ public class TestDataInitializer implements CommandLineRunner {
     eventRepository.save(skogbrannEvent);
 
     Event stormEvent = new Event(
-        4L,
+        1L,
         "Stormvarsel i Trondheim",
         4L,
         63.4021,
         10.4089,
-        1.6,
+        1.0,
         Timestamp.valueOf(LocalDateTime.now().plusHours(1)),
         Timestamp.valueOf(LocalDateTime.now().plusDays(1)),
-        3L,
+        2L,
         "Sikre løse gjenstander og følg med på værmeldingen.");
     eventRepository.save(stormEvent);
 
     Event stormEventCritical = new Event(
-        5L,
+        4L,
         "Livsfarlig storm i Trondheim",
         4L,
         63.3755,
@@ -520,11 +508,11 @@ public class TestDataInitializer implements CommandLineRunner {
         1.0,
         Timestamp.valueOf(LocalDateTime.now().plusHours(1)),
         Timestamp.valueOf(LocalDateTime.now().plusDays(1)),
-        0L,
+        4L,
         "Prøv å hold deg ilivet og søk ly!");
     eventRepository.save(stormEventCritical);
   }
-  
+
   /**
    * Initializes test kit types for the application.
    */
@@ -687,66 +675,76 @@ public class TestDataInitializer implements CommandLineRunner {
   }
 
   /**
-   * Initializes the kit types for the application.
-   * This includes various emergency kits such as flashlights, water purification tools,
-   * and first aid supplies, along with their descriptions.
+   * Initializes mapobjects for the application.
    */
-  public void initializeKitTypes() {
-    Kit kitType1 = new Kit();
-    kitType1.setName("Lommelykt og batterier");
-    kitType1.setDescription(
-        "Et solid lyssett som inkluderer lommelykt (helst LED) og ekstra batterier - "
-        + "viktig ved strømbrudd.");
-    kitRepository.save(kitType1);
+  public void initializeMapObjectsAndMapObjectTypes() {
+    MapObjectType heartStarterType = new MapObjectType();
+    heartStarterType.setName("Hjertestarter");
+    heartStarterType.setIcon("activity");
+    mapObjectTypeRepository.save(heartStarterType);
 
-    Kit kitType2 = new Kit();
-    kitType2.setName("Vannrenseutstyr");
-    kitType2.setDescription(
-        "Inkluderer vannfilter eller rensetabletter. Gjør det mulig å gjøre tilgjengelig vann " 
-        + "drikkbart ved forurensning.");
-    kitRepository.save(kitType2);
+    MapObjectType hospitalType = new MapObjectType();
+    hospitalType.setName("Sykehus");
+    hospitalType.setIcon("hospital");
+    mapObjectTypeRepository.save(hospitalType);
 
-    Kit kitType3 = new Kit();
-    kitType3.setName("Førstehjelpsutstyr");
-    kitType3.setDescription(
-        "Inkluderer plaster, bandasjer, antiseptiske midler og smertestillende. "
-        + "Viktig for å håndtere mindre skader og sykdommer.");
-    kitRepository.save(kitType3);
+    MapObjectType foodStationType = new MapObjectType();
+    foodStationType.setName("Matstasjon");
+    foodStationType.setIcon("apple");
+    mapObjectTypeRepository.save(foodStationType);
 
-    Kit kitType4 = new Kit();
-    kitType4.setName("Nødradio");
-    kitType4.setDescription(
-        "En radio som kan drives med batterier eller håndsveiv. " 
-        + "Viktig for å holde seg oppdatert på nyheter og varsler.");
-    kitRepository.save(kitType4);
+    MapObjectType escapeRoomType = new MapObjectType();
+    escapeRoomType.setName("Tilfluktsrom");
+    escapeRoomType.setIcon("shield");
+    mapObjectTypeRepository.save(escapeRoomType);
 
-    Kit kitType5 = new Kit();
-    kitType5.setName("Varme- og kokeutstyr");
-    kitType5.setDescription(
-        "Utstyr som stormkjøkken, gassbrenner eller rødspritbrenner" 
-        + " - viktig for å kunne tilberede mat "
-        + "og varme vann ved strømbrudd.");
-    kitRepository.save(kitType5);
+    MapObject heartStarterGlos = new MapObject();
+    heartStarterGlos.setTypeId(1L);
+    heartStarterGlos.setLatitude(63.4194f);
+    heartStarterGlos.setLongitude(10.4019f);
+    heartStarterGlos.setOpening(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
+    heartStarterGlos.setClosing(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
+    heartStarterGlos.setContactPhone("23026212");
+    heartStarterGlos.setContactEmail("hjertestarterregister@ous-hf.no");
+    heartStarterGlos.setContactName("Hjertestarterregisteret");
+    heartStarterGlos.setDescription("Finnes til høyre i inngangen til"
+        + " Hovedbygget på NTNU Gløshaugen.");
+    mapObjectRepository.save(heartStarterGlos);
 
-    Kit kitType6 = new Kit();
-    kitType6.setName("Varme og ly kit");
-    kitType6.setDescription("Tepper, stearinlys og tennutstyr som holder" 
-        + " deg varm og gir lys i tilfelle strømmen går.");
-    kitRepository.save(kitType6);
+    MapObject escapeRoom = new MapObject();
+    escapeRoom.setTypeId(4L);
+    escapeRoom.setLatitude(63.4264f);
+    escapeRoom.setLongitude(10.4053f);
+    escapeRoom.setOpening(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
+    escapeRoom.setClosing(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
+    escapeRoom.setContactPhone("33412500");
+    escapeRoom.setContactEmail("postmottak@dsb.no");
+    escapeRoom.setContactName("Direktoratet for samfunnssikkerhet og beredskap");
+    escapeRoom.setDescription("Bakklandet 3b, 7014 Trondheim");
+    mapObjectRepository.save(escapeRoom);
 
-    Kit kitType7 = new Kit();
-    kitType7.setName("Hygienesett");
-    kitType7.setDescription(
-        "Inneholder toalettpapir, såpe, våtservietter og hånddesinfeksjon" 
-        + " for å opprettholde hygiene ved lengre isolasjon.");
-    kitRepository.save(kitType7);
+    MapObject foodStation = new MapObject();
+    foodStation.setTypeId(3L);
+    foodStation.setLatitude(63.4122f);
+    foodStation.setLongitude(10.4051f);
+    foodStation.setOpening(Timestamp.valueOf(LocalDate.now().atTime(8, 00)));
+    foodStation.setClosing(Timestamp.valueOf(LocalDate.now().atTime(20, 00)));
+    foodStation.setContactPhone("12345678");
+    foodStation.setContactEmail("rosenborg@ballklubb.com");
+    foodStation.setContactName("Rosenborg Ballklubb");
+    foodStation.setDescription("Lerkendal Stadion, Klæbuveien 125, 7031 Trondheim");
+    mapObjectRepository.save(foodStation);
 
-    Kit kitType8 = new Kit();
-    kitType8.setName("Verktøysett");
-    kitType8.setDescription(
-        "Inneholder nødvendige manuelle verktøy som multiverktøy, kniv," 
-        + " tape og tau til bruk i nødreparasjoner.");
-    kitRepository.save(kitType8);
-
+    MapObject hospital = new MapObject();
+    hospital.setTypeId(2L);
+    hospital.setLatitude(63.4205f);
+    hospital.setLongitude(10.3877f);
+    hospital.setOpening(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
+    hospital.setClosing(Timestamp.valueOf(LocalDate.now().atTime(2, 00)));
+    hospital.setContactPhone("72547260");
+    hospital.setContactEmail("trondheim.kommune@gmail.com");
+    hospital.setContactName("St. Olavs Hospital");
+    hospital.setDescription("Olav Kyrres gate 17, 7030 Trondheim");
+    mapObjectRepository.save(hospital);
   }
 }
