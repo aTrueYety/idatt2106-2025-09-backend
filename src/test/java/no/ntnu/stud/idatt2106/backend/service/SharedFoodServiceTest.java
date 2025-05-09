@@ -1,7 +1,12 @@
 package no.ntnu.stud.idatt2106.backend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 
 /**
  * Contains tests for SharedFoodService.
@@ -456,6 +460,303 @@ class SharedFoodServiceTest {
     verify(sharedRepo, never()).findById(any());
     verify(groupRepo, never()).findByHouseholdIdAndGroupId(any(), any());
   }
-  
+
+  @Test
+  void shouldReturnSummaryByGroupHouseholdId() {
+    final Long groupHouseholdId = 7L;
+    final Long foodId = 10L;
+    final Long typeId = 3L;
+
+    Food food = new Food();
+    food.setId(foodId);
+    food.setTypeId(typeId);
+    food.setExpirationDate(LocalDate.of(2025, 10, 10));
+    food.setAmount(20f);
+    food.setHouseholdId(4L);
+
+    FoodType type = new FoodType();
+    type.setId(typeId);
+    type.setName("Mel");
+    type.setUnit("kg");
+    type.setCaloriesPerUnit(360f);
+
+    SharedFood shared = new SharedFood(new SharedFoodKey(foodId, groupHouseholdId), 2f);
+    when(sharedRepo.findByGroupHouseholdId(groupHouseholdId)).thenReturn(List.of(shared));
+    when(foodRepo.findById(foodId)).thenReturn(Optional.of(food));
+    when(typeRepo.findById(typeId)).thenReturn(Optional.of(type));
+
+    List<FoodDetailedResponse> result = service.getSharedFoodSummaryByGroup(groupHouseholdId);
+
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getTypeName()).isEqualTo("Mel");
+    assertThat(result.get(0).getTotalAmount()).isEqualTo(2f);
+    assertThat(result.get(0).getTotalCalories()).isEqualTo(720f);
+  }
+
+  @Test
+  void shouldUnshareAllFromGroup() {
+    Long householdId = 10L;
+    Long groupId = 5L;
+    Long groupHouseholdId = 20L;
+    final Long foodId = 99L;
+    final Long typeId = 7L;
+
+    GroupHousehold groupHousehold = new GroupHousehold();
+    groupHousehold.setId(groupHouseholdId);
+    groupHousehold.setGroupId(groupId);
+    groupHousehold.setHouseholdId(householdId);
+
+    Food food = new Food();
+    food.setId(foodId);
+    food.setTypeId(typeId);
+    food.setExpirationDate(LocalDate.of(2025, 8, 10));
+    food.setHouseholdId(householdId);
+
+    final SharedFood shared = new SharedFood(new SharedFoodKey(foodId, groupHouseholdId), 4f);
+
+    Food existing = new Food();
+    existing.setId(100L);
+    existing.setTypeId(typeId);
+    existing.setExpirationDate(food.getExpirationDate());
+    existing.setAmount(6f);
+    existing.setHouseholdId(householdId);
+
+    Household household = new Household();
+    household.setId(householdId);
+    when(householdRepo.findByUserId(any())).thenReturn(Optional.of(household));
+
+    when(groupRepo.findByHouseholdIdAndGroupId(householdId, groupId)).thenReturn(groupHousehold);
+    when(sharedRepo.findByGroupHouseholdId(groupHouseholdId)).thenReturn(List.of(shared));
+    when(foodRepo.findById(foodId)).thenReturn(Optional.of(food));
+    when(foodRepo.findByTypeIdAndExpirationDateAndHouseholdId(typeId,
+        food.getExpirationDate(), householdId))
+        .thenReturn(Optional.of(existing));
+
+    service.unshareAllFromGroup(householdId, groupId);
+
+    verify(foodRepo).update(existing);
+    assertThat(existing.getAmount()).isEqualTo(10f);
+    verify(sharedRepo).deleteById(new SharedFoodKey(foodId, groupHouseholdId));
+  }
+
+  @Test
+  void shouldNotUnshareIfGroupHouseholdNotFound() {
+    Long householdId = 15L;
+    Long groupId = 3L;
+
+    Household household = new Household();
+    household.setId(householdId);
+    when(householdRepo.findByUserId(any())).thenReturn(Optional.of(household));
+    when(groupRepo.findByHouseholdIdAndGroupId(householdId, groupId)).thenReturn(null);
+
+    service.unshareAllFromGroup(householdId, groupId);
+
+    verify(sharedRepo, never()).findByGroupHouseholdId(any());
+    verify(foodRepo, never()).update(any());
+    verify(sharedRepo, never()).deleteById(any());
+  }
+
+  @Test
+  void shouldSkipUnsharingIfFoodNotFound() {
+    Long householdId = 20L;
+    Long groupId = 4L;
+
+    GroupHousehold groupHousehold = new GroupHousehold();
+    groupHousehold.setId(100L);
+    groupHousehold.setHouseholdId(householdId);
+    groupHousehold.setGroupId(groupId);
+
+    Household household = new Household();
+    household.setId(householdId);
+    when(householdRepo.findByUserId(any())).thenReturn(Optional.of(household));
+
+    when(groupRepo.findByHouseholdIdAndGroupId(householdId, groupId)).thenReturn(groupHousehold);
+    SharedFood shared = new SharedFood(new SharedFoodKey(99L, 100L), 3f);
+    when(sharedRepo.findByGroupHouseholdId(100L)).thenReturn(List.of(shared));
+    when(foodRepo.findById(99L)).thenReturn(Optional.empty());
+
+    service.unshareAllFromGroup(householdId, groupId);
+
+    verify(sharedRepo).findByGroupHouseholdId(100L);
+    verify(foodRepo).findById(99L);
+    verify(foodRepo, never()).update(any());
+    verify(sharedRepo, never()).deleteById(any());
+  }
+
+  @Test
+  void shouldSkipUnsharingIfAmountIsZero() {
+    Long householdId = 50L;
+    Long groupId = 6L;
+
+    GroupHousehold groupHousehold = new GroupHousehold();
+    groupHousehold.setId(120L);
+    groupHousehold.setHouseholdId(householdId);
+    groupHousehold.setGroupId(groupId);
+
+    final SharedFood shared = new SharedFood(new SharedFoodKey(77L, 120L), 0f);
+
+    Food food = new Food();
+    food.setId(77L);
+    food.setTypeId(3L);
+    food.setHouseholdId(householdId);
+    food.setExpirationDate(LocalDate.now());
+    food.setAmount(10f);
+
+    Household household = new Household();
+    household.setId(householdId);
+
+    when(householdRepo.findByUserId(any())).thenReturn(Optional.of(household));
+    when(groupRepo.findByHouseholdIdAndGroupId(householdId, groupId)).thenReturn(groupHousehold);
+    when(sharedRepo.findByGroupHouseholdId(120L)).thenReturn(List.of(shared));
+    when(foodRepo.findById(77L)).thenReturn(Optional.of(food));
+    when(foodRepo.findByTypeIdAndExpirationDateAndHouseholdId(
+        3L, food.getExpirationDate(), householdId)).thenReturn(Optional.of(food));
+
+    service.unshareAllFromGroup(householdId, groupId);
+
+    verify(foodRepo, never()).update(any());
+    verify(sharedRepo, never()).deleteById(any());
+  }
+
+  @Test
+  void create_throwsIfFoodNotFound() {
+    when(jwtService.extractUserId("t")).thenReturn(1L);
+    when(householdRepo.findByUserId(1L))
+        .thenReturn(Optional.of(new Household() {
+          {
+            setId(10L);
+          }
+        }));
+    when(foodRepo.findById(5L)).thenReturn(Optional.empty());
+
+    assertThrows(IllegalArgumentException.class,
+        () -> service.create(new SharedFoodRequest(5L, 1.0f, 1L), "Bearer t"));
+  }
+
+  @Test
+  void create_throwsIfFoodNotInYourHousehold() {
+    Food f = new Food();
+    f.setId(5L);
+    f.setHouseholdId(999L);
+    when(jwtService.extractUserId("t")).thenReturn(1L);
+    when(householdRepo.findByUserId(1L))
+        .thenReturn(Optional.of(new Household() {
+          {
+            setId(10L);
+          }
+        }));
+    when(foodRepo.findById(5L)).thenReturn(Optional.of(f));
+
+    assertThrows(IllegalStateException.class,
+        () -> service.create(new SharedFoodRequest(5L, 1.0f, 1L), "Bearer t"));
+  }
+
+  @Test
+  void create_throwsIfNotInGroup() {
+    Food f = new Food();
+    f.setId(5L);
+    f.setHouseholdId(10L);
+    when(jwtService.extractUserId("t")).thenReturn(1L);
+    when(householdRepo.findByUserId(1L))
+        .thenReturn(Optional.of(new Household() {
+          {
+            setId(10L);
+          }
+        }));
+    when(foodRepo.findById(5L)).thenReturn(Optional.of(f));
+    when(groupRepo.findByHouseholdIdAndGroupId(10L, 1L)).thenReturn(null);
+
+    assertThrows(IllegalStateException.class,
+        () -> service.create(new SharedFoodRequest(5L, 1.0f, 1L), "Bearer t"));
+  }
+
+  @Test
+  void update_returnsFalseIfNotInGroup() {
+    when(jwtService.extractUserId("x")).thenReturn(2L);
+    when(householdRepo.findByUserId(2L))
+        .thenReturn(Optional.of(new Household() {
+          {
+            setId(5L);
+          }
+        }));
+    final SharedFoodRequest req = new SharedFoodRequest(1L, 1f, 42L);
+    when(groupRepo.findByHouseholdIdAndGroupId(5L, 42L)).thenReturn(null);
+
+    assertFalse(service.update(req, "Bearer x"));
+  }
+
+  @Test
+  void delete_returnsFalseIfNotInGroup() {
+    when(jwtService.extractUserId("y")).thenReturn(3L);
+    when(householdRepo.findByUserId(3L))
+        .thenReturn(Optional.of(new Household() {
+          {
+            setId(7L);
+          }
+        }));
+    when(groupRepo.findByHouseholdIdAndGroupId(7L, 99L)).thenReturn(null);
+
+    assertFalse(service.delete(8L, 99L, "Bearer y"));
+  }
+
+  @Test
+  void moveFoodToSharedGroup_updatesWhenAlreadyShared() {
+    when(jwtService.extractUserId("tok")).thenReturn(1L);
+    Household household = new Household();
+    household.setId(2L);
+    when(householdRepo.findByUserId(1L)).thenReturn(Optional.of(household));
+    Food food = new Food();
+    food.setId(5L);
+    food.setHouseholdId(2L);
+    food.setAmount(20f);
+    food.setExpirationDate(LocalDate.now());
+    when(foodRepo.findById(5L)).thenReturn(Optional.of(food));
+    when(groupRepo.findByHouseholdIdAndGroupId(2L, 3L))
+        .thenReturn(new GroupHousehold(4L, 2L, 3L));
+    SharedFoodKey key = new SharedFoodKey(5L, 4L);
+    when(sharedRepo.findById(key)).thenReturn(Optional.of(new SharedFood(key, 2f)));
+
+    assertTrue(service.moveFoodToSharedGroup(new SharedFoodRequest(5L, 10f, 3L), "Bearer tok"));
+    verify(sharedRepo).update(argThat(sf -> sf.getAmount() == 12f));
+    verify(foodRepo).update(argThat(f -> f.getAmount() == 10f));
+  }
+
+  @Test
+  void moveFoodFromSharedGroup_deletesWhenExactAmount() {
+    when(jwtService.extractUserId(anyString())).thenReturn(7L);
+    Household household = new Household();
+    household.setId(8L);
+    when(householdRepo.findByUserId(7L)).thenReturn(Optional.of(household));
+    Food food = new Food();
+    food.setId(11L);
+    food.setHouseholdId(8L);
+    food.setTypeId(42L);
+    food.setExpirationDate(LocalDate.now());
+    when(foodRepo.findById(11L)).thenReturn(Optional.of(food));
+    when(groupRepo.findByHouseholdIdAndGroupId(8L, 9L))
+        .thenReturn(new GroupHousehold(10L, 8L, 9L));
+    SharedFoodKey key = new SharedFoodKey(11L, 10L);
+    when(sharedRepo.findById(key)).thenReturn(Optional.of(new SharedFood(key, 5f)));
+
+    assertTrue(service.moveFoodFromSharedGroup(new SharedFoodRequest(11L, 5f, 9L), "Bearer x"));
+    verify(sharedRepo).deleteById(key);
+    verify(sharedRepo, never()).update(any());
+  }
+
+  @Test
+  void getSharedFoodSummaryByGroup_skipsWhenTypeMissing() {
+    SharedFoodKey key = new SharedFoodKey(22L, 21L);
+    when(sharedRepo.findByGroupHouseholdId(21L))
+        .thenReturn(List.of(new SharedFood(key, 3f)));
+    Food food = new Food();
+    food.setId(22L);
+    food.setTypeId(99L);
+    food.setExpirationDate(LocalDate.now());
+    food.setHouseholdId(42L);
+    when(foodRepo.findById(22L)).thenReturn(Optional.of(food));
+    when(typeRepo.findById(99L)).thenReturn(Optional.empty());
+
+    assertTrue(service.getSharedFoodSummaryByGroup(21L).isEmpty());
+  }
 
 }
