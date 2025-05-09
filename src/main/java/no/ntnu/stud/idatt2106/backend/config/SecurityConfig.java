@@ -64,6 +64,17 @@ public class SecurityConfig {
             // -- WHITELISTED ENDPOINTS --//
             .requestMatchers(AUTH_WHITELIST).permitAll()
 
+            // -- AUTHENTICATION ENDPOINTS --//
+            // Public access
+            .requestMatchers(HttpMethod.POST, "/api/auth/reset-password").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/auth/request-password-reset").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/auth/test").permitAll()
+
+            // Super admin
+            .requestMatchers(HttpMethod.POST, "/api/auth/invite-admin").hasRole("SUPERADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/auth/invite-admin").hasRole("SUPERADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/auth/invite").hasRole("SUPERADMIN")
+
             // -- EMERGENCY GROUP CONTROLLER--//
             // Public access
             .requestMatchers(HttpMethod.GET, "/api/emergency-groups").permitAll()
