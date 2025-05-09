@@ -86,7 +86,8 @@ public class EmergencyGroupController {
           Deletes the emergency group with the given ID.
           """)
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+  public ResponseEntity<Void> delete(@PathVariable Long id, 
+      @RequestHeader("Authorization") String token) {
     return service.delete(id, token) ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();
   }

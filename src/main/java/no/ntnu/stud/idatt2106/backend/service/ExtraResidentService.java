@@ -3,13 +3,15 @@ package no.ntnu.stud.idatt2106.backend.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import no.ntnu.stud.idatt2106.backend.model.base.ExtraResident;
+import no.ntnu.stud.idatt2106.backend.model.base.User;
 import no.ntnu.stud.idatt2106.backend.model.request.ExtraResidentRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.ExtraResidentResponse;
 import no.ntnu.stud.idatt2106.backend.model.update.ExtraResidentUpdate;
 import no.ntnu.stud.idatt2106.backend.repository.ExtraResidentRepository;
 import no.ntnu.stud.idatt2106.backend.service.mapper.ExtraResidentMapper;
+import no.ntnu.stud.idatt2106.backend.util.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -17,12 +19,30 @@ import org.springframework.stereotype.Service;
  * Service class for managing extra residents.
  */
 @Service
-@RequiredArgsConstructor
 public class ExtraResidentService {
 
-  private final ExtraResidentRepository repository;
+  @Autowired
+  private ExtraResidentRepository repository;
+  
+  @Autowired
+  private JwtService jwtService;
 
-  public void create(ExtraResidentRequest request) {
+  @Autowired
+  private UserService userService;
+
+  /**
+   * Creates a new extra resident in a household.
+   *
+   * @param request the requested extra resident
+   * @param token the users auth token
+   */
+  public void create(ExtraResidentRequest request, String token) {
+    Long userId = jwtService.extractUserId(token.substring(7));
+    User user = userService.getUserById(userId);
+    Long householdId = user.getHouseholdId();
+    Long requestId = (long) request.getHouseholdId();
+    Validate.that(requestId == householdId, Validate.isTrue(),
+        "Users household is not the same as the household in the request");
     ExtraResident resident = ExtraResidentMapper.toModel(request);
     repository.save(resident);
   }
@@ -38,10 +58,21 @@ public class ExtraResidentService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Retrieves all extra resident entities.
+   *
+   * @return all extra residents
+   */
   public List<ExtraResident> getAllEntities() {
     return repository.findAll();
   }
 
+  /**
+   * Retrieves a extra resident by its ID.
+   *
+   * @param id the id of the extra resident
+   * @return Optional with the extra resident
+   */
   public Optional<ExtraResidentResponse> getById(Long id) {
     return repository.findById(id)
         .map(ExtraResidentMapper::toResponse);

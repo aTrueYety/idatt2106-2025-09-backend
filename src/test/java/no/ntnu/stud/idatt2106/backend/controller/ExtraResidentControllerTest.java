@@ -91,12 +91,15 @@ public class ExtraResidentControllerTest {
     request.setHouseholdId(10);
     request.setTypeId(2);
 
+    String token = "Bearer jwt.token";
+
     mockMvc.perform(post("/api/extra-residents")
         .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", token)
         .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isCreated());
 
-    verify(service).create(any(ExtraResidentRequest.class));
+    verify(service).create(any(ExtraResidentRequest.class), eq(token));
   }
 
   @Test
