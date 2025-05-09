@@ -165,6 +165,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.GET, "/api/user/pending-admins").hasRole("SUPERADMIN")
 
             // Public
+            .requestMatchers(HttpMethod.GET, "/api/user/*").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/user/confirm-email/*").permitAll()
 
             .anyRequest().authenticated())
