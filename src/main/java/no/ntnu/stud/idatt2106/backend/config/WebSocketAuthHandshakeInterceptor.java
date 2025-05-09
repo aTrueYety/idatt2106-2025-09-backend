@@ -43,7 +43,7 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
 
     // If the token is not found in the query parameters, return false
     if (!StringUtils.hasText(token)) {
-      return true;
+      return false;
     }
 
     // Extract the user ID from the token and add it to the attributes map
