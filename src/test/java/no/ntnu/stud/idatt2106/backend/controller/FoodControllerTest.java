@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import no.ntnu.stud.idatt2106.backend.config.JwtAuthFilter;
 import no.ntnu.stud.idatt2106.backend.config.SecurityConfigTest;
 import no.ntnu.stud.idatt2106.backend.model.request.FoodRequest;
 import no.ntnu.stud.idatt2106.backend.model.response.FoodResponse;
@@ -23,6 +24,8 @@ import no.ntnu.stud.idatt2106.backend.service.FoodService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -31,7 +34,9 @@ import org.springframework.test.web.servlet.MockMvc;
 /**
  * Tests for FoodController.
  */
-@WebMvcTest(FoodController.class)
+@WebMvcTest(controllers = FoodController.class, 
+    excludeFilters = @ComponentScan.Filter(type 
+    = FilterType.ASSIGNABLE_TYPE, value = JwtAuthFilter.class))
 @Import(SecurityConfigTest.class)
 public class FoodControllerTest {
 

@@ -43,7 +43,7 @@ public class GroupHouseholdController {
    * @return a ResponseEntity indicating the result of the operation
    */
   @Operation(summary = "Invite a household to a group")
-  @PostMapping("/invite")
+  @PostMapping("/invite") //TODO remove token param
   public ResponseEntity<Void> create(
       @RequestBody GroupHouseholdRequest request,
       @RequestHeader("Authorization") String token) {
@@ -59,7 +59,7 @@ public class GroupHouseholdController {
    * @return a ResponseEntity indicating the result of the operation
    */
   @Operation(summary = "Accept an invitation for a household to join a group")
-  @PostMapping("/accept")
+  @PostMapping("/accept") //TODO remove token param
   public ResponseEntity<Void> accept(
       @RequestBody Long groupId,
       @RequestHeader("Authorization") String token) {
@@ -77,7 +77,7 @@ public class GroupHouseholdController {
   @Operation(summary = "Reject an invitation for a household to join a group")
   @PostMapping("/reject")
   public ResponseEntity<Void> reject(
-      @RequestBody Long groupId,
+      @RequestBody Long groupId, //TODO remove token param
       @RequestHeader("Authorization") String token) {
     service.rejectInvite(groupId, token);
     return ResponseEntity.status(201).build();
@@ -110,7 +110,7 @@ public class GroupHouseholdController {
   @Operation(summary = "Delete a group-household relation by ID")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(
-      @PathVariable Long id, 
+      @PathVariable Long id, //TODO remove token in param
       @RequestHeader("Authorization") String token) {
     return service.delete(id, token) ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();
@@ -128,7 +128,7 @@ public class GroupHouseholdController {
           Retrieves all group-household relations associated with the household that
           the currently authenticated user belongs to.
           """
-  )
+  )//TODO remove token in param
   @GetMapping("/my-groups")
   public ResponseEntity<List<GroupHouseholdResponse>> getGroupsForCurrentUserHousehold(
       @RequestHeader("Authorization") String token) {

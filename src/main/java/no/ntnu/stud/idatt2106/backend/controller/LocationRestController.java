@@ -39,7 +39,7 @@ public class LocationRestController {
    */
   @Operation(
       summary = "Toggles shared position between household members"
-  ) //TODO auth, user should be a part of the household
+  ) //TODO user should be a part of the household
   @PutMapping("/toggle-household/{householdId}")
   public ResponseEntity<String> toggleHouseholdShare(
       @PathVariable Long householdId,
@@ -67,7 +67,7 @@ public class LocationRestController {
    */
   @Operation(
       summary = "Retrieves last known position of the users in a household"
-  ) //TODO auth, user should be a part of the household
+  ) //TODO user should be a part of the household
   @GetMapping("/last-known/{householdId}")
   public ResponseEntity<List<LocationUpdate>> getLastKnownPositions(
       @PathVariable Long householdId) {
@@ -88,7 +88,7 @@ public class LocationRestController {
    */
   @Operation(
       summary = "Updates the last known position for a user"
-  ) //TODO auth?
+  )
   @PutMapping("/update")
   public ResponseEntity<String> updateLastKnownPosition(@RequestBody LocationUpdate update) {
 

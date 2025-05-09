@@ -44,7 +44,7 @@ public class EventController {
       summary = "Registers a new event",
       description = "Regusters a new event. Requires the user to be an admin."
   )
-  @PostMapping
+  @PostMapping //TODO remove token param
   public ResponseEntity<String> addEvent(
       @RequestBody EventRequest event,
       @RequestHeader("Authorization") String token) {
@@ -82,7 +82,7 @@ public class EventController {
       summary = "Updates an existing event",
       description = "Updates an existing event. Requires the user to be an admin."
   )
-  @PostMapping("/update")
+  @PostMapping("/update") //TODO remove token param
   public ResponseEntity<String> updateEvent(
       @RequestBody Event event,
       @RequestHeader("Authorization") String token) {
@@ -100,7 +100,7 @@ public class EventController {
   @Operation(
       summary = "Deletes an existing event",
       description = "Deletes an existing event. Requires the user to be an admin."
-  )
+  ) //TODO remove token param
   @DeleteMapping("/{eventId}")
   public ResponseEntity<String> deleteEvent(
       @PathVariable Long eventId,

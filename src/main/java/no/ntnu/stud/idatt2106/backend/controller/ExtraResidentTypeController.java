@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/extra-resident-types")
 public class ExtraResidentTypeController {
+
   @Autowired
   private ExtraResidentTypeService service;
 
@@ -70,7 +71,7 @@ public class ExtraResidentTypeController {
           Creates a new extra resident type with the specified name, food- and water constumption.
           """
   )
-  @PostMapping //TODO Should require auth. Admin?
+  @PostMapping
   public ResponseEntity<Void> create(@RequestBody ExtraResidentTypeRequest request) {
     service.create(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -87,7 +88,7 @@ public class ExtraResidentTypeController {
       summary = "Updates an existing extra resident type",
       description = "Updates the extra resident type with the specified ID."
   )
-  @PutMapping("/{id}") //TODO Require admin?
+  @PutMapping("/{id}")
   public ResponseEntity<Void> update(
       @PathVariable int id, @RequestBody ExtraResidentTypeRequest request) {
     boolean success = service.update(id, request);
@@ -105,7 +106,7 @@ public class ExtraResidentTypeController {
       summary = "Deletes an existing extra resident type",
       description = "Deletes the extra resident type with the given ID."
   )
-  @DeleteMapping("/{id}") //TODO Admin?
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable int id) {
     return service.delete(id) ? ResponseEntity.noContent().build() :
     ResponseEntity.notFound().build();
