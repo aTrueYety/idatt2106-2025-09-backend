@@ -53,6 +53,7 @@ public class WebSocketAuthHandshakeInterceptor implements HandshakeInterceptor {
 
     } catch (Exception e) {
       e.printStackTrace();
+      return false;
     }
 
     return true;
