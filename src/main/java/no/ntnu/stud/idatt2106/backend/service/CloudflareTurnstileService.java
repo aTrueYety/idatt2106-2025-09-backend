@@ -32,6 +32,10 @@ public class CloudflareTurnstileService {
    *         result
    */
   public boolean verifyCaptcha(String captchaResponse) {
+    if (secretKey.isEmpty()) {
+      return true;
+    }
+
     HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", "application/x-www-form-urlencoded");
     
