@@ -145,15 +145,15 @@ public class TestDataInitializer implements CommandLineRunner {
     // adminAdminsen - test user with super admin privileges
 
     RegisterRequest adminUserRequest = new RegisterRequest("adminJunior",
-        "Password12345", "admin@tgmail.com");
+        "Password12345", "admin@tgmail.com", "captha");
     RegisterRequest superAdminUserRequest = new RegisterRequest("adminAdminsen",
-        "Password12345", "superadmin@gmail.com");
+        "Password12345", "superadmin@gmail.com", "captha");
     RegisterRequest testUserRequest = new RegisterRequest("olaNordmann",
-        "Password12345", "testme@gmail.com");
+        "Password12345", "testme@gmail.com", "captha");
     RegisterRequest testUserRequest2 = new RegisterRequest("kariNordmann",
-        "Password12345", "testhim@gmail.com");
+        "Password12345", "testhim@gmail.com", "captha");
     RegisterRequest testUserRequest3 = new RegisterRequest("nordmannJunior",
-        "Password12345", "junior@gmail.com");
+        "Password12345", "junior@gmail.com", "captha");
 
     authService.register(adminUserRequest);
     authService.register(superAdminUserRequest);
