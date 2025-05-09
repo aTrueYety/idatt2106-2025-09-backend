@@ -21,8 +21,6 @@ public class UserResponse {
   private String lastName;
   private boolean sharePositionHousehold;
   private boolean sharePositionGroup;
-  private float lastLatitude;
-  private float lastLongitude;
   private Boolean admin;
   private Boolean superAdmin;
 }
