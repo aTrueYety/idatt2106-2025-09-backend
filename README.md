@@ -54,7 +54,7 @@ mvn spring-boot:run -Ptest-e2e -D"spring-boot.run.profiles=test-e2e"
 ### Testbrukere
 Om man kjører applikasjonen med predefinerte testdata får man noen testbrukere:
 
-Superadmin
+Superadmin:
 - Brukernavn: adminAdminsen
 - Passord: Password12345
 
