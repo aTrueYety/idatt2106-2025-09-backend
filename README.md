@@ -1,4 +1,5 @@
 <h1 align="center">Krisefikser backend</h1>
+
 ## Info
 Krisefikser er en web applikation som hjælper med å øke beredskapen og forståelsen for kriser og katastrofer. Backenden er bygget med Apache Maven og Java, og den håndterer databasetilkoblinger, API-anmodninger og forretningslogik. Se [wikien](https://github.com/aTrueYety/idatt2106-2025-09-backend/wiki) for uttligere dokumentation og detaljer.
 
