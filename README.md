@@ -36,15 +36,25 @@ cd idatt2106-2025-09-backend
 
 3. Opprett en .env fil og legg til i rotmappen med følgende innhold:
 ```env
-DATABASE_URL=
-DATABASE_USER=
-DATABASE_PASSWORD=
-SPRING_DATABASE_DRIVER=
+#database
+DATABASE_URL= Database url. f.eks jdbc:mysql://192.168.0.1:3306/default
+DATABASE_USER= Databasebrukeren.
+DATABASE_PASSWORD= Databasepassordet til databasebrukeren.
+SPRING_DATABASE_DRIVER= Hvilken databasedriver som skal brukes (com.mysql.cj.jdbc.Driver eller org.h2.Driver).
+DATABASE_SCHEMA= Hvilken schema databasen skal bruke (default for mysql eller PUBLIC for h2).
 
-GMAIL_HOST=
-GMAIL_PORT=
-GMAIL_USER=
-GMAIL_PASSWORD=
+#epost
+GMAIL_HOST= Epost-serveren som skal benyttes.
+GMAIL_PORT= Porten epost serveren kjører på.
+GMAIL_USER= Epost-brukernavn.
+GMAIL_PASSWORD= Epost-passord.
+
+#turnstile
+TURNSTILE_SECRET_KEY= Den hemmelig nøkkelen du får når du setter opp turnstile.
+
+#diverse
+CORS_ALLOWED_ORIGINS= Hvilke cross-orgins som er tillatt. Lokalt er dette localhost:3000.
+FRONTEND_URL= Hva url-en til frontend er. Lokalt er dette localhost:3000.
 ```
 
 4. Bygg
