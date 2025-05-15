@@ -70,7 +70,7 @@ mvn spring-boot:run
 
 For å kjøre med predefinert testdata kan du bruke følgende kommando:
 ```bash
-mvn spring-boot:run -Ptest-e2e -D"spring-boot.run.profiles=test-e2e"
+mvn spring-boot:run -Ptest-e2e -Dspring-boot.run.profiles=test-e2e
 ```
 
 ### Testbrukere
